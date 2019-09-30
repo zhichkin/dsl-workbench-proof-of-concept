@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>OneCSharp.Metadata.Shared</AssemblyName>
+    <RootNamespace>OneCSharp.Metadata.Shared</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Persistence.Shared\Persistence.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
