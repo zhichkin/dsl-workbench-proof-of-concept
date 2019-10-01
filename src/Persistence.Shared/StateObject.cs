@@ -28,7 +28,7 @@ namespace OneCSharp.Persistence.Shared
         public StateObject() { }
 
         protected PersistentState _state = PersistentState.New;
-        public PersistentState State { get; }
+        public PersistentState State { get { return _state; } }
 
         public event StateChangedEventHandler StateChanged;
         public event StateChangingEventHandler StateChanging;
@@ -47,8 +47,6 @@ namespace OneCSharp.Persistence.Shared
         }
         protected void Set<TValue>(TValue value, ref TValue storage)
         {
-            if (_state == PersistentState.Virtual) throw new InvalidOperationException();
-
             if (_state == PersistentState.Deleted) return;
 
             if (_state == PersistentState.New || _state == PersistentState.Changed)

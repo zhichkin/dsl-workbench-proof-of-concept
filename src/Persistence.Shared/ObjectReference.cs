@@ -1,11 +1,13 @@
-﻿namespace OneCSharp.Persistence.Shared
+﻿using System;
+
+namespace OneCSharp.Persistence.Shared
 {
     public interface IObjectReference<TKey> : IPersistentObject<TKey> where TKey : struct
     {
         string Presentation { get; }
     }
 
-    public sealed class ObjectReference<TKey> : IObjectReference<TKey> where TKey : struct
+    public class ObjectReference<TKey> : IObjectReference<TKey> where TKey : struct
     {
         public ObjectReference(int typeCode, TKey primaryKey, string presentation)
         {
@@ -48,5 +50,29 @@
         {
             return !(left == right);
         }
+    }
+
+    public sealed class ObjectReference : ObjectReference<Guid>
+    {
+        public ObjectReference(int typeCode, Guid primaryKey, string presentation)
+            : base(typeCode, primaryKey, presentation)
+        { }
+        public ObjectReference(ReferenceObject<Guid> reference)
+            : this(reference.TypeCode,
+                  reference.PrimaryKey,
+                  reference.ToString())
+        { }
+    }
+
+    public sealed class IdentityReference : ObjectReference<int>
+    {
+        public IdentityReference(int typeCode, int primaryKey, string presentation)
+            : base(typeCode, primaryKey, presentation)
+        { }
+        public IdentityReference(ReferenceObject<int> reference)
+            : this(reference.TypeCode,
+                  reference.PrimaryKey,
+                  reference.ToString())
+        { }
     }
 }

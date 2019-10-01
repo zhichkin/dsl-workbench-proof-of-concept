@@ -7,8 +7,9 @@ namespace OneCSharp.Metadata.Shared
     [TypeCode(1)]
     public sealed class InfoBase : MetadataObject
     {
-        public InfoBase() : base() { _typeCode = 1; }
-        public InfoBase(Guid key) : base(key) { _typeCode = 1; }
+        public InfoBase() : base() { }
+        public InfoBase(Guid key) : base(key) { }
+        public override int TypeCode { get { return 1; } }
 
         private string _server = string.Empty;
         private string _database = string.Empty;

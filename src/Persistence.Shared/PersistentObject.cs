@@ -15,9 +15,7 @@ namespace OneCSharp.Persistence.Shared
     {
         public PersistentObject() { }
         public PersistentObject(TKey primaryKey) { _key = primaryKey; }
-
-        protected int _typeCode;
-        public int TypeCode { get { return _typeCode; } }
+        public abstract int TypeCode { get; }
 
         protected TKey _key;
         public TKey PrimaryKey { get { return _key; } }

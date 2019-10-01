@@ -7,8 +7,9 @@ namespace OneCSharp.Metadata.Shared
     [TypeCode(2)]
     public sealed class Namespace : MetadataObject
     {
-        public Namespace() : base() { _typeCode = 2; }
-        public Namespace(Guid key) : base(key) { _typeCode = 2; }
+        public Namespace() : base() { }
+        public Namespace(Guid key) : base(key) { }
+        public override int TypeCode { get { return 2; } }
 
         private MetadataObject _owner = null; // InfoBase|Namespace
         private List<Namespace> _namespaces = new List<Namespace>();

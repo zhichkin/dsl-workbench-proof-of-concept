@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>OneCSharp.Metadata.Server</AssemblyName>
+    <RootNamespace>OneCSharp.Metadata.Server</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Metadata.Shared\Metadata.Shared.csproj" />
+    <ProjectReference Include="..\Persistence.Shared\Persistence.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

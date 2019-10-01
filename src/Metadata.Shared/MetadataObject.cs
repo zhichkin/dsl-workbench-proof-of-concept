@@ -3,7 +3,7 @@ using System;
 
 namespace OneCSharp.Metadata.Shared
 {
-    public abstract class MetadataObject : ReferenceObject<Guid>
+    public abstract class MetadataObject : ReferenceObject
     {
         public MetadataObject() : base() { this._key = Guid.NewGuid(); }
         public MetadataObject(Guid key) : base(key) { }
@@ -13,5 +13,22 @@ namespace OneCSharp.Metadata.Shared
         private string _alias = string.Empty;
         public string Name { set { Set<string>(value, ref _name); } get { return Get<string>(ref _name); } }
         public string Alias { set { Set<string>(value, ref _alias); } get { return Get<string>(ref _alias); } }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
+
+        public abstract class Persister : StateObject.Insider
+        {
+            protected void SetVersion(MetadataObject target, byte[] version)
+            {
+                target._version = version;
+            }
+            protected byte[] GetVersion(MetadataObject target)
+            {
+                return target._version;
+            }
+        }
     }
 }
