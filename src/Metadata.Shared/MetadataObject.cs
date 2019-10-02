@@ -11,9 +11,10 @@ namespace OneCSharp.Metadata.Shared
         private byte[] _version = new byte[8]; // Optimistic concurrency implementation
         private string _name = string.Empty;
         private string _alias = string.Empty;
+        
         public string Name { set { Set<string>(value, ref _name); } get { return Get<string>(ref _name); } }
         public string Alias { set { Set<string>(value, ref _alias); } get { return Get<string>(ref _alias); } }
-
+        
         public override string ToString()
         {
             return this.Name;

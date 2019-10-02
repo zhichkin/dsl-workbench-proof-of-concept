@@ -73,6 +73,7 @@ namespace OneCSharp.Query.Shared
         }
         public void RemoveChild(BooleanFunction child)
         {
+            child.Parent = null;
             this.Operands.Remove(child);
         }
     }
