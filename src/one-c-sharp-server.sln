@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence.Shared", "Persi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Metadata.Shared", "Metadata.Shared\Metadata.Shared.csproj", "{75C2024A-B4A1-4933-BE0C-63DB57409A6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metadata.Tests", "Metadata.Tests\Metadata.Tests.csproj", "{06D9EEF9-7BAF-431C-A4F6-5E190FCDBD21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Metadata.Tests", "Metadata.Tests\Metadata.Tests.csproj", "{06D9EEF9-7BAF-431C-A4F6-5E190FCDBD21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metadata.Server", "Metadata.Server\Metadata.Server.csproj", "{BF32F95B-DD4E-4D0A-B3D8-DB045DC2B6F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Metadata.Server", "Metadata.Server\Metadata.Server.csproj", "{BF32F95B-DD4E-4D0A-B3D8-DB045DC2B6F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Query.Shared", "Query.Shared\Query.Shared.csproj", "{1518D3CB-D31A-4A07-966E-A1EB0C8B79DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{BF32F95B-DD4E-4D0A-B3D8-DB045DC2B6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF32F95B-DD4E-4D0A-B3D8-DB045DC2B6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF32F95B-DD4E-4D0A-B3D8-DB045DC2B6F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1518D3CB-D31A-4A07-966E-A1EB0C8B79DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1518D3CB-D31A-4A07-966E-A1EB0C8B79DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1518D3CB-D31A-4A07-966E-A1EB0C8B79DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1518D3CB-D31A-4A07-966E-A1EB0C8B79DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
