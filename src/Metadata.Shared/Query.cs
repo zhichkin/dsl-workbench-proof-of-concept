@@ -11,7 +11,7 @@ namespace OneCSharp.Metadata.Shared
         public override int TypeCode { get { return 8; } }
 
         private Namespace _namespace = null;
-        private Entity owner = null;
+        private Entity entity = null;
         private string parseTree = string.Empty;
         private Entity requestType = null;
         private Entity responseType = null;
@@ -23,7 +23,7 @@ namespace OneCSharp.Metadata.Shared
         /// <summary>
         /// Entity owning this query (can be null if owner is a namespace)
         /// </summary>
-        public Entity Owner { set { Set<Entity>(value, ref owner); } get { return Get<Entity>(ref owner); } }
+        public Entity Entity { set { Set<Entity>(value, ref entity); } get { return Get<Entity>(ref entity); } }
         /// <summary>
         /// JSON serialized abstract syntax tree of the query
         /// </summary>
