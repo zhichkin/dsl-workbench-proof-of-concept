@@ -9,26 +9,26 @@ namespace OneCSharp.Metadata.Server
     public sealed class InfoBaseDataPersister : MetadataObject.Persister, IDataPersister
     {
         #region "SQL commands"
-        private const string SelectCommandScript = @"SELECT [name], [server], [database], [username], [password], [version] FROM [metadata].[infobases] WHERE [key] = @key";
+        private const string SelectCommandScript = @"SELECT [name], [alias], [server], [database], [username], [password], [version] FROM [ocs].[infobases] WHERE [key] = @key";
         private const string InsertCommandScript =
                 @"DECLARE @result table([version] binary(8)); " +
-                @"INSERT [metadata].[infobases] ([key], [name], [server], [database], [username], [password]) " +
+                @"INSERT [ocs].[infobases] ([key], [name], [alias], [server], [database], [username], [password]) " +
                 @"OUTPUT inserted.[version] INTO @result " +
-                @"VALUES (@key, @name, @server, @database, @username, @password); " +
+                @"VALUES (@key, @name, @alias, @server, @database, @username, @password); " +
                 @"IF @@ROWCOUNT > 0 SELECT [version] FROM @result;";
         private const string UpdateCommandScript =
                 @"DECLARE @rows_affected int; DECLARE @result table([version] binary(8)); " +
-                @"UPDATE [metadata].[infobases] SET [name] = @name, [server] = @server, [database] = @database, [username] = @username, [password] = @password " +
+                @"UPDATE [ocs].[infobases] SET [name] = @name, [alias] = @alias, [server] = @server, [database] = @database, [username] = @username, [password] = @password " +
                 @"OUTPUT inserted.[version] INTO @result" +
                 @" WHERE [key] = @key AND [version] = @version; " +
                 @"SET @rows_affected = @@ROWCOUNT; " +
                 @"IF (@rows_affected = 0) " +
                 @"BEGIN " +
-                @"  INSERT @result ([version]) SELECT [version] FROM [metadata].[infobases] WHERE [key] = @key; " +
+                @"  INSERT @result ([version]) SELECT [version] FROM [ocs].[infobases] WHERE [key] = @key; " +
                 @"END " +
                 @"SELECT @rows_affected, [version] FROM @result;";
         private const string DeleteCommandScript =
-            @"DELETE [metadata].[infobases] WHERE [key] = @key " +
+            @"DELETE [ocs].[infobases] WHERE [key] = @key " +
             @"   AND ([version] = @version OR @version = 0x00000000); " + // taking into account deletion of the entities having virtual state
             @"SELECT @@ROWCOUNT;";
         #endregion
@@ -58,11 +58,12 @@ namespace OneCSharp.Metadata.Server
                 if (reader.Read())
                 {
                     po.Name = (string)reader[0];
-                    po.Server = (string)reader[1];
-                    po.Database = (string)reader[2];
-                    po.UserName = (string)reader[3];
-                    po.Password = (string)reader[4];
-                    this.SetVersion(po, (byte[])reader[5]);
+                    po.Alias = (string)reader[1];
+                    po.Server = (string)reader[2];
+                    po.Database = (string)reader[3];
+                    po.UserName = (string)reader[4];
+                    po.Password = (string)reader[5];
+                    this.SetVersion(po, (byte[])reader[6]);
                     this.SetState(po, PersistentState.Original);
                     ok = true;
                 }
@@ -95,6 +96,11 @@ namespace OneCSharp.Metadata.Server
                 parameter = new SqlParameter("name", SqlDbType.NVarChar);
                 parameter.Direction = ParameterDirection.Input;
                 parameter.Value = po.Name;
+                command.Parameters.Add(parameter);
+
+                parameter = new SqlParameter("alias", SqlDbType.NVarChar);
+                parameter.Direction = ParameterDirection.Input;
+                parameter.Value = po.Alias;
                 command.Parameters.Add(parameter);
 
                 parameter = new SqlParameter("server", SqlDbType.NVarChar);
@@ -161,6 +167,11 @@ namespace OneCSharp.Metadata.Server
                 parameter = new SqlParameter("name", SqlDbType.NVarChar);
                 parameter.Direction = ParameterDirection.Input;
                 parameter.Value = po.Name;
+                command.Parameters.Add(parameter);
+
+                parameter = new SqlParameter("alias", SqlDbType.NVarChar);
+                parameter.Direction = ParameterDirection.Input;
+                parameter.Value = po.Alias;
                 command.Parameters.Add(parameter);
 
                 parameter = new SqlParameter("server", SqlDbType.NVarChar);

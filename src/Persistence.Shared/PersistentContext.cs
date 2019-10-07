@@ -13,11 +13,16 @@ namespace OneCSharp.Persistence.Shared
         void Load(IPersistentObject persistentObject);
         void Save(IPersistentObject persistentObject);
         void Kill(IPersistentObject persistentObject);
+        void AddObjectFactory(Type type, IObjectFactory factory);
+        void AddObjectFactory(int typeCode, IObjectFactory factory);
+        IObjectFactory GetObjectFactory(Type type);
+        IObjectFactory GetObjectFactory(int typeCode);
     }
 
     public class PersistentContext : IPersistentContext
     {
         private Dictionary<int, IDataPersister> _dataPersisters = new Dictionary<int, IDataPersister>();
+        private Dictionary<int, IObjectFactory> _objectFactories = new Dictionary<int, IObjectFactory>();
         public PersistentContext() { }
         public PersistentContext(string connectionString)
         {
@@ -74,6 +79,25 @@ namespace OneCSharp.Persistence.Shared
                 IDataPersister persister = this.GetDataPersister(persistentObject.TypeCode);
                 persister.Delete(persistentObject);
             }
+        }
+
+        public void AddObjectFactory(Type type, IObjectFactory factory)
+        {
+            TypeCodeAttribute tca = (TypeCodeAttribute)type.GetCustomAttributes(typeof(TypeCodeAttribute), false)[0];
+            _objectFactories.Add(tca.TypeCode, factory);
+        }
+        public void AddObjectFactory(int typeCode, IObjectFactory factory)
+        {
+            _objectFactories.Add(typeCode, factory);
+        }
+        public IObjectFactory GetObjectFactory(Type type)
+        {
+            TypeCodeAttribute tca = (TypeCodeAttribute)type.GetCustomAttributes(typeof(TypeCodeAttribute), false)[0];
+            return this.GetObjectFactory(tca.TypeCode);
+        }
+        public IObjectFactory GetObjectFactory(int typeCode)
+        {
+            return _objectFactories[typeCode];
         }
     }
 }

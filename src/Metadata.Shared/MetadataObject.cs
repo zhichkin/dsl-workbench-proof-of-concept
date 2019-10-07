@@ -17,7 +17,7 @@ namespace OneCSharp.Metadata.Shared
         
         public override string ToString()
         {
-            return this.Name;
+            return string.IsNullOrWhiteSpace(this.Alias) ? this.Name : this.Alias;
         }
 
         public abstract class Persister : StateObject.Insider

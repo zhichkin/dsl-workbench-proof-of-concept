@@ -19,5 +19,13 @@ namespace OneCSharp.Persistence.Shared
 
         protected TKey _key;
         public TKey PrimaryKey { get { return _key; } }
+
+        public abstract class PrimaryKeyInsider
+        {
+            protected void SetPrimaryKey(PersistentObject<TKey> target, TKey key)
+            {
+                target._key = key;
+            }
+        }
     }
 }

@@ -4,21 +4,21 @@ namespace OneCSharp.Persistence.Shared
 {
     public interface IObjectFactory
     {
-        ///// <summary>
-        ///// Creates new instance of the given type
-        ///// </summary>
-        //IReferenceObject New(Type type); // New
-        ///// <summary>
-        ///// Creates new instance of the given type with specified identity value
-        ///// </summary>
-        //IReferenceObject New(Type type, Guid identity); // New
-        ///// <summary>
-        ///// Creates virtual instance of the given type code and identity value
-        ///// </summary>
-        //IReferenceObject New(int typeCode, Guid identity); // Virtual
-        ///// <summary>
-        ///// Creates virtual instance of the given type and identity value
-        ///// </summary>
-        //T New<T>(Guid identity) where T : IReferenceObject; // Virtual
+        /// <summary>
+        /// Creates new instance of the given type
+        /// </summary>
+        IPersistentObject New(Type type);
+        /// <summary>
+        /// Creates new instance by type code
+        /// </summary>
+        IPersistentObject New(int typeCode);
+        /// <summary>
+        /// Creates new instance of the given type and key value
+        /// </summary>
+        IPersistentObject New(Type type, object key);
+        /// <summary>
+        /// Creates new instance by type code and key value
+        /// </summary>
+        IPersistentObject New(int typeCode, object key);
     }
 }
