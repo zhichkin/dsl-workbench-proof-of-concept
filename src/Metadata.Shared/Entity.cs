@@ -11,22 +11,22 @@ namespace OneCSharp.Metadata.Shared
         public override int TypeCode { get { return 3; } }
 
         private int _code = 0; // type code
-        private Table _table = null;
-        private Namespace _namespace = null; // Namespace
-        private Entity owner = null; // Nesting
-        private Entity parent = null; // Inheritance
-        private bool isSealed = false;
-        private bool isAbstract = false;
+        private ObjectReference _table = null; // Table
+        private ObjectReference _namespace = null; // Namespace
+        private ObjectReference _owner = null; // Entity (nesting)
+        private ObjectReference _parent = null; // Entity (inheritance)
+        private bool _isSealed = false;
+        private bool _isAbstract = false;
 
         ///<summary>Type code of the entity</summary>
-        public int Code { set { Set<int>(value, ref _code); } get { return Get<int>(ref _code); } }
-        public Table Table { set { Set<Table>(value, ref _table); } get { return Get<Table>(ref _table); } }
-        public Namespace Namespace { set { Set<Namespace>(value, ref _namespace); } get { return Get<Namespace>(ref _namespace); } }
+        public int Code { set { Set(value, ref _code); } get { return Get(ref _code); } }
+        public ObjectReference Table { set { Set(value, ref _table); } get { return Get(ref _table); } }
+        public ObjectReference Namespace { set { Set(value, ref _namespace); } get { return Get(ref _namespace); } }
         ///<summary>Nesting entity reference</summary>
-        public Entity Owner { set { Set<Entity>(value, ref owner); } get { return Get<Entity>(ref owner); } }
+        public ObjectReference Owner { set { Set(value, ref _owner); } get { return Get(ref _owner); } }
         ///<summary>Inheritance: base entity reference</summary>
-        public Entity Parent { set { Set<Entity>(value, ref parent); } get { return Get<Entity>(ref parent); } }
-        public bool IsSealed { set { Set<bool>(value, ref isSealed); } get { return Get<bool>(ref isSealed); } }
-        public bool IsAbstract { set { Set<bool>(value, ref isAbstract); } get { return Get<bool>(ref isAbstract); } }
+        public ObjectReference Parent { set { Set(value, ref _parent); } get { return Get(ref _parent); } }
+        public bool IsSealed { set { Set(value, ref _isSealed); } get { return Get(ref _isSealed); } }
+        public bool IsAbstract { set { Set(value, ref _isAbstract); } get { return Get(ref _isAbstract); } }
     }
 }

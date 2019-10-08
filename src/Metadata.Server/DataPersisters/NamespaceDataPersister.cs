@@ -9,7 +9,15 @@ namespace OneCSharp.Metadata.Server
     public sealed class NamespaceDataPersister : MetadataObject.Persister, IDataPersister
     {
         #region "SQL commands"
-        private const string SelectCommandText = @"SELECT [owner_], [owner], [name], [alias], [version] FROM [ocs].[namespaces] WHERE [key] = @key";
+        private const string SelectCommandText =
+            "SELECT ns.[owner_], ns.[owner], " +
+            "CASE WHEN NOT i.[key] IS NULL THEN i.[name] " +
+            "WHEN NOT n.[key] IS NULL THEN n.[name] " +
+            "END AS[_owner], " +
+            "ns.[name], ns.[alias], ns.[version] " +
+            "FROM (SELECT * FROM [ocs].[namespaces] WHERE [key] = @key) AS ns " +
+            "LEFT JOIN [ocs].[infobases] AS i ON ns.[owner] = i.[key] " +
+            "LEFT JOIN [ocs].[namespaces] AS n ON ns.[owner] = n.[key];";
         private const string InsertCommandText =
             @"DECLARE @result table([version] binary(8)); " +
             @"INSERT [ocs].[namespaces] ([key], [owner_], [owner], [name], [alias]) " +
@@ -63,16 +71,16 @@ namespace OneCSharp.Metadata.Server
                 {
                     int code = reader.GetInt32(0);
                     Guid key = reader.GetGuid(1);
-                    string presentation = string.Empty;
+                    string presentation = reader.GetString(2);
                     //var factory = this.Context.GetObjectFactory(code);
                     //var owner = (MetadataObject)factory.New(code, key);
                     //this.Context.Load(owner);
                     //presentation = owner.ToString();
                     e.Owner = new ObjectReference(code, key, presentation);
-                    e.Name = (string)reader[2];
-                    e.Alias = (string)reader[3];
-                    this.SetVersion(e, (byte[])reader[4]);
-
+                    e.Name = (string)reader[3];
+                    e.Alias = (string)reader[4];
+                    this.SetVersion(e, (byte[])reader[5]);
+                    this.SetState(e, PersistentState.Original);
                     ok = true;
                 }
 
@@ -81,7 +89,6 @@ namespace OneCSharp.Metadata.Server
 
             if (!ok) throw new ApplicationException("Error executing select command.");
         }
-
         public void Insert(IPersistentObject entity)
         {
             Namespace e = (Namespace)entity;
@@ -137,7 +144,6 @@ namespace OneCSharp.Metadata.Server
 
             if (!ok) throw new ApplicationException("Error executing insert command.");
         }
-
         public void Update(IPersistentObject entity)
         {
             Namespace e = (Namespace)entity;
@@ -209,7 +215,6 @@ namespace OneCSharp.Metadata.Server
 
             if (!ok) throw new OptimisticConcurrencyException(e.State.ToString());
         }
-
         public void Delete(IPersistentObject entity)
         {
             Namespace e = (Namespace)entity;
@@ -238,7 +243,11 @@ namespace OneCSharp.Metadata.Server
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                if (reader.Read()) { ok = (int)reader[0] > 0; }
+                if (reader.Read())
+                {
+                    ok = (int)reader[0] > 0;
+                    this.SetState(e, PersistentState.Deleted);
+                }
 
                 reader.Close(); connection.Close();
             }

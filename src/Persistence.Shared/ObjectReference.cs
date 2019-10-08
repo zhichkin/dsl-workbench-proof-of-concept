@@ -62,6 +62,7 @@ namespace OneCSharp.Persistence.Shared
                   reference.PrimaryKey,
                   reference.ToString())
         { }
+        public bool IsEmpty() { return (this.PrimaryKey == Guid.Empty); }
     }
 
     public sealed class IdentityReference : ObjectReference<int>
