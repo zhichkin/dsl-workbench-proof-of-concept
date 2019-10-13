@@ -6,9 +6,8 @@ namespace OneCSharp.Metadata.Shared
     [TypeCode(8)]
     public sealed class Query : MetadataObject
     {
-        public Query() : base() { }
-        public Query(Guid key) : base(key) { }
-        public override int TypeCode { get { return 8; } }
+        public Query() : base(8) { }
+        public Query(Guid key) : base(8, key) { }
 
         private Namespace _namespace = null;
         private Entity entity = null;
@@ -19,22 +18,22 @@ namespace OneCSharp.Metadata.Shared
         /// <summary>
         /// Namespace owning this query
         /// </summary>
-        public Namespace Namespace { set { Set<Namespace>(value, ref _namespace); } get { return Get<Namespace>(ref _namespace); } }
+        public Namespace Namespace { set { Set(value, ref _namespace); } get { return _namespace; } }
         /// <summary>
         /// Entity owning this query (can be null if owner is a namespace)
         /// </summary>
-        public Entity Entity { set { Set<Entity>(value, ref entity); } get { return Get<Entity>(ref entity); } }
+        public Entity Entity { set { Set(value, ref entity); } get { return entity; } }
         /// <summary>
         /// JSON serialized abstract syntax tree of the query
         /// </summary>
-        public string ParseTree { set { Set<string>(value, ref parseTree); } get { return Get<string>(ref parseTree); } }
+        public string ParseTree { set { Set(value, ref parseTree); } get { return parseTree; } }
         /// <summary>
         /// Data type of query (input data)
         /// </summary>
-        public Entity RequestType { set { Set<Entity>(value, ref requestType); } get { return Get<Entity>(ref requestType); } }
+        public Entity RequestType { set { Set(value, ref requestType); } get { return requestType; } }
         /// <summary>
         /// Data type of query (output data)
         /// </summary>
-        public Entity ResponseType { set { Set<Entity>(value, ref responseType); } get { return Get<Entity>(ref responseType); } }
+        public Entity ResponseType { set { Set(value, ref responseType); } get { return responseType; } }
     }
 }

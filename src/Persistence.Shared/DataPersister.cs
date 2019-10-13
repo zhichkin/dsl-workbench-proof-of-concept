@@ -4,10 +4,10 @@ namespace OneCSharp.Persistence.Shared
 {
     public interface IDataPersister
     {
-        IPersistentContext Context { get; }
-        void Select(IPersistentObject persistentObject);
-        void Insert(IPersistentObject persistentObject);
-        void Update(IPersistentObject persistentObject);
-        void Delete(IPersistentObject persistentObject);
+        IPersistentContext Context { get; set; }
+        int Insert(ref ReferenceObject dto);
+        int Update(ref ReferenceObject dto);
+        int Delete(ref ReferenceObject dto);
+        int Select(ref ReferenceObject dto);
     }
 }

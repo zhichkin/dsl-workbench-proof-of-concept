@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace OneCSharp.Metadata.Server
 {
-    public sealed class NamespaceDataPersister : MetadataObject.Persister, IDataPersister
+    public sealed class NamespaceDataPersister : IDataPersister
     {
         #region "SQL commands"
         private const string SelectCommandText =
@@ -43,8 +43,8 @@ namespace OneCSharp.Metadata.Server
         #endregion
 
         public NamespaceDataPersister(IPersistentContext context) { this.Context = context; }
-        public IPersistentContext Context { get; private set; }
-        public void Select(IPersistentObject entity)
+        public IPersistentContext Context { get; set; }
+        public int Select(ref ReferenceObject entity)
         {
             Namespace e = (Namespace)entity;
             
@@ -66,30 +66,23 @@ namespace OneCSharp.Metadata.Server
                 command.Parameters.Add(parameter);
 
                 SqlDataReader reader = command.ExecuteReader();
-
                 if (reader.Read())
                 {
                     int code = reader.GetInt32(0);
                     Guid key = reader.GetGuid(1);
                     string presentation = reader.GetString(2);
-                    //var factory = this.Context.GetObjectFactory(code);
-                    //var owner = (MetadataObject)factory.New(code, key);
-                    //this.Context.Load(owner);
-                    //presentation = owner.ToString();
-                    e.Owner = new ObjectReference(code, key, presentation);
+                    e.Owner = new ReferenceObject(code, key, presentation);
                     e.Name = (string)reader[3];
                     e.Alias = (string)reader[4];
-                    this.SetVersion(e, (byte[])reader[5]);
-                    this.SetState(e, PersistentState.Original);
+                    ((IOptimisticConcurrencyObject)e).Version = (byte[])reader[5];
                     ok = true;
                 }
-
-                reader.Close(); connection.Close();
+                reader.Close();
+                connection.Close();
             }
-
-            if (!ok) throw new ApplicationException("Error executing select command.");
+            if (ok) return 1; else return 0;
         }
-        public void Insert(IPersistentObject entity)
+        public int Insert(ref ReferenceObject entity)
         {
             Namespace e = (Namespace)entity;
 
@@ -131,24 +124,19 @@ namespace OneCSharp.Metadata.Server
                 command.Parameters.Add(parameter);
 
                 SqlDataReader reader = command.ExecuteReader();
-
                 if (reader.Read())
                 {
-                    this.SetVersion(e, (byte[])reader[0]);
-                    this.SetState(e, PersistentState.Original);
+                    ((IOptimisticConcurrencyObject)e).Version = (byte[])reader[0];
                     ok = true;
                 }
-
-                reader.Close(); connection.Close();
+                reader.Close();
+                connection.Close();
             }
-
-            if (!ok) throw new ApplicationException("Error executing insert command.");
+            if (ok) return 1; else return 0;
         }
-        public void Update(IPersistentObject entity)
+        public int Update(ref ReferenceObject entity)
         {
             Namespace e = (Namespace)entity;
-
-            bool ok = false; int rows_affected = 0;
 
             using (SqlConnection connection = new SqlConnection(this.Context.ConnectionString))
             {
@@ -167,7 +155,7 @@ namespace OneCSharp.Metadata.Server
 
                 parameter = new SqlParameter("version", SqlDbType.Timestamp);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = this.GetVersion(e);
+                parameter.Value = ((IOptimisticConcurrencyObject)e).Version;
                 command.Parameters.Add(parameter);
 
                 parameter = new SqlParameter("owner_", SqlDbType.Int);
@@ -190,32 +178,31 @@ namespace OneCSharp.Metadata.Server
                 parameter.Value = e.Alias ?? string.Empty;
                 command.Parameters.Add(parameter);
 
+                int result = 2; // sql exception
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
                     {
-                        rows_affected = reader.GetInt32(0);
-                        this.SetVersion(e, (byte[])reader[1]);
+                        int rows_affected = reader.GetInt32(0);
+                        ((IOptimisticConcurrencyObject)e).Version = (byte[])reader[1];
                         if (rows_affected == 0)
                         {
-                            this.SetState(e, PersistentState.Changed);
+                            result = 0; // changed
                         }
                         else
                         {
-                            this.SetState(e, PersistentState.Original);
-                            ok = true;
+                            result = 1; // original
                         }
                     }
                     else
                     {
-                        this.SetState(e, PersistentState.Deleted);
+                        result = -1; // deleted
                     }
                 }
+                return result;
             }
-
-            if (!ok) throw new OptimisticConcurrencyException(e.State.ToString());
         }
-        public void Delete(IPersistentObject entity)
+        public int Delete(ref ReferenceObject entity)
         {
             Namespace e = (Namespace)entity;
 
@@ -238,21 +225,18 @@ namespace OneCSharp.Metadata.Server
 
                 parameter = new SqlParameter("version", SqlDbType.Timestamp);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = this.GetVersion(e);
+                parameter.Value = ((IOptimisticConcurrencyObject)e).Version;
                 command.Parameters.Add(parameter);
 
                 SqlDataReader reader = command.ExecuteReader();
-
                 if (reader.Read())
                 {
                     ok = (int)reader[0] > 0;
-                    this.SetState(e, PersistentState.Deleted);
                 }
-
-                reader.Close(); connection.Close();
+                reader.Close();
+                connection.Close();
             }
-
-            if (!ok) throw new ApplicationException("Error executing delete command.");
+            if (ok) { return 1; } else { return 0; }
         }
     }
 }

@@ -6,9 +6,8 @@ namespace OneCSharp.Metadata.Shared
     [TypeCode(6)]
     public sealed class Field : MetadataObject
     {
-        public Field() : base() { }
-        public Field(Guid key) : base(key) { }
-        public override int TypeCode { get { return 6; } }
+        public Field() : base(6) { }
+        public Field(Guid key) : base(6, key) { }
 
         private Table table = null; // Table - owner of the field
         private Property property = null; // Property using field to store data
@@ -22,16 +21,16 @@ namespace OneCSharp.Metadata.Shared
         private bool is_primary_key = false;
         private byte key_ordinal = 0;
 
-        public Table Table { set { Set<Table>(value, ref table); } get { return Get<Table>(ref table); } }
-        public Property Property { set { Set<Property>(value, ref property); } get { return Get<Property>(ref property); } }
-        public FieldPurpose Purpose { set { Set<FieldPurpose>(value, ref purpose); } get { return Get<FieldPurpose>(ref purpose); } }
-        public string TypeName { set { Set<string>(value, ref type_name); } get { return Get<string>(ref type_name); } }
-        public int Length { set { Set<int>(value, ref length); } get { return Get<int>(ref length); } }
-        public int Precision { set { Set<int>(value, ref precision); } get { return Get<int>(ref precision); } }
-        public int Scale { set { Set<int>(value, ref scale); } get { return Get<int>(ref scale); } }
-        public bool IsNullable { set { Set<bool>(value, ref is_nullable); } get { return Get<bool>(ref is_nullable); } }
-        public bool IsReadOnly { set { Set<bool>(value, ref is_readonly); } get { return Get<bool>(ref is_readonly); } }
-        public bool IsPrimaryKey { set { Set<bool>(value, ref is_primary_key); } get { return Get<bool>(ref is_primary_key); } }
-        public byte KeyOrdinal { set { Set<byte>(value, ref key_ordinal); } get { return Get<byte>(ref key_ordinal); } }
+        public Table Table { set { Set(value, ref table); } get { return table; } }
+        public Property Property { set { Set(value, ref property); } get { return property; } }
+        public FieldPurpose Purpose { set { Set(value, ref purpose); } get { return purpose; } }
+        public string TypeName { set { Set(value, ref type_name); } get { return type_name; } }
+        public int Length { set { Set(value, ref length); } get { return length; } }
+        public int Precision { set { Set(value, ref precision); } get { return precision; } }
+        public int Scale { set { Set(value, ref scale); } get { return scale; } }
+        public bool IsNullable { set { Set(value, ref is_nullable); } get { return is_nullable; } }
+        public bool IsReadOnly { set { Set(value, ref is_readonly); } get { return is_readonly; } }
+        public bool IsPrimaryKey { set { Set(value, ref is_primary_key); } get { return is_primary_key; } }
+        public byte KeyOrdinal { set { Set(value, ref key_ordinal); } get { return key_ordinal; } }
     }
 }

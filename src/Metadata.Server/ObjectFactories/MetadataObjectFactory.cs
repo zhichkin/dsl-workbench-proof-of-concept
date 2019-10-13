@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace OneCSharp.Metadata.Server
 {
-    public sealed class MetadataObjectFactory : MetadataObject.PrimaryKeyInsider, IObjectFactory
+    public sealed class MetadataObjectFactory : IObjectFactory
     {
-        private readonly Dictionary<int, Func<IPersistentObject>> _factoryMethods = new Dictionary<int, Func<IPersistentObject>>();
+        private readonly Dictionary<int, Func<ReferenceObject>> _factoryMethods = new Dictionary<int, Func<ReferenceObject>>();
         public MetadataObjectFactory()
         {
             _factoryMethods.Add(1, () => { return new InfoBase(); });
@@ -19,25 +19,27 @@ namespace OneCSharp.Metadata.Server
             _factoryMethods.Add(7, () => { return new Relation(); });
             _factoryMethods.Add(8, () => { return new Query(); });
         }
-        public IPersistentObject New(Type type)
+        public IDataTransferObject New(Type type)
         {
             TypeCodeAttribute tca = (TypeCodeAttribute)type.GetCustomAttributes(typeof(TypeCodeAttribute), false)[0];
             return this.New(tca.TypeCode);
         }
-        public IPersistentObject New(int typeCode)
+        public IDataTransferObject New(int typeCode)
         {
             return _factoryMethods[typeCode]();
         }
-        public IPersistentObject New(Type type, object key)
+        public IDataTransferObject New(Type type, object key)
         {
             var entity = (MetadataObject)this.New(type);
-            this.SetPrimaryKey(entity, (Guid)key);
+            var po = entity as IPersistentObject<Guid>;
+            po.PrimaryKey = (Guid)key;
             return entity;
         }
-        public IPersistentObject New(int typeCode, object key)
+        public IDataTransferObject New(int typeCode, object key)
         {
             var entity = (MetadataObject)this.New(typeCode);
-            this.SetPrimaryKey(entity, (Guid)key);
+            var po = entity as IPersistentObject<Guid>;
+            po.PrimaryKey = (Guid)key;
             return entity;
         }
     }

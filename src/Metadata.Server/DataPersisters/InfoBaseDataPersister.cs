@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace OneCSharp.Metadata.Server
 {
-    public sealed class InfoBaseDataPersister : MetadataObject.Persister, IDataPersister
+    public sealed class InfoBaseDataPersister : IDataPersister
     {
         #region "SQL commands"
         private const string SelectCommandScript = @"SELECT [name], [alias], [server], [database], [username], [password], [version] FROM [ocs].[infobases] WHERE [key] = @key";
@@ -34,8 +34,8 @@ namespace OneCSharp.Metadata.Server
         #endregion
 
         public InfoBaseDataPersister(IPersistentContext context) { this.Context = context; }
-        public IPersistentContext Context { get; private set; }
-        public void Select(IPersistentObject persistentObject)
+        public IPersistentContext Context { get; set; }
+        public int Select(ref ReferenceObject persistentObject)
         {
             InfoBase po = (InfoBase)persistentObject;
             bool ok = false;
@@ -63,16 +63,15 @@ namespace OneCSharp.Metadata.Server
                     po.Database = (string)reader[3];
                     po.UserName = (string)reader[4];
                     po.Password = (string)reader[5];
-                    this.SetVersion(po, (byte[])reader[6]);
-                    this.SetState(po, PersistentState.Original);
+                    ((IOptimisticConcurrencyObject)po).Version = (byte[])reader[6];
                     ok = true;
                 }
                 reader.Close();
                 connection.Close();
             }
-            if (!ok) throw new ApplicationException("Error executing select command.");
+            if (ok) return 1; else return 0;
         }
-        public void Insert(IPersistentObject persistentObject)
+        public int Insert(ref ReferenceObject persistentObject)
         {
             InfoBase po = (InfoBase)persistentObject;
 
@@ -127,22 +126,18 @@ namespace OneCSharp.Metadata.Server
 
                 if (reader.Read())
                 {
-                    this.SetVersion(po, (byte[])reader[0]);
-                    this.SetState(po, PersistentState.Original);
+                    ((IOptimisticConcurrencyObject)po).Version = (byte[])reader[0];
                     ok = true;
                 }
 
                 reader.Close();
                 connection.Close();
             }
-            if (!ok) throw new ApplicationException("Error executing insert command.");
+            if (ok) return 1; else return 0;
         }
-        public void Update(IPersistentObject persistentObject)
+        public int Update(ref ReferenceObject persistentObject)
         {
             InfoBase po = (InfoBase)persistentObject;
-
-            bool ok = false;
-            int rows_affected = 0;
 
             using (SqlConnection connection = new SqlConnection(this.Context.ConnectionString))
             {
@@ -161,7 +156,7 @@ namespace OneCSharp.Metadata.Server
 
                 parameter = new SqlParameter("version", SqlDbType.Timestamp);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = this.GetVersion(po);
+                parameter.Value = ((IOptimisticConcurrencyObject)po).Version;
                 command.Parameters.Add(parameter);
 
                 parameter = new SqlParameter("name", SqlDbType.NVarChar);
@@ -194,31 +189,31 @@ namespace OneCSharp.Metadata.Server
                 parameter.Value = po.Password;
                 command.Parameters.Add(parameter);
 
+                int result = 2; // sql exception
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
                     {
-                        rows_affected = reader.GetInt32(0);
-                        this.SetVersion(po, (byte[])reader[1]);
+                        int rows_affected = reader.GetInt32(0);
+                        ((IOptimisticConcurrencyObject)po).Version = (byte[])reader[1];
                         if (rows_affected == 0)
                         {
-                            this.SetState(po, PersistentState.Changed);
+                            result = 0; // changed
                         }
                         else
                         {
-                            this.SetState(po, PersistentState.Original);
-                            ok = true;
+                            result = 1; // original
                         }
                     }
                     else
                     {
-                        this.SetState(po, PersistentState.Deleted);
+                        result = -1; // deleted
                     }
                 }
+                return result;
             }
-            if (!ok) throw new OptimisticConcurrencyException(po.State.ToString());
         }
-        public void Delete(IPersistentObject persistentObject)
+        public int Delete(ref ReferenceObject persistentObject)
         {
             InfoBase po = (InfoBase)persistentObject;
 
@@ -241,21 +236,18 @@ namespace OneCSharp.Metadata.Server
 
                 parameter = new SqlParameter("version", SqlDbType.Timestamp);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = this.GetVersion(po);
+                parameter.Value = ((IOptimisticConcurrencyObject)po).Version;
                 command.Parameters.Add(parameter);
 
                 SqlDataReader reader = command.ExecuteReader();
-
                 if (reader.Read())
                 {
                     ok = (int)reader[0] > 0;
-                    this.SetState(po, PersistentState.Deleted);
                 }
-                
                 reader.Close();
                 connection.Close();
             }
-            if (!ok) throw new OptimisticConcurrencyException(po.State.ToString());
+            if (ok) { return 1; } else { return 0; }
         }
     }
 }

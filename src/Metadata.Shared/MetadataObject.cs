@@ -3,33 +3,31 @@ using System;
 
 namespace OneCSharp.Metadata.Shared
 {
-    public abstract class MetadataObject : ReferenceObject
+    [PrimaryKey("key")]
+    public abstract class MetadataObject : ReferenceObject, IOptimisticConcurrencyObject
     {
-        public MetadataObject() : base() { this._key = Guid.NewGuid(); }
-        public MetadataObject(Guid key) : base(key) { }
-
         private byte[] _version = new byte[8]; // Optimistic concurrency implementation
+        public MetadataObject(int typeCode)
+        {
+            this._typeCode = typeCode;
+            this._primaryKey = Guid.NewGuid();
+            this._state = PersistentState.New;
+        }
+        public MetadataObject(int typeCode, Guid primaryKey)
+        {
+            this._typeCode = typeCode;
+            this._primaryKey = primaryKey;
+            this._state = PersistentState.New;
+        }
+        byte[] IOptimisticConcurrencyObject.Version { get { return _version; } set { _version = value; } }
+
         private string _name = string.Empty;
         private string _alias = string.Empty;
-        
-        public string Name { set { Set<string>(value, ref _name); } get { return Get<string>(ref _name); } }
-        public string Alias { set { Set<string>(value, ref _alias); } get { return Get<string>(ref _alias); } }
-        
+        [Field("name", "nvarchar(64)")] public string Name { set { Set(value, ref _name); } get { return _name; } }
+        [Field("alias", "nvarchar(128)")] public string Alias { set { Set(value, ref _alias); } get { return _alias; } }
         public override string ToString()
         {
             return string.IsNullOrWhiteSpace(this.Alias) ? this.Name : this.Alias;
-        }
-
-        public abstract class Persister : StateObject.Insider
-        {
-            protected void SetVersion(MetadataObject target, byte[] version)
-            {
-                target._version = version;
-            }
-            protected byte[] GetVersion(MetadataObject target)
-            {
-                return target._version;
-            }
         }
     }
 }

@@ -6,9 +6,8 @@ namespace OneCSharp.Metadata.Shared
     [TypeCode(4)]
     public sealed class Property : MetadataObject
     {
-        public Property() : base() { }
-        public Property(Guid key) : base(key) { }
-        public override int TypeCode { get { return 4; } }
+        public Property() : base(4) { }
+        public Property(Guid key) : base(4, key) { }
 
         private Entity entity = null; // Entity - owner of the property
         private PropertyPurpose purpose = PropertyPurpose.Property; // purpose of the property
@@ -17,11 +16,11 @@ namespace OneCSharp.Metadata.Shared
         private bool isReadOnly = false;
         private bool isPrimaryKey = false;
 
-        public Entity Entity { set { Set<Entity>(value, ref entity); } get { return Get<Entity>(ref entity); } }
-        public PropertyPurpose Purpose { set { Set<PropertyPurpose>(value, ref purpose); } get { return Get<PropertyPurpose>(ref purpose); } }
-        public int Ordinal { set { Set<int>(value, ref ordinal); } get { return Get<int>(ref ordinal); } }
-        public bool IsAbstract { set { Set<bool>(value, ref isAbstract); } get { return Get<bool>(ref isAbstract); } }
-        public bool IsReadOnly { set { Set<bool>(value, ref isReadOnly); } get { return Get<bool>(ref isReadOnly); } }
-        public bool IsPrimaryKey { set { Set<bool>(value, ref isPrimaryKey); } get { return Get<bool>(ref isPrimaryKey); } }
+        public Entity Entity { set { Set(value, ref entity); } get { return entity; } }
+        public PropertyPurpose Purpose { set { Set(value, ref purpose); } get { return purpose; } }
+        public int Ordinal { set { Set(value, ref ordinal); } get { return ordinal; } }
+        public bool IsAbstract { set { Set(value, ref isAbstract); } get { return isAbstract; } }
+        public bool IsReadOnly { set { Set(value, ref isReadOnly); } get { return isReadOnly; } }
+        public bool IsPrimaryKey { set { Set(value, ref isPrimaryKey); } get { return isPrimaryKey; } }
     }
 }

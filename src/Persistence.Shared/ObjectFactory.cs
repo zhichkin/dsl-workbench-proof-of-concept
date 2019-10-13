@@ -7,18 +7,18 @@ namespace OneCSharp.Persistence.Shared
         /// <summary>
         /// Creates new instance of the given type
         /// </summary>
-        IPersistentObject New(Type type);
+        IDataTransferObject New(Type type);
         /// <summary>
         /// Creates new instance by type code
         /// </summary>
-        IPersistentObject New(int typeCode);
+        IDataTransferObject New(int typeCode);
         /// <summary>
         /// Creates new instance of the given type and key value
         /// </summary>
-        IPersistentObject New(Type type, object key);
+        IDataTransferObject New(Type type, object key);
         /// <summary>
         /// Creates new instance by type code and key value
         /// </summary>
-        IPersistentObject New(int typeCode, object key);
+        IDataTransferObject New(int typeCode, object key);
     }
 }
