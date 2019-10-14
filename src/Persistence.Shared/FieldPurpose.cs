@@ -1,4 +1,4 @@
-﻿namespace OneCSharp.Metadata.Shared
+﻿namespace OneCSharp.Persistence.Shared
 {
     public enum FieldPurpose
     {

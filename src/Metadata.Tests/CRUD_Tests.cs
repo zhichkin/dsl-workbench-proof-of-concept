@@ -3,6 +3,8 @@ using OneCSharp.Metadata.Server;
 using OneCSharp.Metadata.Shared;
 using OneCSharp.Persistence.Shared;
 using System;
+using System.Linq;
+using System.Reflection;
 
 namespace OneCSharp.Metadata.Tests
 {
@@ -225,18 +227,65 @@ namespace OneCSharp.Metadata.Tests
         }
     
         [TestMethod]
-        public void GetType_Test()
+        public void GetMetadataAttributes_Test()
         {
             Type type = typeof(InfoBase);
-            //var a = (PrimaryKeyAttribute)type.GetCustomAttributes(typeof(PrimaryKeyAttribute), false)[0];
-            //Console.WriteLine("1. " + a.Name);
-            var list = type.GetCustomAttributes(typeof(PrimaryKeyAttribute), true);
+            
+            var list = type.GetCustomAttributes(typeof(PrimaryKeyAttribute), false);
+            foreach (var item in list)
+            {
+                Console.WriteLine($"1. {((PrimaryKeyAttribute)item).Name}");
+            }
+
+            list = type.GetCustomAttributes(typeof(PrimaryKeyAttribute), true);
             foreach (var item in list)
             {
                 Console.WriteLine($"2. {((PrimaryKeyAttribute)item).Name}");
             }
-            var m = (PrimaryKeyAttribute)typeof(MetadataObject).GetCustomAttributes(typeof(PrimaryKeyAttribute), false)[0];
-            Console.WriteLine($"3. {m.Name}");
+
+            var properties = type.GetProperties();
+            foreach (var property in properties)
+            {
+                string info = string.Empty;
+                var fields = property.GetCustomAttributes(typeof(FieldAttribute), false);
+                foreach (var field in fields)
+                {
+                    var a = (FieldAttribute)field;
+                    info += $"{a.Name} ({a.TypeName}),";
+                }
+                //if (fields.Length > 0)
+                //{
+                    Console.WriteLine($"{property.Name} : {info}");
+                //}
+            }
+            
+            Type i = type.GetInterface("IPersistentObject`1");
+            if (i != null)
+            {
+                Console.WriteLine($"{i.GenericTypeArguments[0].ToString()}");
+            }
+
+            i = type.GetInterface("IOptimisticConcurrencyObject");
+            if (i != null)
+            {
+                string info = string.Empty;
+                var property = i.GetProperties()[0];
+                Console.WriteLine($"{property.ToString()}");
+
+                var fields = property.GetCustomAttributes(typeof(FieldAttribute), false);
+                foreach (var field in fields)
+                {
+                    var a = (FieldAttribute)field;
+                    info += $"{a.Name} ({a.TypeName}),";
+                }
+                Console.WriteLine($"{property.Name} : {info}");
+            }
+
+            i = type.GetInterfaces().Where((i) => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IPersistentObject<>)).FirstOrDefault();
+            Console.WriteLine($"{i.ToString()}");
+
+            var optimist = typeof(IOptimisticConcurrencyObject).IsAssignableFrom(type);
+            Console.WriteLine($"{type} implements IOptimisticConcurrencyObject = {optimist}");
         }
     }
 }

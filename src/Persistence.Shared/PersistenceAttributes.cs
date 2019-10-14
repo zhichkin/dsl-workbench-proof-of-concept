@@ -11,8 +11,7 @@ namespace OneCSharp.Persistence.Shared
         }
         public int TypeCode { get; private set; }
     }
-
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public sealed class SchemaAttribute : Attribute
     {
         public SchemaAttribute(string schema)
@@ -21,7 +20,6 @@ namespace OneCSharp.Persistence.Shared
         }
         public string Schema { get; private set; }
     }
-
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
     public sealed class TableAttribute : Attribute
     {
@@ -31,20 +29,6 @@ namespace OneCSharp.Persistence.Shared
         }
         public string Name { get; private set; }
     }
-
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
-    public sealed class FieldAttribute : Attribute
-    {
-        public FieldAttribute(string name, string typeName)
-        {
-            this.Name = name;
-            this.TypeName = typeName;
-        }
-        public string Name { get; private set; }
-        public string TypeName { get; private set; }
-        // TODO: purpose !!!
-    }
-
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public sealed class PrimaryKeyAttribute : Attribute
     {
@@ -53,5 +37,29 @@ namespace OneCSharp.Persistence.Shared
             this.Name = name;
         }
         public string Name { get; private set; }
+    }
+    [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+    public sealed class VersionAttribute : Attribute
+    {
+        public VersionAttribute(string name, string typeName = "timestamp")
+        {
+            this.Name = name;
+            this.TypeName = typeName;
+        }
+        public string Name { get; private set; }
+        public string TypeName { get; private set; }
+    }
+    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
+    public sealed class FieldAttribute : Attribute
+    {
+        public FieldAttribute(string name, string typeName, FieldPurpose purpose = FieldPurpose.Value)
+        {
+            this.Name = name;
+            this.Purpose = purpose;
+            this.TypeName = typeName;
+        }
+        public string Name { get; private set; }
+        public string TypeName { get; private set; }
+        public FieldPurpose Purpose { get; private set; }
     }
 }

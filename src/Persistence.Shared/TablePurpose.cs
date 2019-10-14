@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OneCSharp.Metadata.Shared
+namespace OneCSharp.Persistence.Shared
 {
     public enum TablePurpose
     {
