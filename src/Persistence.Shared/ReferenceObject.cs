@@ -13,12 +13,12 @@ namespace OneCSharp.Persistence.Shared
     {
         TKey PrimaryKey { get; set; }
     }
-    public interface IReferenceObject : IPersistentObject<Guid>
+    public interface IReferenceObject<TKey> : IPersistentObject<TKey> where TKey : struct
     {
-        bool IsEmpty();
         string Presentation { get; set; }
     }
-    public class ReferenceObject : IReferenceObject, IPersistentStateObject
+    public interface IValueObject<TKey> : IPersistentObject<TKey> where TKey : class { }
+    public class ReferenceObject : IReferenceObject<Guid>, IPersistentStateObject
     {
         protected int _typeCode = 0;
         protected Guid _primaryKey = Guid.Empty;
@@ -36,7 +36,7 @@ namespace OneCSharp.Persistence.Shared
         int IDataTransferObject.TypeCode { get { return this.TypeCode; } set { this.TypeCode = value; } }
         public Guid PrimaryKey { get { return _primaryKey; } }
         Guid IPersistentObject<Guid>.PrimaryKey { get { return _primaryKey; } set { _primaryKey = value; } }
-        string IReferenceObject.Presentation { get { return _presentation; } set { _presentation = value; } }
+        string IReferenceObject<Guid>.Presentation { get { return _presentation; } set { _presentation = value; } }
         public PersistentState State { get { return _state; } }
         PersistentState IPersistentStateObject.State { get { return _state; } set { _state = value; } }
         public bool IsEmpty() { return (this.PrimaryKey == Guid.Empty); }

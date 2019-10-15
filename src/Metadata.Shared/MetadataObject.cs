@@ -4,8 +4,8 @@ using System;
 namespace OneCSharp.Metadata.Shared
 {
     [Schema("metadata")]
-    [PrimaryKey("key")]
-    [Version("version", "rowversion")]
+    [PrimaryKey("key", "uniqueidentifier")]
+    [Version("version")]
     public abstract class MetadataObject : ReferenceObject, IOptimisticConcurrencyObject
     {
         private byte[] _version = new byte[8]; // Optimistic concurrency implementation

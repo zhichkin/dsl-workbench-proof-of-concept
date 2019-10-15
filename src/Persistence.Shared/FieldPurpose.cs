@@ -19,8 +19,6 @@
         /// <summary>GUID value referencing primary key of an entity.</summary>
         Object,
         /// <summary>Integer code of the entity type (discriminator).</summary>
-        TypeCode,
-        /// <summary>Row version binary(8)</summary>
-        Version
+        TypeCode
     }
 }
