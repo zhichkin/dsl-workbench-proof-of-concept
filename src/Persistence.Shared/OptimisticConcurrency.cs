@@ -2,12 +2,13 @@
 
 namespace OneCSharp.Persistence.Shared
 {
-    public interface IOptimisticConcurrencyObject
+    public interface IVersion
     {
-        byte[] Version { get; set; } // timestamp | rowversion
+        byte[] Version { get; set; } // rowversion | timestamp
     }
     public class OptimisticConcurrencyException : Exception
     {
+        public OptimisticConcurrencyException() { }
         public OptimisticConcurrencyException(string message) : base(message) { }
     }
 }

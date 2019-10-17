@@ -10,19 +10,15 @@ namespace OneCSharp.Persistence.Shared
         void AddDataPersister(int typeCode, IDataPersister persister);
         IDataPersister GetDataPersister(Type type);
         IDataPersister GetDataPersister(int typeCode);
-        void Load(ReferenceObject dto);
-        void Save(ReferenceObject dto);
-        void Kill(ReferenceObject dto);
-        void AddObjectFactory(Type type, IObjectFactory factory);
-        void AddObjectFactory(int typeCode, IObjectFactory factory);
-        IObjectFactory GetObjectFactory(Type type);
-        IObjectFactory GetObjectFactory(int typeCode);
+        void Select(IDataTransferObject dto);
+        void Insert(IDataTransferObject dto);
+        void Update(IDataTransferObject dto);
+        void Delete(IDataTransferObject dto);
     }
 
     public class PersistentContext : IPersistentContext
     {
         private Dictionary<int, IDataPersister> _dataPersisters = new Dictionary<int, IDataPersister>();
-        private Dictionary<int, IObjectFactory> _objectFactories = new Dictionary<int, IObjectFactory>();
         public PersistentContext() { }
         public PersistentContext(string connectionString)
         {
@@ -47,101 +43,29 @@ namespace OneCSharp.Persistence.Shared
         {
             return _dataPersisters[typeCode];
         }
-        public void Load(ReferenceObject dto)
+        public void Select(IDataTransferObject dto)
         {
-            // ??? if (dto.State == PersistentState.New) return;
-
-            if (dto.State == PersistentState.Deleted || dto.State == PersistentState.Virtual)
-            {
-                throw new InvalidOperationException();
-            }
-
-            PersistentState oldState = dto.State;
             IDataPersister persister = this.GetDataPersister(dto.TypeCode);
-            int result = persister.Select(ref dto);
-            if (result == 0) throw new OptimisticConcurrencyException(dto.State.ToString());
-
-            IPersistentStateObject pso = dto as IPersistentStateObject;
-            pso.State = PersistentState.Original;
-
-            if (oldState != dto.State)
-            {
-                pso.OnStateChanged(new StateEventArgs(oldState, dto.State));
-            }
+            int result = persister.Select(dto);
+            if (result == 0) throw new OptimisticConcurrencyException();
         }
-        public void Save(ReferenceObject dto)
+        public void Insert(IDataTransferObject dto)
         {
-            if (dto.State == PersistentState.Original || dto.State == PersistentState.Virtual) return;
-
-            if (dto.State == PersistentState.Deleted) throw new InvalidOperationException();
-
-            if (dto.State == PersistentState.New || dto.State == PersistentState.Changed)
-            {
-                PersistentState oldState = dto.State;
-                IDataPersister persister = this.GetDataPersister(dto.TypeCode);
-                if (dto.State == PersistentState.New)
-                {
-                    int result = persister.Insert(ref dto);
-                    if (result == 0) throw new OptimisticConcurrencyException(dto.State.ToString());
-                    ((IPersistentStateObject)dto).State = PersistentState.Original;
-                }
-                else // PersistentState.Changed
-                {
-                    int result = persister.Update(ref dto);
-                    if (result == 0)
-                    {
-                        ((IPersistentStateObject)dto).State = PersistentState.Changed;
-                    }
-                    else if (result == 1)
-                    {
-                        ((IPersistentStateObject)dto).State = PersistentState.Original;
-                    }
-                    else if(result == -1)
-                    {
-                        ((IPersistentStateObject)dto).State = PersistentState.Deleted;
-                    }
-                    if (result != 1) throw new OptimisticConcurrencyException(dto.State.ToString());
-                }
-                ((IPersistentStateObject)dto).OnStateChanged(new StateEventArgs(oldState, dto.State));
-            }
+            IDataPersister persister = this.GetDataPersister(dto.TypeCode);
+            int result = persister.Insert(dto);
+            if (result == 0) throw new OptimisticConcurrencyException();
         }
-        public void Kill(ReferenceObject dto)
+        public void Update(IDataTransferObject dto)
         {
-            if (dto.State == PersistentState.Deleted) return;
-
-            if (dto.State == PersistentState.New) throw new InvalidOperationException();
-
-            if (dto.State == PersistentState.Original || dto.State == PersistentState.Changed || dto.State == PersistentState.Virtual)
-            {
-                PersistentState oldState = dto.State;
-                IDataPersister persister = this.GetDataPersister(dto.TypeCode);
-                int result = persister.Delete(ref dto);
-                if (result == 0) throw new OptimisticConcurrencyException(dto.State.ToString());
-                IPersistentStateObject pso = dto as IPersistentStateObject;
-                pso.State = PersistentState.Deleted;
-                if (oldState != dto.State)
-                {
-                    pso.OnStateChanged(new StateEventArgs(oldState, dto.State));
-                }
-            }
+            IDataPersister persister = this.GetDataPersister(dto.TypeCode);
+            int result = persister.Update(dto);
+            if (result != 1) throw new OptimisticConcurrencyException();
         }
-        public void AddObjectFactory(Type type, IObjectFactory factory)
+        public void Delete(IDataTransferObject dto)
         {
-            TypeCodeAttribute tca = (TypeCodeAttribute)type.GetCustomAttributes(typeof(TypeCodeAttribute), false)[0];
-            _objectFactories.Add(tca.TypeCode, factory);
-        }
-        public void AddObjectFactory(int typeCode, IObjectFactory factory)
-        {
-            _objectFactories.Add(typeCode, factory);
-        }
-        public IObjectFactory GetObjectFactory(Type type)
-        {
-            TypeCodeAttribute tca = (TypeCodeAttribute)type.GetCustomAttributes(typeof(TypeCodeAttribute), false)[0];
-            return this.GetObjectFactory(tca.TypeCode);
-        }
-        public IObjectFactory GetObjectFactory(int typeCode)
-        {
-            return _objectFactories[typeCode];
+            IDataPersister persister = this.GetDataPersister(dto.TypeCode);
+            int result = persister.Delete(dto);
+            if (result == 0) throw new OptimisticConcurrencyException();
         }
     }
 }

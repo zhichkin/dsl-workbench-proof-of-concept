@@ -8,9 +8,11 @@ namespace OneCSharp.Persistence.Shared
         Original, // объект загружен из источника данных и ещё ни разу с тех пор не изменялся
         Changed,  // объект загружен из источника данных и с тех пор был уже изменен
         Deleted,  // объект удалён из источника данных, но пока ещё существует в памяти
-        Virtual   // ссылка на объект в базе данных { TypeCode + PrimaryKey + Presentation }
+        Virtual,  // ссылка на объект в базе данных { TypeCode + PrimaryKey + View? }
+        Loading   // может быть использован для реализации концепции ILazyLoading,
+                  // как промежуточное состояние на время загрузки данных объекта
     }
-    public interface IPersistentStateObject
+    public interface IPersistentState
     {
         PersistentState State { get; set; }
         void OnStateChanged(StateEventArgs args);
@@ -27,5 +29,5 @@ namespace OneCSharp.Persistence.Shared
         public PersistentState OldState { get; }
         public PersistentState NewState { get; }
     }
-    public delegate void StateChangedEventHandler(IPersistentStateObject sender, StateEventArgs args);
+    public delegate void StateChangedEventHandler(IPersistentState sender, StateEventArgs args);
 }

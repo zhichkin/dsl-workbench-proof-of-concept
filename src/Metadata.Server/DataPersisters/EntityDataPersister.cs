@@ -48,7 +48,7 @@ namespace OneCSharp.Metadata.Server
             @"SELECT @@ROWCOUNT;";
         #endregion
 
-        public int Select(ref ReferenceObject dto)
+        public int Select(IDataTransferObject dto)
         {
             Entity entity = (Entity)dto;
 
@@ -71,15 +71,15 @@ namespace OneCSharp.Metadata.Server
                 SqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {
-                    var optcon = entity as IOptimisticConcurrencyObject;
-                    optcon.Version    = (byte[])reader[0];
+                    var v = entity as IVersion;
+                    v.Version    = (byte[])reader[0];
                     entity.Name       = reader.GetString(1);
                     entity.Alias      = reader.GetString(2);
                     entity.Code       = reader.GetInt32(3);
-                    entity.Table      = new ReferenceObject(5, reader.GetGuid(4),  reader.GetString(5));
-                    entity.Namespace  = new ReferenceObject(2, reader.GetGuid(6),  reader.GetString(7));
-                    entity.Owner      = new ReferenceObject(3, reader.GetGuid(8),  reader.GetString(9));
-                    entity.Parent     = new ReferenceObject(3, reader.GetGuid(10), reader.GetString(11));
+                    entity.Table      = new ClientReferenceObject(5, reader.GetGuid(4),  reader.GetString(5));
+                    entity.Namespace  = new ClientReferenceObject(2, reader.GetGuid(6),  reader.GetString(7));
+                    entity.Owner      = new ClientReferenceObject(3, reader.GetGuid(8),  reader.GetString(9));
+                    entity.Parent     = new ClientReferenceObject(3, reader.GetGuid(10), reader.GetString(11));
                     entity.IsSealed   = reader.GetBoolean(12);
                     entity.IsAbstract = reader.GetBoolean(13);
                     ok = true;
@@ -89,7 +89,7 @@ namespace OneCSharp.Metadata.Server
             }
             if (ok) return 1; else return 0;
         }
-        public int Insert(ref ReferenceObject dto)
+        public int Insert(IDataTransferObject dto)
         {
             Entity entity = (Entity)dto;
 
@@ -108,8 +108,8 @@ namespace OneCSharp.Metadata.Server
                 SqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {
-                    var optcon = entity as IOptimisticConcurrencyObject;
-                    optcon.Version = (byte[])reader[0];
+                    var v = entity as IVersion;
+                    v.Version = (byte[])reader[0];
                     ok = true;
                 }
                 reader.Close();
@@ -117,10 +117,10 @@ namespace OneCSharp.Metadata.Server
             }
             if (ok) return 1; else return 0;
         }
-        public int Update(ref ReferenceObject dto)
+        public int Update(IDataTransferObject dto)
         {
             Entity entity = (Entity)dto;
-            var optcon = entity as IOptimisticConcurrencyObject;
+            var optcon = entity as IVersion;
 
             using (SqlConnection connection = new SqlConnection(this.Context.ConnectionString))
             {
@@ -214,7 +214,7 @@ namespace OneCSharp.Metadata.Server
                 Value = entity.IsAbstract
             });
         }
-        public int Delete(ref ReferenceObject dto)
+        public int Delete(IDataTransferObject dto)
         {
             Entity entity = (Entity)dto;
 
@@ -237,7 +237,7 @@ namespace OneCSharp.Metadata.Server
 
                 parameter = new SqlParameter("version", SqlDbType.Timestamp);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = ((IOptimisticConcurrencyObject)entity).Version;
+                parameter.Value = ((IVersion)entity).Version;
                 command.Parameters.Add(parameter);
 
                 SqlDataReader reader = command.ExecuteReader();

@@ -24,10 +24,10 @@ namespace OneCSharp.Metadata.Server
                 _ = type.GetCustomAttributes(typeof(PrimaryKeyAttribute), true);
             }
 
-            var reference = typeof(IReferenceObject).IsAssignableFrom(type);
-            var state = typeof(IPersistentStateObject).IsAssignableFrom(type);
+            var reference = typeof(IPersistentObject<Guid>).IsAssignableFrom(type);
+            var state = typeof(IPersistentState).IsAssignableFrom(type);
 
-            var optimistic = typeof(IOptimisticConcurrencyObject).IsAssignableFrom(type);
+            var optimistic = typeof(IVersion).IsAssignableFrom(type);
             if (optimistic)
             {
                 _ = type.GetCustomAttributes(typeof(VersionAttribute), true);

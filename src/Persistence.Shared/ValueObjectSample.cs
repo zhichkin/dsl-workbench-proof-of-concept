@@ -7,11 +7,13 @@ namespace OneCSharp.Persistence.Shared
         ReferenceObject Owner { get; set; }
         int RowNumber { get; set; }
     }
-    public class TablePart : IValueObject<ITablePartKey>, ITablePartKey
+    public class TablePart : IPersistentObject<ITablePartKey>, ITablePartKey
     {
-        public ITablePartKey PrimaryKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int TypeCode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public ReferenceObject Owner { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int RowNumber { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private ITablePartKey _primaryKey;
+        public int TypeCode { get; set; }
+        public ITablePartKey PrimaryKey { get { return this; } }
+        ITablePartKey IPersistentObject<ITablePartKey>.PrimaryKey { get { return this; } set { _primaryKey = value; } }
+        public ReferenceObject Owner { get; set; }
+        public int RowNumber { get; set; }
     }
 }

@@ -35,7 +35,7 @@ namespace OneCSharp.Metadata.Server
 
         public InfoBaseDataPersister(IPersistentContext context) { this.Context = context; }
         public IPersistentContext Context { get; set; }
-        public int Select(ref ReferenceObject persistentObject)
+        public int Select(IDataTransferObject persistentObject)
         {
             InfoBase po = (InfoBase)persistentObject;
             bool ok = false;
@@ -63,7 +63,7 @@ namespace OneCSharp.Metadata.Server
                     po.Database = (string)reader[3];
                     po.UserName = (string)reader[4];
                     po.Password = (string)reader[5];
-                    ((IOptimisticConcurrencyObject)po).Version = (byte[])reader[6];
+                    ((IVersion)po).Version = (byte[])reader[6];
                     ok = true;
                 }
                 reader.Close();
@@ -71,7 +71,7 @@ namespace OneCSharp.Metadata.Server
             }
             if (ok) return 1; else return 0;
         }
-        public int Insert(ref ReferenceObject persistentObject)
+        public int Insert(IDataTransferObject persistentObject)
         {
             InfoBase po = (InfoBase)persistentObject;
 
@@ -126,7 +126,7 @@ namespace OneCSharp.Metadata.Server
 
                 if (reader.Read())
                 {
-                    ((IOptimisticConcurrencyObject)po).Version = (byte[])reader[0];
+                    ((IVersion)po).Version = (byte[])reader[0];
                     ok = true;
                 }
 
@@ -135,7 +135,7 @@ namespace OneCSharp.Metadata.Server
             }
             if (ok) return 1; else return 0;
         }
-        public int Update(ref ReferenceObject persistentObject)
+        public int Update(IDataTransferObject persistentObject)
         {
             InfoBase po = (InfoBase)persistentObject;
 
@@ -156,7 +156,7 @@ namespace OneCSharp.Metadata.Server
 
                 parameter = new SqlParameter("version", SqlDbType.Timestamp);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = ((IOptimisticConcurrencyObject)po).Version;
+                parameter.Value = ((IVersion)po).Version;
                 command.Parameters.Add(parameter);
 
                 parameter = new SqlParameter("name", SqlDbType.NVarChar);
@@ -195,7 +195,7 @@ namespace OneCSharp.Metadata.Server
                     if (reader.Read())
                     {
                         int rows_affected = reader.GetInt32(0);
-                        ((IOptimisticConcurrencyObject)po).Version = (byte[])reader[1];
+                        ((IVersion)po).Version = (byte[])reader[1];
                         if (rows_affected == 0)
                         {
                             result = 0; // changed
@@ -213,7 +213,7 @@ namespace OneCSharp.Metadata.Server
                 return result;
             }
         }
-        public int Delete(ref ReferenceObject persistentObject)
+        public int Delete(IDataTransferObject persistentObject)
         {
             InfoBase po = (InfoBase)persistentObject;
 
@@ -236,7 +236,7 @@ namespace OneCSharp.Metadata.Server
 
                 parameter = new SqlParameter("version", SqlDbType.Timestamp);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = ((IOptimisticConcurrencyObject)po).Version;
+                parameter.Value = ((IVersion)po).Version;
                 command.Parameters.Add(parameter);
 
                 SqlDataReader reader = command.ExecuteReader();

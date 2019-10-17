@@ -44,7 +44,7 @@ namespace OneCSharp.Metadata.Server
 
         public NamespaceDataPersister(IPersistentContext context) { this.Context = context; }
         public IPersistentContext Context { get; set; }
-        public int Select(ref ReferenceObject entity)
+        public int Select(IDataTransferObject entity)
         {
             Namespace e = (Namespace)entity;
             
@@ -71,10 +71,10 @@ namespace OneCSharp.Metadata.Server
                     int code = reader.GetInt32(0);
                     Guid key = reader.GetGuid(1);
                     string presentation = reader.GetString(2);
-                    e.Owner = new ReferenceObject(code, key, presentation);
+                    e.Owner = new ClientReferenceObject(code, key, presentation);
                     e.Name = (string)reader[3];
                     e.Alias = (string)reader[4];
-                    ((IOptimisticConcurrencyObject)e).Version = (byte[])reader[5];
+                    ((IVersion)e).Version = (byte[])reader[5];
                     ok = true;
                 }
                 reader.Close();
@@ -82,7 +82,7 @@ namespace OneCSharp.Metadata.Server
             }
             if (ok) return 1; else return 0;
         }
-        public int Insert(ref ReferenceObject entity)
+        public int Insert(IDataTransferObject entity)
         {
             Namespace e = (Namespace)entity;
 
@@ -103,9 +103,10 @@ namespace OneCSharp.Metadata.Server
                 parameter.Value = e.PrimaryKey;
                 command.Parameters.Add(parameter);
 
+                IDataTransferObject owner = e.Owner as IDataTransferObject;
                 parameter = new SqlParameter("owner_", SqlDbType.Int);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = (e.Owner == null) ? 0 : e.Owner.TypeCode;
+                parameter.Value = (owner == null) ? 0 : owner.TypeCode;
                 command.Parameters.Add(parameter);
 
                 parameter = new SqlParameter("owner", SqlDbType.UniqueIdentifier);
@@ -126,7 +127,7 @@ namespace OneCSharp.Metadata.Server
                 SqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {
-                    ((IOptimisticConcurrencyObject)e).Version = (byte[])reader[0];
+                    ((IVersion)e).Version = (byte[])reader[0];
                     ok = true;
                 }
                 reader.Close();
@@ -134,7 +135,7 @@ namespace OneCSharp.Metadata.Server
             }
             if (ok) return 1; else return 0;
         }
-        public int Update(ref ReferenceObject entity)
+        public int Update(IDataTransferObject entity)
         {
             Namespace e = (Namespace)entity;
 
@@ -155,12 +156,13 @@ namespace OneCSharp.Metadata.Server
 
                 parameter = new SqlParameter("version", SqlDbType.Timestamp);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = ((IOptimisticConcurrencyObject)e).Version;
+                parameter.Value = ((IVersion)e).Version;
                 command.Parameters.Add(parameter);
 
+                IDataTransferObject owner = e.Owner as IDataTransferObject;
                 parameter = new SqlParameter("owner_", SqlDbType.Int);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = (e.Owner == null) ? 0 : e.Owner.TypeCode;
+                parameter.Value = (owner == null) ? 0 : owner.TypeCode;
                 command.Parameters.Add(parameter);
 
                 parameter = new SqlParameter("owner", SqlDbType.UniqueIdentifier);
@@ -184,7 +186,7 @@ namespace OneCSharp.Metadata.Server
                     if (reader.Read())
                     {
                         int rows_affected = reader.GetInt32(0);
-                        ((IOptimisticConcurrencyObject)e).Version = (byte[])reader[1];
+                        ((IVersion)e).Version = (byte[])reader[1];
                         if (rows_affected == 0)
                         {
                             result = 0; // changed
@@ -202,7 +204,7 @@ namespace OneCSharp.Metadata.Server
                 return result;
             }
         }
-        public int Delete(ref ReferenceObject entity)
+        public int Delete(IDataTransferObject entity)
         {
             Namespace e = (Namespace)entity;
 
@@ -225,7 +227,7 @@ namespace OneCSharp.Metadata.Server
 
                 parameter = new SqlParameter("version", SqlDbType.Timestamp);
                 parameter.Direction = ParameterDirection.Input;
-                parameter.Value = ((IOptimisticConcurrencyObject)e).Version;
+                parameter.Value = ((IVersion)e).Version;
                 command.Parameters.Add(parameter);
 
                 SqlDataReader reader = command.ExecuteReader();
