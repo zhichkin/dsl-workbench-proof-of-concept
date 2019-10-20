@@ -3,7 +3,7 @@
   <Metadata>
     <Identity Id="OQL.ab9c99b2-7909-4486-b66d-b1bb8b9269ec" Version="1.0" Language="en-US" Publisher="Жичкин Дмитрий" />
     <DisplayName>OQL</DisplayName>
-    <Description>Empty VSIX Project.</Description>
+    <Description>OneCSharp query language.</Description>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />

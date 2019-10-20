@@ -1,15 +1,16 @@
-﻿using System;
-using System.ComponentModel.Composition;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
+﻿using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
+using System;
+using System.ComponentModel.Composition;
+using System.Runtime.InteropServices;
 
 namespace OQL
 {
@@ -22,6 +23,7 @@ namespace OQL
         [Import] internal IVsEditorAdaptersFactoryService AdapterService = null;
         [Import] internal ICompletionBroker CompletionBroker { get; set; }
         [Import] internal SVsServiceProvider ServiceProvider { get; set; }
+        [Import] internal ITextStructureNavigatorSelectorService NavigatorService { get; set; }
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
             ITextView textView = AdapterService.GetWpfTextView(textViewAdapter);
@@ -41,8 +43,8 @@ namespace OQL
 
         internal TestCompletionCommandHandler(IVsTextView textViewAdapter, ITextView textView, TestCompletionHandlerProvider provider)
         {
-            this.m_textView = textView;
-            this.m_provider = provider;
+            m_textView = textView;
+            m_provider = provider;
 
             //add the command to the command chain
             textViewAdapter.AddCommandFilter(this, out m_nextCommandHandler);
@@ -50,6 +52,18 @@ namespace OQL
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            //if (!VsShellUtilities.IsInAutomationFunction(m_provider.ServiceProvider))
+            //{
+            //    if (pguidCmdGroup == VSConstants.VSStd2K && cCmds > 0)
+            //    {
+            //        // make the Insert Snippet command appear on the context menu 
+            //        if ((uint)prgCmds[0].cmdID == (uint)VSConstants.VSStd2KCmdID.INSERTSNIPPET)
+            //        {
+            //            prgCmds[0].cmdf = (int)Constants.MSOCMDF_ENABLED | (int)Constants.MSOCMDF_SUPPORTED;
+            //            return VSConstants.S_OK;
+            //        }
+            //    }
+            //}
             return m_nextCommandHandler.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
