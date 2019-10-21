@@ -25,6 +25,9 @@ namespace OQL
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(OQLPackage.PackageGuidString)]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideToolWindow(typeof(OneCSharpToolWindow), MultiInstances = true, Style = VsDockStyle.MDI)]
+    [ProvideToolWindow(typeof(MetadataToolWindow), MultiInstances = false, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Left)]
     public sealed class OQLPackage : AsyncPackage
     {
         /// <summary>
@@ -46,6 +49,8 @@ namespace OQL
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await OneCSharpToolWindowCommand.InitializeAsync(this);
+            await MetadataToolWindowCommand.InitializeAsync(this);
         }
 
         #endregion

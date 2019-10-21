@@ -41,10 +41,13 @@ namespace OQL
         private TestCompletionHandlerProvider m_provider;
         private ICompletionSession m_session;
 
+        private TextViewController _controller;
+
         internal TestCompletionCommandHandler(IVsTextView textViewAdapter, ITextView textView, TestCompletionHandlerProvider provider)
         {
             m_textView = textView;
             m_provider = provider;
+            _controller = new TextViewController(m_textView.TextBuffer);
 
             //add the command to the command chain
             textViewAdapter.AddCommandFilter(this, out m_nextCommandHandler);
@@ -52,23 +55,32 @@ namespace OQL
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            //if (!VsShellUtilities.IsInAutomationFunction(m_provider.ServiceProvider))
-            //{
-            //    if (pguidCmdGroup == VSConstants.VSStd2K && cCmds > 0)
-            //    {
-            //        // make the Insert Snippet command appear on the context menu 
-            //        if ((uint)prgCmds[0].cmdID == (uint)VSConstants.VSStd2KCmdID.INSERTSNIPPET)
-            //        {
-            //            prgCmds[0].cmdf = (int)Constants.MSOCMDF_ENABLED | (int)Constants.MSOCMDF_SUPPORTED;
-            //            return VSConstants.S_OK;
-            //        }
-            //    }
-            //}
+            //return VSConstants.S_OK;
             return m_nextCommandHandler.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+
+            ITrackingSpan trackingSpan = GetCodeContext();
+
+            if (trackingSpan == null
+                && (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE
+                || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE))
+            {
+                return VSConstants.S_OK;
+            }
+
+            if (trackingSpan != null
+                //&& pguidCmdGroup == VSConstants.VSStd2K
+                && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR
+                || nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE
+                || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE
+                || nCmdID == (uint)VSConstants.VSStd2KCmdID.END))
+            {
+                return VSConstants.S_OK;
+            }
+
             if (VsShellUtilities.IsInAutomationFunction(m_provider.ServiceProvider))
             {
                 return m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
@@ -157,6 +169,16 @@ namespace OQL
             m_session.Start();
 
             return true;
+        }
+
+        private ITrackingSpan GetCodeContext()
+        {
+            SnapshotPoint? caretPoint = m_textView.Caret.Position.BufferPosition;
+            if (caretPoint.HasValue)
+            {
+                return _controller.GetTrackingSpan(caretPoint.Value);
+            }
+            return null;
         }
     }
 }
