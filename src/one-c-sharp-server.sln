@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Metadata.Server", "Metadata
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Query.Shared", "Query.Shared\Query.Shared.csproj", "{1518D3CB-D31A-4A07-966E-A1EB0C8B79DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OQL", "OQL\OQL.csproj", "{6C7DF7D7-747C-434D-AC82-4A05E04E31E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualStudio", "VisualStudio\VisualStudio.csproj", "{6C7DF7D7-747C-434D-AC82-4A05E04E31E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OQL.UI", "OQL.UI\OQL.UI.csproj", "{AF9A5DF6-EFBC-4B1D-A155-7BCBD9162B53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{6C7DF7D7-747C-434D-AC82-4A05E04E31E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C7DF7D7-747C-434D-AC82-4A05E04E31E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C7DF7D7-747C-434D-AC82-4A05E04E31E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF9A5DF6-EFBC-4B1D-A155-7BCBD9162B53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF9A5DF6-EFBC-4B1D-A155-7BCBD9162B53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF9A5DF6-EFBC-4B1D-A155-7BCBD9162B53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF9A5DF6-EFBC-4B1D-A155-7BCBD9162B53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
