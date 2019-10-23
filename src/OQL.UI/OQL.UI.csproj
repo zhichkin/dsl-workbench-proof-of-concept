@@ -49,9 +49,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Procedure.cs" />
-    <Compile Include="Model\ProcedureParameter.cs" />
+    <Compile Include="Model\Parameter.cs" />
     <Compile Include="Model\SelectStatement.cs" />
     <Compile Include="Model\SyntaxNode.cs" />
+    <Compile Include="UI\Parameter\ParameterView.xaml.cs">
+      <DependentUpon>ParameterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Parameter\ParameterViewModel.cs" />
     <Compile Include="UI\Procedure\ProcedureView.xaml.cs">
       <DependentUpon>ProcedureView.xaml</DependentUpon>
     </Compile>
@@ -80,6 +84,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="SyntaxNodeStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Parameter\ParameterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Procedure\ProcedureView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

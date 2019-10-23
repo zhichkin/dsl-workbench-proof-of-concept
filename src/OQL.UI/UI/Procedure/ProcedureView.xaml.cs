@@ -21,7 +21,7 @@ namespace OneCSharp.OQL.UI
             vm.AddParameter();
         }
 
-        private void ProcedureHeader_MouseEnter(object sender, MouseEventArgs e)
+        private void Keyword_MouseEnter(object sender, MouseEventArgs e)
         {
             TextBlock tb = sender as TextBlock;
             if (tb == null) return;
