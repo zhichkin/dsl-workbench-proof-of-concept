@@ -52,6 +52,15 @@
     <Compile Include="Model\Parameter.cs" />
     <Compile Include="Model\SelectStatement.cs" />
     <Compile Include="Model\SyntaxNode.cs" />
+    <Compile Include="Services\UIServices.cs" />
+    <Compile Include="UI\Dialogs\TreeNodeViewModel.cs" />
+    <Compile Include="UI\Dialogs\OneCSharpDialog.cs" />
+    <Compile Include="UI\Dialogs\TypeSelectionDialog.xaml.cs">
+      <DependentUpon>TypeSelectionDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Parameter\ParametersListView.xaml.cs">
+      <DependentUpon>ParametersListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Parameter\ParameterView.xaml.cs">
       <DependentUpon>ParameterView.xaml</DependentUpon>
     </Compile>
@@ -88,6 +97,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Dialogs\TypeSelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Parameter\ParametersListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Parameter\ParameterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -96,6 +113,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
+      <Version>16.3.29318.209</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

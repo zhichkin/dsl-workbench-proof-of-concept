@@ -10,7 +10,7 @@
     <StackPanel Orientation="Vertical" Margin="10">
 
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding Keyword}" FontWeight="Bold" VerticalAlignment="Center" Foreground="Blue" MouseEnter="Keyword_MouseEnter">
+            <TextBlock Text="{Binding Keyword}" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="Blue" MouseEnter="Keyword_MouseEnter">
                 <TextBlock.ContextMenu>
                     <ContextMenu Placement="Bottom">
                         <MenuItem Header="New">
@@ -24,13 +24,15 @@
             <TextBox Text="{Binding Name}" MinWidth="50" VerticalContentAlignment="Center" Margin="10,0,0,0" BorderThickness="1" BorderBrush="LightGray"/>
         </StackPanel>
 
-        <ItemsControl ItemsSource="{Binding Parameters}" Margin="30,5,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <!--<ItemsControl ItemsSource="{Binding Parameters}" Margin="30,5,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type ui:ParameterViewModel}">
                     <ui:ParameterView Margin="0,5,0,0"/>
                 </DataTemplate>
             </ItemsControl.Resources>
-        </ItemsControl>
+        </ItemsControl>-->
+
+        <ui:ParametersListView DataContext="{Binding Parameters}" Margin="30,5,0,0"/>
 
         <ItemsControl ItemsSource="{Binding Statements}"
                           Margin="30,20,0,0"

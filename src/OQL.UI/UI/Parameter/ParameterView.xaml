@@ -15,10 +15,11 @@
     
     <StackPanel Orientation="Horizontal">
 
-        <TextBlock Text="@" FontWeight="Bold" Margin="0,0,2,0" VerticalAlignment="Center"/>
+        <TextBlock Text="@" FontWeight="SemiBold" Margin="0,0,2,0" VerticalAlignment="Center"/>
         <TextBox Text="{Binding Name}" MinWidth="50" Margin="0" VerticalContentAlignment="Center" BorderThickness="1" BorderBrush="LightGray"/>
 
-        <TextBlock Text="{Binding TypeName}" Margin="10,0,0,0" VerticalAlignment="Center" FontFamily="Segoe UI"/>
+        <TextBlock Text="{Binding TypeName}" Margin="10,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#2B91AF"
+                   Cursor="Hand" MouseUp="TypeName_MouseUp"/>
         
         <!--<Button Content="x" ToolTip="Remove parameter" Command="{Binding RemoveParameterCommand}" Height="24" Width="24"/>-->
         <!--<TextBlock Text="=" FontWeight="SemiBold" Margin="5,0,0,0" VerticalAlignment="Center"/>-->
@@ -32,12 +33,12 @@
                 Visibility="{Binding IsClearButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Height="24" Width="24"/>-->
 
-        <TextBlock Text="INPUT" Margin="10,0,2,0" VerticalAlignment="Center" FontWeight="Bold" Foreground="Blue"/>
+        <TextBlock Text="INPUT" Margin="10,0,2,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="Blue"/>
         <CheckBox IsChecked="{Binding IsInput}" VerticalAlignment="Center"/>
 
-        <TextBlock Text="OUTPUT" Margin="10,0,2,0" VerticalAlignment="Center" FontWeight="Bold" Foreground="Blue"/>
+        <TextBlock Text="OUTPUT" Margin="10,0,2,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="Blue"/>
         <CheckBox IsChecked="{Binding IsOutput}" VerticalAlignment="Center"/>
-
+        
     </StackPanel>
 
 </UserControl>
