@@ -40,10 +40,44 @@ namespace OneCSharp.OQL.UI
 
         public void AddParameter()
         {
-            Parameter p = new Parameter();
+            Parameter p = new Parameter(_model);
             _model.Parameters.Add(p);
-            this.Parameters.Add(new ParameterViewModel(p));
+            this.Parameters.Add(new ParameterViewModel(p) { Parent = this });
         }
+        public void RemoveParameter(ParameterViewModel parameter)
+        {
+            parameter.Parent = null;
+            this.Parameters.Remove(parameter);
+        }
+        public void MoveParameterUp(ParameterViewModel parameter)
+        {
+            int index = this.Parameters.IndexOf(parameter);
+            if (index == 0) return;
+
+            this.Parameters.Remove(parameter);
+            this.Parameters.Insert(--index, parameter);
+
+            if (this.Parameters.Count > 1)
+            {
+                parameter.IsRemoveButtonVisible = false;
+            }
+        }
+        public void MoveParameterDown(ParameterViewModel parameter)
+        {
+            int index = this.Parameters.IndexOf(parameter);
+            if (index == (this.Parameters.Count - 1)) return;
+
+            this.Parameters.Remove(parameter);
+            this.Parameters.Insert(++index, parameter);
+
+            if (this.Parameters.Count > 1)
+            {
+                parameter.IsRemoveButtonVisible = false;
+            }
+        }
+
+
+
         public void AddSelectStatement()
         {
             this.Statements.Add(new SelectStatement()

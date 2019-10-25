@@ -43,7 +43,39 @@ namespace OneCSharp.OQL.UI
         }
         public void RemoveParameter()
         {
-            // TODO
+            // TODO: child should ask parent to remove it from parent's collections !
+            if (_model == null || _model.Parent == null) return;
+            Procedure parent = _model.Parent as Procedure;
+            if (parent == null) return;
+            parent.Parameters.Remove(_model);
+
+            ProcedureViewModel vm = this.Parent as ProcedureViewModel;
+            if (vm == null) return;
+            vm.RemoveParameter(this);
+        }
+        public void MoveParameterUp()
+        {
+            // TODO: child should ask parent to remove it from parent's collections !
+            if (_model == null || _model.Parent == null) return;
+            Procedure parent = _model.Parent as Procedure;
+            if (parent == null) return;
+            // TODO: parent.Parameters.Remove(_model);
+
+            ProcedureViewModel vm = this.Parent as ProcedureViewModel;
+            if (vm == null) return;
+            vm.MoveParameterUp(this);
+        }
+        public void MoveParameterDown()
+        {
+            // TODO: child should ask parent to remove it from parent's collections !
+            if (_model == null || _model.Parent == null) return;
+            Procedure parent = _model.Parent as Procedure;
+            if (parent == null) return;
+            // TODO: parent.Parameters.Remove(_model);
+
+            ProcedureViewModel vm = this.Parent as ProcedureViewModel;
+            if (vm == null) return;
+            vm.MoveParameterDown(this);
         }
     }
 }

@@ -5,6 +5,7 @@ namespace OneCSharp.OQL.Model
     public interface ISyntaxNode
     {
         ISyntaxNode Parent { get; set; }
+        // TODO: add functions to add and remove children, so as children could ask parent to remove them from parent's collections
     }
     public abstract class SyntaxNode : ISyntaxNode
     {

@@ -115,8 +115,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
-      <Version>16.3.29318.209</Version>
+    <PackageReference Include="Microsoft.VisualStudio.SDK">
+      <Version>16.0.202</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
