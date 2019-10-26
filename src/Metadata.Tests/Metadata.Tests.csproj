@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Metadata.Manager\Metadata.Manager.csproj" />
     <ProjectReference Include="..\Metadata.Server\Metadata.Server.csproj" />
     <ProjectReference Include="..\Metadata.Shared\Metadata.Shared.csproj" />
   </ItemGroup>
