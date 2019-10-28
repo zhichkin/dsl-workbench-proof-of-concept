@@ -39,6 +39,10 @@
   <ItemGroup>
     <Compile Include="MetadataManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
