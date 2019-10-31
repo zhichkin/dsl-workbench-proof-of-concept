@@ -1,21 +1,35 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
+using System.Linq;
 
 namespace OneCSharp.Metadata.Tests
 {
     [TestClass]
     public sealed class MetadataManagerTests
     {
-        private string _catalogPath = "C:\\Users\\User\\Desktop\\GitHub\\one-c-sharp-server\\src\\reving"; //"C:\\temp";
-        private string _connectionString = "Data Source=ZHICHKIN;Initial Catalog=reverse_engineering;Integrated Security=True"; // accounting_3_0_72_72_demo
+        private string _catalogPath = "C:\\temp";
+        private string _infoBaseName = "accounting_3_0_72_72_demo";
+        private string _serverAddress = "ZHICHKIN";
 
         [TestMethod]
         public void DBNames()
         {
             string logPath = Path.Combine(_catalogPath, "log.txt");
-            MetadataManager manager = new MetadataManager(logPath);
-            manager.ImportMetadata(_connectionString, _catalogPath);
-            manager.ImportMetadataToFiles(_connectionString, _catalogPath);
+            TextFileLogger logger = new TextFileLogger(logPath);
+            MetadataServer manager = new MetadataServer("ZHICHKIN");
+            manager.UseLogger(logger);
+            
+            InfoBase infoBase = manager.GetInfoBases()
+                .Where(ib => ib.Database == _infoBaseName)
+                .FirstOrDefault();
+
+            if (infoBase == null)
+            {
+                logger.WriteEntry($"InfoBase {_infoBaseName} not found at server address {_serverAddress}");
+                return;
+            }
+
+            manager.ImportMetadata(infoBase);
         }
     }
 }

@@ -162,103 +162,103 @@ namespace OneCSharp.Metadata
 
 
         public string ConnectionString { get; set; }
-        public void Load(string connectionString, List<MetadataObject> metaObjects)
-        {
-            this.ConnectionString = connectionString;
-            foreach (MetadataObject item in metaObjects)
-            {
-                GetSQLMetadata(item);
-            }
-        }
-        private void GetSQLMetadata(MetadataObject metaObject)
-        {
-            ReadSQLMetadata(metaObject);
-            foreach (MetadataObject nestedObject in metaObject.NestedObjects)
-            {
-                ReadSQLMetadata(nestedObject);
-            }
-        }
-        private void ReadSQLMetadata(MetadataObject metaObject)
-        {
-            List<SqlFieldInfo> sql_fields = GetSqlFields(metaObject.Table);
-            if (sql_fields.Count == 0)
-            {
-                Logger.WriteEntry($"Fileds not found for {metaObject.Table} ({metaObject.Name})");
-                return;
-            }
-            ClusteredIndexInfo indexInfo = this.GetClusteredIndexInfo(metaObject.Table);
-            if (indexInfo == null)
-            {
-                Logger.WriteEntry($"Clustered index not found for {metaObject.Table} ({metaObject.Name})");
-            }
+        //public void Load(string connectionString, List<MetadataObject> metaObjects)
+        //{
+        //    this.ConnectionString = connectionString;
+        //    foreach (MetadataObject item in metaObjects)
+        //    {
+        //        GetSQLMetadata(item);
+        //    }
+        //}
+        //private void GetSQLMetadata(MetadataObject metaObject)
+        //{
+        //    ReadSQLMetadata(metaObject);
+        //    foreach (MetadataObject nestedObject in metaObject.NestedObjects)
+        //    {
+        //        ReadSQLMetadata(nestedObject);
+        //    }
+        //}
+        //private void ReadSQLMetadata(MetadataObject metaObject)
+        //{
+        //    List<SqlFieldInfo> sql_fields = GetSqlFields(metaObject.Table);
+        //    if (sql_fields.Count == 0)
+        //    {
+        //        Logger.WriteEntry($"Fileds not found for {metaObject.Table} ({metaObject.Name})");
+        //        return;
+        //    }
+        //    ClusteredIndexInfo indexInfo = this.GetClusteredIndexInfo(metaObject.Table);
+        //    if (indexInfo == null)
+        //    {
+        //        Logger.WriteEntry($"Clustered index not found for {metaObject.Table} ({metaObject.Name})");
+        //    }
 
-            foreach (SqlFieldInfo info in sql_fields)
-            {
-                bool found = false;
-                MetadataField field = null;
-                MetadataProperty property = null;
-                foreach (MetadataProperty p in metaObject.Properties)
-                {
-                    string SDBL = info.COLUMN_NAME
-                        .Replace("RRRef", string.Empty)
-                        .Replace("RTRef", string.Empty)
-                        .Replace("RRef", string.Empty)
-                        .Replace("TRef", string.Empty)
-                        .Replace("_TYPE", string.Empty)
-                        .Replace("_S", string.Empty)
-                        .Replace("_N", string.Empty)
-                        .Replace("_L", string.Empty)
-                        .Replace("_B", string.Empty)
-                        .Replace("_T", string.Empty)
-                        .Replace("_", string.Empty);
+        //    foreach (SqlFieldInfo info in sql_fields)
+        //    {
+        //        bool found = false;
+        //        MetadataField field = null;
+        //        MetadataProperty property = null;
+        //        foreach (MetadataProperty p in metaObject.Properties)
+        //        {
+        //            string SDBL = info.COLUMN_NAME
+        //                .Replace("RRRef", string.Empty)
+        //                .Replace("RTRef", string.Empty)
+        //                .Replace("RRef", string.Empty)
+        //                .Replace("TRef", string.Empty)
+        //                .Replace("_TYPE", string.Empty)
+        //                .Replace("_S", string.Empty)
+        //                .Replace("_N", string.Empty)
+        //                .Replace("_L", string.Empty)
+        //                .Replace("_B", string.Empty)
+        //                .Replace("_T", string.Empty)
+        //                .Replace("_", string.Empty);
 
-                    if (p.SDBL == SDBL)
-                    {
-                        property = p;
-                        foreach (MetadataField f in p.Fields)
-                        {
-                            if (f.Name == info.COLUMN_NAME)
-                            {
-                                field = f;
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (!found)
-                {
-                    if (property == null)
-                    {
-                        property = new MetadataProperty()
-                        {
-                            Name = info.COLUMN_NAME
-                        };
-                        metaObject.Properties.Add(property);
-                    }
-                    field = new MetadataField()
-                    {
-                        Name = info.COLUMN_NAME,
-                        //Purpose = FieldPurpose.Value
-                    };
-                    property.Fields.Add(field);
-                }
-                field.TypeName = info.DATA_TYPE;
-                field.Length = info.CHARACTER_MAXIMUM_LENGTH;
-                field.Precision = info.NUMERIC_PRECISION;
-                field.Scale = info.NUMERIC_SCALE;
-                field.IsNullable = info.IS_NULLABLE;
+        //            if (p.SDBL == SDBL)
+        //            {
+        //                property = p;
+        //                foreach (MetadataField f in p.Fields)
+        //                {
+        //                    if (f.Name == info.COLUMN_NAME)
+        //                    {
+        //                        field = f;
+        //                        found = true;
+        //                        break;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        if (!found)
+        //        {
+        //            if (property == null)
+        //            {
+        //                property = new MetadataProperty()
+        //                {
+        //                    Name = info.COLUMN_NAME
+        //                };
+        //                metaObject.Properties.Add(property);
+        //            }
+        //            field = new MetadataField()
+        //            {
+        //                Name = info.COLUMN_NAME,
+        //                //Purpose = FieldPurpose.Value
+        //            };
+        //            property.Fields.Add(field);
+        //        }
+        //        field.TypeName = info.DATA_TYPE;
+        //        field.Length = info.CHARACTER_MAXIMUM_LENGTH;
+        //        field.Precision = info.NUMERIC_PRECISION;
+        //        field.Scale = info.NUMERIC_SCALE;
+        //        field.IsNullable = info.IS_NULLABLE;
 
-                if (indexInfo != null)
-                {
-                    ClusteredIndexColumnInfo columnInfo = indexInfo.GetColumnByName(info.COLUMN_NAME);
-                    if (columnInfo != null)
-                    {
-                        //field.IsPrimaryKey = true;
-                        //field.KeyOrdinal = columnInfo.KEY_ORDINAL;
-                    }
-                }
-            }
-        }
+        //        if (indexInfo != null)
+        //        {
+        //            ClusteredIndexColumnInfo columnInfo = indexInfo.GetColumnByName(info.COLUMN_NAME);
+        //            if (columnInfo != null)
+        //            {
+        //                //field.IsPrimaryKey = true;
+        //                //field.KeyOrdinal = columnInfo.KEY_ORDINAL;
+        //            }
+        //        }
+        //    }
+        //}
     }
 }
