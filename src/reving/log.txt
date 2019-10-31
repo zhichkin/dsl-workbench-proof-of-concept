@@ -1,2 +1,4 @@
 INPUT = 33
 OUTPUT = 2
+INPUT = 34
+OUTPUT = 3
