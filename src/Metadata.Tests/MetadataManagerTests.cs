@@ -7,8 +7,8 @@ namespace OneCSharp.Metadata.Tests
     public sealed class MetadataManagerTests
     {
         private string _catalogPath = "C:\\temp";
-        private string _connectionString = "Data Source=ZHICHKIN;Initial Catalog=accounting_3_0_72_72_demo;Integrated Security=True";
-        
+        private string _connectionString = "Data Source=ZHICHKIN;Initial Catalog=reverse_engineering;Integrated Security=True"; // accounting_3_0_72_72_demo
+
         [TestMethod]
         public void DBNames()
         {

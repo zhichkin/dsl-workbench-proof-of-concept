@@ -360,10 +360,29 @@ namespace OneCSharp.Metadata
             }
         }
 
+
+
+
         public void ImportMetadata(string connectionString, string catalogPath)
         {
+            QueryHelper.CatalogPath = catalogPath;
             DBName[] DBNames = QueryHelper.ReadDBNames(connectionString);
-            List<DBObject> DBObjects = QueryHelper.ReadDBSchema(connectionString, DBNames);
+            if (DBNames != null)
+            {
+                List<DBObject> DBObjects = QueryHelper.ReadDBSchema(connectionString, DBNames);
+                WriteToLog($"INPUT = {DBObjects.Count}");
+                List<MetadataObject> MetaObjects = QueryHelper.ReadConfig(connectionString, DBObjects);
+                WriteToLog($"OUTPUT = {MetaObjects.Count}");
+                QueryHelper.ReadSQLMetadata(connectionString, MetaObjects);
+            }
+
+            //foreach (var md in MetaObjects)
+            //{
+            //    if (md.Token == "Document" && md.NestedObjects.Count > 0)
+            //    {
+            //        break;
+            //    }
+            //}
         }
     }
 }

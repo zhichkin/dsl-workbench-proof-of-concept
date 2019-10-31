@@ -41,46 +41,55 @@ namespace OneCSharp.Metadata
         internal string Name; // reference types only & if not compound (E token)
         internal int Kind; // ??? used usually with references
     }
+    public sealed class MetadataObject
+    {
+        public string Name;
+        public string Alias;
+        public string Token;
+        public string Table;
+        public List<MetadataProperty> Properties = new List<MetadataProperty>();
+        public List<MetadataObject> NestedObjects = new List<MetadataObject>();
+    }
+    public sealed class MetadataProperty
+    {
+        public string SDBL;
+        public string Name;
+        public string Alias;
+        public List<MetadataField> Fields = new List<MetadataField>();
+    }
+    public sealed class MetadataField
+    {
+        public string Name;
+        public string TypeName;
+        public int Length;
+        public byte Precision;
+        public int Scale;
+        public bool IsNullable;
+    }
+
+    internal static class Logger
+    {
+        private const string _logPath = "C:\\temp\\log.txt";
+        public static void WriteEntry(string entry)
+        {
+            using (StreamWriter writer = new StreamWriter(_logPath, true))
+            {
+                writer.WriteLine(entry);
+                writer.Close();
+            }
+        }
+    }
 
     internal static class QueryHelper
     {
-        public static Stream ReadConfigFile(string connectionString, string fileName)
+        public static string CatalogPath { get; set; }
+        private static void WriteBinaryDataToFile(Stream binaryData, string fileName)
         {
-            SqlBytes binaryData = null;
-
-            { // limited scope for variables declared in it - using statement does like that - used here to get control over catch block
-                SqlConnection connection = new SqlConnection(connectionString);
-                SqlCommand command = connection.CreateCommand();
-                SqlDataReader reader = null;
-                command.CommandType = CommandType.Text;
-                command.CommandText = "SELECT BinaryData FROM Config WHERE FileName = @FileName ORDER BY PartNo ASC";
-                command.Parameters.AddWithValue("FileName", fileName);
-                try
-                {
-                    connection.Open();
-                    reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        binaryData = reader.GetSqlBytes(0);
-                    }
-                }
-                catch (Exception error)
-                {
-                    // TODO: log error
-                }
-                finally
-                {
-                    if (reader != null)
-                    {
-                        if (reader.HasRows) command.Cancel();
-                        reader.Dispose();
-                    }
-                    if (command != null) command.Dispose();
-                    if (connection != null) connection.Dispose();
-                }
-            } // end of limited scope
-
-            return binaryData?.Stream;
+            string filePath = Path.Combine(CatalogPath, fileName);
+            using (FileStream output = File.Create(filePath))
+            {
+                binaryData.CopyTo(output);
+            }
         }
 
 
@@ -89,7 +98,14 @@ namespace OneCSharp.Metadata
             SqlBytes binaryData = GetDBNamesFromDatabase(connectionString);
             if (binaryData == null) return null;
             DeflateStream stream = new DeflateStream(binaryData.Stream, CompressionMode.Decompress);
-            return ParseDBNames(stream);
+            MemoryStream memory = new MemoryStream();
+            stream.CopyTo(memory);
+
+            memory.Seek(0, SeekOrigin.Begin);
+            WriteBinaryDataToFile(memory, "DBNames.txt");
+            
+            memory.Seek(0, SeekOrigin.Begin);
+            return ParseDBNames(memory);
         }
         private static SqlBytes GetDBNamesFromDatabase(string connectionString)
         {
@@ -170,9 +186,13 @@ namespace OneCSharp.Metadata
         {
             SqlBytes binaryData = GetDBSchemaFromDatabase(connectionString);
             if (binaryData == null) return null;
+            
+            WriteBinaryDataToFile(binaryData.Stream, "DBSchema.txt");
+            
+            binaryData.Stream.Seek(0, SeekOrigin.Begin);
             return ParseDBSchema(binaryData.Stream, dbnames);
         }
-        public static SqlBytes GetDBSchemaFromDatabase(string connectionString)
+        private static SqlBytes GetDBSchemaFromDatabase(string connectionString)
         {
             SqlBytes binaryData = null;
 
@@ -402,6 +422,176 @@ namespace OneCSharp.Metadata
                 Kind = int.Parse(items[4].Replace("}",string.Empty))
             };
             return dbt;
+        }
+
+
+        public static List<MetadataObject> ReadConfig(string connectionString, List<DBObject> dbobjects)
+        {
+            List<MetadataObject> result = new List<MetadataObject>();
+            foreach (DBObject dbo in dbobjects)
+            {
+                SqlBytes binaryData = ReadConfigFromDatabase(connectionString, dbo.FileName);
+                if (binaryData == null)
+                {
+                    Logger.WriteEntry($"{dbo.Name} file not found {dbo.FileName}");
+                    continue;
+                }
+
+                DeflateStream stream = new DeflateStream(binaryData.Stream, CompressionMode.Decompress);
+                MemoryStream memory = new MemoryStream();
+                stream.CopyTo(memory);
+
+                memory.Seek(0, SeekOrigin.Begin);
+                WriteBinaryDataToFile(stream, $"config\\{dbo.FileName}.txt");
+
+                memory.Seek(0, SeekOrigin.Begin);
+                MetadataObject mo = ParseMetadataObject(memory, dbo);
+                if (mo == null)
+                {
+                    Logger.WriteEntry($"{dbo.Name} could not create MetadataObject {dbo.FileName}");
+                    continue;
+                }
+                result.Add(mo);
+            }
+            return result;
+        }
+        private static SqlBytes ReadConfigFromDatabase(string connectionString, string fileName)
+        {
+            SqlBytes binaryData = null;
+
+            { // limited scope for variables declared in it - using statement does like that - used here to get control over catch block
+                SqlConnection connection = new SqlConnection(connectionString);
+                SqlCommand command = connection.CreateCommand();
+                SqlDataReader reader = null;
+                command.CommandType = CommandType.Text;
+                command.CommandText = "SELECT BinaryData FROM Config WHERE FileName = @FileName ORDER BY PartNo ASC";
+                command.Parameters.AddWithValue("FileName", fileName);
+                try
+                {
+                    connection.Open();
+                    reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        binaryData = reader.GetSqlBytes(0);
+                    }
+                }
+                catch (Exception error)
+                {
+                    // TODO: log error
+                }
+                finally
+                {
+                    if (reader != null)
+                    {
+                        if (reader.HasRows) command.Cancel();
+                        reader.Dispose();
+                    }
+                    if (command != null) command.Dispose();
+                    if (connection != null) connection.Dispose();
+                }
+            } // end of limited scope
+
+            return binaryData;
+        }
+        private static MetadataObject ParseMetadataObject(Stream stream, DBObject dbo)
+        {
+            MetadataObject mo = new MetadataObject()
+            {
+                Token = dbo.Token,
+                Table = $"_{dbo.Name}"
+            };
+
+            string UUID = null;
+            string name = null;
+            Regex regex = new Regex("^{\\d,\\d,[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}},\"\\w+\",$"); // Example: {0,0,eb3dfdc7-58b8-4b1f-b079-368c262364c9},"ВерсииФайлов",
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                string line = null;
+                
+                Match match = null;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    match = regex.Match(line);
+                    if (!match.Success) continue;
+
+                    string[] lines = line.Split(',');
+                    UUID = lines[2].Replace("}", string.Empty);
+                    name = lines[3].Replace("\"", string.Empty);
+                    SetNameByUUID(mo, dbo, UUID, name);
+                }
+            }
+            return mo;
+        }
+        private static void SetNameByUUID(MetadataObject metaObject, DBObject dbo, string UUID, string name)
+        {
+            if (string.IsNullOrEmpty(metaObject.Name))
+            {
+                if (dbo.FileName == UUID)
+                {
+                    metaObject.Name = name;
+                    return;
+                }
+            }
+
+            foreach (DBProperty property in dbo.Properties)
+            {
+                if (property.FileName == UUID)
+                {
+                    MetadataProperty p = new MetadataProperty()
+                    {
+                        Name = name,
+                        SDBL = property.Name
+                    };
+                    //p.Fields.Add(new MetadataField() { Name = $"_{property.Name}" });
+                    metaObject.Properties.Add(p);
+                    return;
+                }
+            }
+
+            foreach (DBObject table in dbo.NestedObjects)
+            {
+                if (table.FileName == UUID)
+                {
+                    MetadataObject t = new MetadataObject()
+                    {
+                        Name = name,
+                        Token = table.Token,
+                        Table = $"{metaObject.Table}_{table.Name}"
+                    };
+                    metaObject.NestedObjects.Add(t);
+                    return;
+                }
+
+                foreach (DBProperty property in table.Properties)
+                {
+                    if (property.FileName == UUID)
+                    {
+                        MetadataProperty p = new MetadataProperty()
+                        {
+                            Name = name,
+                            SDBL = property.Name
+                        };
+                        //p.Fields.Add(new MetadataField() { Name = $"_{property.Name}" });
+                        MetadataObject nested = metaObject.NestedObjects.Find(i => i.Table == table.Name);
+                        if (nested == null)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            nested.Properties.Add(p);
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+
+
+        public static void ReadSQLMetadata(string connectionString, List<MetadataObject> metaObjects)
+        {
+            SQLHelper SQL = new SQLHelper();
+            SQL.Load(connectionString, metaObjects);
         }
     }
 }
