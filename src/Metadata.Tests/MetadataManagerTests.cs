@@ -14,8 +14,8 @@ namespace OneCSharp.Metadata.Tests
         {
             string logPath = Path.Combine(_catalogPath, "log.txt");
             MetadataManager manager = new MetadataManager(logPath);
-            //manager.ImportMetadataToFiles(_connectionString, _catalogPath);
             manager.ImportMetadata(_connectionString, _catalogPath);
+            manager.ImportMetadataToFiles(_connectionString, _catalogPath);
         }
     }
 }

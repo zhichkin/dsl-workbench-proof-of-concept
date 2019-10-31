@@ -36,25 +36,25 @@ namespace OneCSharp.Metadata
         }
         public void ImportMetadataToFiles(string connectionString, string calalogPath)
         {
-            string RootPath = Path.Combine(calalogPath, "root.txt");
-            string ConfigPath = Path.Combine(calalogPath, "config.txt");
-            string DBNamesPath = Path.Combine(calalogPath, "dbnames.txt");
-            string DBSchemaPath = Path.Combine(calalogPath, "dbschema.txt");
-            string IBVersionPath = Path.Combine(calalogPath, "ibversion.txt");
+            //string RootPath = Path.Combine(calalogPath, "root.txt");
+            //string ConfigPath = Path.Combine(calalogPath, "config.txt");
+            //string DBNamesPath = Path.Combine(calalogPath, "dbnames.txt");
+            //string DBSchemaPath = Path.Combine(calalogPath, "dbschema.txt");
+            //string IBVersionPath = Path.Combine(calalogPath, "ibversion.txt");
             
-            ReadDBNames(connectionString, DBNamesPath);
-            ReadDBSchema(connectionString, DBSchemaPath);
-            ReadIBVersion(connectionString, IBVersionPath);
-            ReadConfig(connectionString, "root", RootPath); // + version + versions
-            ReadConfig(connectionString, "e0666db2-45d6-49b4-a200-061c6ba7d569", ConfigPath);
+            //ReadDBNames(connectionString, DBNamesPath);
+            //ReadDBSchema(connectionString, DBSchemaPath);
+            //ReadIBVersion(connectionString, IBVersionPath);
+            //ReadConfig(connectionString, "root", RootPath); // + version + versions
+            //ReadConfig(connectionString, "e0666db2-45d6-49b4-a200-061c6ba7d569", ConfigPath);
             
-            ReadConfig(connectionString, "db4a9ccb-9ef5-4b3c-8577-b6fe5db1b62e", Path.Combine(calalogPath, "db4a9ccb-9ef5-4b3c-8577-b6fe5db1b62e.txt"));
-            ReadConfig(connectionString, "30ee720f-b02b-4bab-8c66-bd27d8c2e8cb", Path.Combine(calalogPath, "30ee720f-b02b-4bab-8c66-bd27d8c2e8cb.txt"));
-            ReadConfig(connectionString, "cb3a5c5b-7bdc-4e12-96f1-11b1213b6853", Path.Combine(calalogPath, "cb3a5c5b-7bdc-4e12-96f1-11b1213b6853.txt"));
-            ReadConfig(connectionString, "9ad3b432-5b49-44ee-9d8d-83c36458d927", Path.Combine(calalogPath, "9ad3b432-5b49-44ee-9d8d-83c36458d927.txt"));
-            ReadConfig(connectionString, "c1568f1c-25ab-4328-8e77-e0e84788f10f", Path.Combine(calalogPath, "c1568f1c-25ab-4328-8e77-e0e84788f10f.txt"));
+            ReadConfig(connectionString, "aba88ae0-46b0-4d41-9a48-5600a2fc4227", Path.Combine(calalogPath, "aba88ae0-46b0-4d41-9a48-5600a2fc4227.txt"));
+            ReadConfig(connectionString, "d94507c6-8ef1-45d2-a58c-ebb577734bd3", Path.Combine(calalogPath, "d94507c6-8ef1-45d2-a58c-ebb577734bd3.txt"));
+            //ReadConfig(connectionString, "cb3a5c5b-7bdc-4e12-96f1-11b1213b6853", Path.Combine(calalogPath, "cb3a5c5b-7bdc-4e12-96f1-11b1213b6853.txt"));
+            //ReadConfig(connectionString, "9ad3b432-5b49-44ee-9d8d-83c36458d927", Path.Combine(calalogPath, "9ad3b432-5b49-44ee-9d8d-83c36458d927.txt"));
+            //ReadConfig(connectionString, "c1568f1c-25ab-4328-8e77-e0e84788f10f", Path.Combine(calalogPath, "c1568f1c-25ab-4328-8e77-e0e84788f10f.txt"));
 
-            ReadCurrentSchema(connectionString, Path.Combine(calalogPath, "SchemaStorage.txt"));
+            //ReadCurrentSchema(connectionString, Path.Combine(calalogPath, "SchemaStorage.txt"));
         }
         public void ReadIBVersion(string connectionString, string filePath)
         {
