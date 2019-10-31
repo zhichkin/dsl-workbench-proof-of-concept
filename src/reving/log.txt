@@ -1,0 +1,3 @@
+INPUT = 30
+OUTPUT = 0
+INPUT = 32
