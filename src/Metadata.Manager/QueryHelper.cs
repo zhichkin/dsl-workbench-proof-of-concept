@@ -442,7 +442,7 @@ namespace OneCSharp.Metadata
                 stream.CopyTo(memory);
 
                 memory.Seek(0, SeekOrigin.Begin);
-                WriteBinaryDataToFile(stream, $"config\\{dbo.FileName}.txt");
+                WriteBinaryDataToFile(memory, $"config\\{dbo.FileName}.txt");
 
                 memory.Seek(0, SeekOrigin.Begin);
                 MetadataObject mo = ParseMetadataObject(memory, dbo);
