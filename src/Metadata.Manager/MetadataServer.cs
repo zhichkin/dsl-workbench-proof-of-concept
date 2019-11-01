@@ -1,10 +1,5 @@
-﻿using System;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Data.SqlTypes;
-using System.IO;
-using System.IO.Compression;
-using System.Collections.Generic;
 
 namespace OneCSharp.Metadata
 {
@@ -12,7 +7,9 @@ namespace OneCSharp.Metadata
     {
         private readonly string _serverAddress;
         private ILogger _logger;
-        private Dictionary<string, List<DBName>> _DBNames = new Dictionary<string, List<DBName>>();
+        private Dictionary<string, DbObject> _UUIDs = new Dictionary<string, DbObject>();
+        private Dictionary<string, DBNameEntry> _DBNames = new Dictionary<string, DBNameEntry>();
+        
         public MetadataServer(string serverAddress) { _serverAddress = serverAddress; }
         public string ServerAddress { get { return _serverAddress; } }
         public void UseLogger(ILogger logger) { _logger = logger; }
@@ -30,7 +27,9 @@ namespace OneCSharp.Metadata
             };
             return reader.GetInfoBases();
         }
-        public void ImportMetadata(InfoBase infoBase)
+        internal Dictionary<string, DbObject> UUIDs { get { return _UUIDs; } }
+        internal Dictionary<string, DBNameEntry> DBNames { get { return _DBNames; } }
+        public void ImportMetadata(InfoBase infoBase, bool saveFiles)
         {
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder()
             {
@@ -43,12 +42,19 @@ namespace OneCSharp.Metadata
             {
                 ConnectionString = csb.ConnectionString
             };
-            reader.UseLogger(_logger);
+            if (saveFiles)
+            {
+                reader.UseLogger(_logger);
+            }
             reader.ReadDBNames(_DBNames);
 
             if (_DBNames.Count > 0)
             {
-                //reader.ReadConfig(infoBase);
+                foreach (var item in _DBNames)
+                {
+                    reader.ReadConfig(this, item.Key, infoBase);
+                }
+                reader.MakeSecondPass(infoBase, this);
                 //reader.ReadSQLMetadata(infoBase);
             }
         }

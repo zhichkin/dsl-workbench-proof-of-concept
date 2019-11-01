@@ -7,18 +7,32 @@ using System.IO.Compression;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace OneCSharp.Metadata
 {
+    internal sealed class DBNameEntry
+    {
+        internal DbObject DbObject = new DbObject();
+        internal List<DBName> DBNames = new List<DBName>();
+    }
     internal sealed class DBName
     {
         internal string Token;
         internal int TypeCode;
+        internal bool IsMainTable;
     }
-    
+
+    internal delegate void SpecialParser(StreamReader reader, string line, DbObject dbo, MetadataServer server);
+
     internal sealed class MetadataReader
     {
         private ILogger _logger;
+        public MetadataReader()
+        {
+            _SpecialParsers.Add("cf4abea7-37b2-11d4-940f-008048da11f9", ParseDbProperties); // DbObjects properties collection
+            _SpecialParsers.Add("932159f9-95b2-4e76-a8dd-8849fe5c5ded", ParseNestedObjects); // nested objects collection
+        }
         internal string ConnectionString { get; set; }
         private void WriteBinaryDataToFile(Stream binaryData, string fileName)
         {
@@ -72,7 +86,7 @@ namespace OneCSharp.Metadata
         }
 
         # region " Read DBNames "
-        internal void ReadDBNames(Dictionary<string, List<DBName>> DBNames)
+        internal void ReadDBNames(Dictionary<string, DBNameEntry> DBNames)
         {
             SqlBytes binaryData = GetDBNamesFromDatabase();
             if (binaryData == null) return;
@@ -130,7 +144,7 @@ namespace OneCSharp.Metadata
 
             return binaryData;
         }
-        private void ParseDBNames(Stream stream, Dictionary<string, List<DBName>> DBNames)
+        private void ParseDBNames(Stream stream, Dictionary<string, DBNameEntry> DBNames)
         {
             using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
             {
@@ -149,7 +163,7 @@ namespace OneCSharp.Metadata
         {
             return int.Parse(line.Replace("{", string.Empty).Replace(",", string.Empty));
         }
-        private void ParseDBNameLine(string line, Dictionary<string, List<DBName>> DBNames)
+        private void ParseDBNameLine(string line, Dictionary<string, DBNameEntry> DBNames)
         {
             string[] items = line.Split(',');
             if (items.Length < 3) return;
@@ -160,17 +174,34 @@ namespace OneCSharp.Metadata
                 Token = items[1].Replace("\"", string.Empty),
                 TypeCode = int.Parse(items[2].Replace("}", string.Empty))
             };
-            
-            if (DBNames.TryGetValue(FileName, out List<DBName> dbnames))
+            dbname.IsMainTable = IsMainTable(dbname.Token);
+
+            if (DBNames.TryGetValue(FileName, out DBNameEntry entry))
             {
-                dbnames.Add(dbname);
+                entry.DBNames.Add(dbname);
             }
             else
             {
-                DBNames.Add(FileName, new List<DBName>() { dbname });
+                entry = new DBNameEntry();
+                entry.DBNames.Add(dbname);
+                DBNames.Add(FileName, entry);
             }
         }
-        # endregion
+        private bool IsMainTable(string token)
+        {
+            switch (token)
+            {
+                case DBToken.VT: return true;
+                case DBToken.Enum: return true;
+                case DBToken.Const: return true;
+                case DBToken.InfoRg: return true;
+                case DBToken.AccumRg: return true;
+                case DBToken.Document: return true;
+                case DBToken.Reference: return true;
+            }
+            return false;
+        }
+        #endregion
 
         #region " Read DBSchema "
         //internal sealed class DBObject // Regex("^{\"\\w+\",\"[NI]\",\\d+,\"\\w*\","); // Example: {"Reference42","N",42,"", | {"VT5798","I",0,"Reference228",
@@ -443,169 +474,494 @@ namespace OneCSharp.Metadata
         #endregion
 
         #region " Read Config "
-        //public List<MetadataObject> ReadConfig(string connectionString, List<DBObject> dbobjects)
-        //{
-        //    List<MetadataObject> result = new List<MetadataObject>();
-        //    foreach (DBObject dbo in dbobjects)
-        //    {
-        //        SqlBytes binaryData = ReadConfigFromDatabase(connectionString, dbo.FileName);
-        //        if (binaryData == null)
-        //        {
-        //            Logger.WriteEntry($"{dbo.Name} file not found {dbo.FileName}");
-        //            continue;
-        //        }
+        private readonly Regex rxUUID = new Regex("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"); // Example: eb3dfdc7-58b8-4b1f-b079-368c262364c9
+        private readonly Regex rxSpecialUUID = new Regex("^{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12},\\d+(?:})?,$"); // Example: {3daea016-69b7-4ed4-9453-127911372fe6,0}, | {cf4abea7-37b2-11d4-940f-008048da11f9,5,
+        private readonly Regex rxDbName = new Regex("^{\\d,\\d,[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}},\"\\w+\",$");
+        private readonly Regex rxDbType = new Regex("^{\"[#BSDN]\""); // Example: {"#",1aaea747-a4ba-4fb2-9473-075b1ced620c}, | {"B"}, | {"S",10,0}, | {"D","T"}, | {"N",10,0,1}
+        private readonly Regex rxNestedProperties = new Regex("^{888744e1-b616-11d4-9436-004095e12fc7,\\d+[},]$"); // look rxSpecialUUID
+        private readonly Dictionary<string, SpecialParser> _SpecialParsers = new Dictionary<string, SpecialParser>();
+        public void ReadConfig(MetadataServer server, string fileName, InfoBase infoBase)
+        {
+            if (new Guid(fileName) == Guid.Empty) return;
 
-        //        DeflateStream stream = new DeflateStream(binaryData.Stream, CompressionMode.Decompress);
-        //        MemoryStream memory = new MemoryStream();
-        //        stream.CopyTo(memory);
+            SqlBytes binaryData = ReadConfigFromDatabase(fileName);
+            if (binaryData == null) return;
 
-        //        memory.Seek(0, SeekOrigin.Begin);
-        //        WriteBinaryDataToFile(memory, $"config\\{dbo.FileName}.txt");
+            DeflateStream stream = new DeflateStream(binaryData.Stream, CompressionMode.Decompress);
+            if (_logger == null)
+            {
+                ParseMetadataObject(stream, server, fileName, infoBase);
+            }
+            else
+            {
+                MemoryStream memory = new MemoryStream();
+                stream.CopyTo(memory);
+                memory.Seek(0, SeekOrigin.Begin);
+                WriteBinaryDataToFile(memory, $"{fileName}.txt");
+                memory.Seek(0, SeekOrigin.Begin);
+                ParseMetadataObject(memory, server, fileName, infoBase);
+            }
+        }
+        private SqlBytes ReadConfigFromDatabase(string fileName)
+        {
+            SqlBytes binaryData = null;
 
-        //        memory.Seek(0, SeekOrigin.Begin);
-        //        MetadataObject mo = ParseMetadataObject(memory, dbo);
-        //        if (mo == null)
-        //        {
-        //            Logger.WriteEntry($"{dbo.Name} could not create MetadataObject {dbo.FileName}");
-        //            continue;
-        //        }
-        //        result.Add(mo);
-        //    }
-        //    return result;
-        //}
-        //private SqlBytes ReadConfigFromDatabase(string connectionString, string fileName)
-        //{
-        //    SqlBytes binaryData = null;
+            { // limited scope for variables declared in it - using statement does like that - used here to get control over catch block
+                SqlConnection connection = new SqlConnection(ConnectionString);
+                SqlCommand command = connection.CreateCommand();
+                SqlDataReader reader = null;
+                command.CommandType = CommandType.Text;
+                command.CommandText = "SELECT BinaryData FROM Config WHERE FileName = @FileName ORDER BY PartNo ASC";
+                command.Parameters.AddWithValue("FileName", fileName);
+                try
+                {
+                    connection.Open();
+                    reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        binaryData = reader.GetSqlBytes(0);
+                    }
+                }
+                catch (Exception error)
+                {
+                    // TODO: log error
+                }
+                finally
+                {
+                    if (reader != null)
+                    {
+                        if (reader.HasRows) command.Cancel();
+                        reader.Dispose();
+                    }
+                    if (command != null) command.Dispose();
+                    if (connection != null) connection.Dispose();
+                }
+            } // end of limited scope
 
-        //    { // limited scope for variables declared in it - using statement does like that - used here to get control over catch block
-        //        SqlConnection connection = new SqlConnection(connectionString);
-        //        SqlCommand command = connection.CreateCommand();
-        //        SqlDataReader reader = null;
-        //        command.CommandType = CommandType.Text;
-        //        command.CommandText = "SELECT BinaryData FROM Config WHERE FileName = @FileName ORDER BY PartNo ASC";
-        //        command.Parameters.AddWithValue("FileName", fileName);
-        //        try
-        //        {
-        //            connection.Open();
-        //            reader = command.ExecuteReader();
-        //            while (reader.Read())
-        //            {
-        //                binaryData = reader.GetSqlBytes(0);
-        //            }
-        //        }
-        //        catch (Exception error)
-        //        {
-        //            // TODO: log error
-        //        }
-        //        finally
-        //        {
-        //            if (reader != null)
-        //            {
-        //                if (reader.HasRows) command.Cancel();
-        //                reader.Dispose();
-        //            }
-        //            if (command != null) command.Dispose();
-        //            if (connection != null) connection.Dispose();
-        //        }
-        //    } // end of limited scope
+            return binaryData;
+        }
+        private void ParseMetadataObject(Stream stream, MetadataServer server, string fileName, InfoBase infoBase)
+        {
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                string line = reader.ReadLine();
+                if (line != null)
+                {
+                    line = reader.ReadLine();
+                }
 
-        //    return binaryData;
-        //}
-        //private MetadataObject ParseMetadataObject(Stream stream, DBObject dbo)
-        //{
-        //    MetadataObject mo = new MetadataObject()
-        //    {
-        //        Token = dbo.Token,
-        //        Table = $"_{dbo.Name}"
-        //    };
+                DbObject dbo;
+                if (server.DBNames.TryGetValue(fileName, out DBNameEntry entry))
+                {
+                    dbo = entry.DbObject;
+                }
+                else
+                {
+                    dbo = new DbObject();
+                }
+                try
+                {
+                    ParseInternalIdentifier(line, dbo, server);
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
 
-        //    string UUID = null;
-        //    string name = null;
-        //    Regex regex = new Regex("^{\\d,\\d,[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}},\"\\w+\",$"); // Example: {0,0,eb3dfdc7-58b8-4b1f-b079-368c262364c9},"ВерсииФайлов",
-        //    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
-        //    {
-        //        string line = null;
+                _ = reader.ReadLine();
+                _ = reader.ReadLine();
+                line = reader.ReadLine();
+                if (line != null)
+                {
+                    ParseDbObjectNames(line, fileName, dbo, server);
+                    SetDbObjecNamespace(dbo, infoBase);
+                }
+                if (dbo.Token == DBToken.Reference)
+                {
+                    ParseReferenceOwner(reader, dbo, server);
+                }
 
-        //        Match match = null;
-        //        while ((line = reader.ReadLine()) != null)
-        //        {
-        //            match = regex.Match(line);
-        //            if (!match.Success) continue;
+                int count = 0;
+                string UUID = null;
+                Match match = null;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    match = rxSpecialUUID.Match(line);
+                    if (!match.Success) continue;
 
-        //            string[] lines = line.Split(',');
-        //            UUID = lines[2].Replace("}", string.Empty);
-        //            name = lines[3].Replace("\"", string.Empty);
-        //            SetNameByUUID(mo, dbo, UUID, name);
-        //        }
-        //    }
-        //    return mo;
-        //}
-        //private void SetNameByUUID(MetadataObject metaObject, DBObject dbo, string UUID, string name)
-        //{
-        //    if (string.IsNullOrEmpty(metaObject.Name))
-        //    {
-        //        if (dbo.FileName == UUID)
-        //        {
-        //            metaObject.Name = name;
-        //            return;
-        //        }
-        //    }
+                    string[] lines = line.Split(',');
+                    UUID = lines[0].Replace("{", string.Empty);
+                    count = int.Parse(lines[1].Replace("}", string.Empty));
+                    if (count == 0) continue;
 
-        //    foreach (DBProperty property in dbo.Properties)
-        //    {
-        //        if (property.FileName == UUID)
-        //        {
-        //            MetadataProperty p = new MetadataProperty()
-        //            {
-        //                Name = name,
-        //                SDBL = property.Name
-        //            };
-        //            //p.Fields.Add(new MetadataField() { Name = $"_{property.Name}" });
-        //            metaObject.Properties.Add(p);
-        //            return;
-        //        }
-        //    }
+                    if (_SpecialParsers.ContainsKey(UUID))
+                    {
+                        _SpecialParsers[UUID](reader, line, dbo, server);
+                    }
+                }
+            }
+        }
+        private void ParseInternalIdentifier(string line, DbObject dbo, MetadataServer server)
+        {
+            string[] lines = line.Split(',');
+            string UUID = lines[3];
+            server.UUIDs.Add(UUID, dbo);
+        }
+        private void ParseDbObjectNames(string line, string fileName, DbObject dbo, MetadataServer server)
+        {
+            string[] lines = line.Split(',');
+            string FileName = lines[2].Replace("}", string.Empty);
+            if (fileName != FileName)
+            {
+                // TODO: error ?
+            }
+            dbo.Name = lines[3].Replace("\"", string.Empty);
+            if (server.DBNames.TryGetValue(fileName, out DBNameEntry entry))
+            {
+                DBName dbname = entry.DBNames.Where(i => i.IsMainTable).FirstOrDefault();
+                if (dbname != null)
+                {
+                    dbo.Token = dbname.Token;
+                    dbo.TypeCode = dbname.TypeCode;
+                    dbo.TableName = CreateTableName(dbo, dbname);
+                }
+            }
+        }
+        private string CreateTableName(DbObject dbo, DBName dbname)
+        {
+            if (dbname.Token == DBToken.VT)
+            {
+                if (dbo.Owner == null)
+                {
+                    return string.Empty;
+                    // TODO: error ?
+                }
+                else
+                {
+                    return $"{dbo.Owner.TableName}_{dbname.Token}{dbname.TypeCode}";
+                }
+            }
+            else
+            {
+                return $"_{dbname.Token}{dbname.TypeCode}";
+            }
+        }
+        private void SetDbObjecNamespace(DbObject dbo, InfoBase infoBase)
+        {
+            if (dbo.Parent != null) return;
 
-        //    foreach (DBObject table in dbo.NestedObjects)
-        //    {
-        //        if (table.FileName == UUID)
-        //        {
-        //            MetadataObject t = new MetadataObject()
-        //            {
-        //                Name = name,
-        //                Token = table.Token,
-        //                Table = $"{metaObject.Table}_{table.Name}"
-        //            };
-        //            metaObject.NestedObjects.Add(t);
-        //            return;
-        //        }
+            Namespace ns = infoBase.Namespaces.Where(n => n.Name == dbo.Token).FirstOrDefault();
+            if (ns == null)
+            {
+                ns = new Namespace() { InfoBase = infoBase };
+                ns.Name = (string.IsNullOrEmpty(dbo.Token)) ? "Unknown" : dbo.Token;
+                infoBase.Namespaces.Add(ns);
+            }
+            dbo.Parent = ns;
+            ns.DbObjects.Add(dbo);
+        }
+        private void ParseReferenceOwner(StreamReader reader, DbObject dbo, MetadataServer server)
+        {
+            int count = 0;
+            string[] lines;
 
-        //        foreach (DBProperty property in table.Properties)
-        //        {
-        //            if (property.FileName == UUID)
-        //            {
-        //                MetadataProperty p = new MetadataProperty()
-        //                {
-        //                    Name = name,
-        //                    SDBL = property.Name
-        //                };
-        //                //p.Fields.Add(new MetadataField() { Name = $"_{property.Name}" });
-        //                MetadataObject nested = metaObject.NestedObjects.Find(i => i.Table == table.Name);
-        //                if (nested == null)
-        //                {
-        //                    continue;
-        //                }
-        //                else
-        //                {
-        //                    nested.Properties.Add(p);
-        //                }
-        //                return;
-        //            }
-        //        }
-        //    }
-        //}
+            _ = reader.ReadLine(); // строка описания - "Синоним" в терминах 1С
+            _ = reader.ReadLine();
+            string line = reader.ReadLine();
+            if (line != null)
+            {
+                lines = line.Split(',');
+                count = int.Parse(lines[1].Replace("}", string.Empty));
+            }
+            if (count == 0) return;
+
+            Match match;
+            List<DbType> types = new List<DbType>();
+            for (int i = 0; i < count; i++)
+            {
+                _ = reader.ReadLine();
+                line = reader.ReadLine();
+                if (line == null) return;
+
+                match = rxUUID.Match(line);
+                if (match.Success)
+                {
+                    if (server.DBNames.TryGetValue(match.Value, out DBNameEntry entry))
+                    {
+                        types.Add(new DbType()
+                        {
+                            TypeCode = entry.DbObject.TypeCode,
+                            Name = entry.DbObject.TableName,
+                            DbObject = entry.DbObject
+                        });
+                    }
+                }
+                _ = reader.ReadLine();
+            }
+
+            if (types.Count > 0)
+            {
+                DbProperty property = new DbProperty
+                {
+                    Parent = dbo,
+                    Types = types,
+                    Name = "Владелец" // [_OwnerIDRRef] | [_OwnerID_TYPE] + [_OwnerID_RTRef] + [_OwnerID_RRRef]
+                    // TODO: add DbField at once ?
+                };
+                dbo.Properties.Add(property);
+            }
+        }
+        private void ParseDbProperties(StreamReader reader, string line, DbObject dbo, MetadataServer server)
+        {
+            string[] lines = line.Split(',');
+            int count = int.Parse(lines[1].Replace("}", string.Empty));
+            Match match;
+            string nextLine;
+            for (int i = 0; i < count; i++)
+            {
+                while ((nextLine = reader.ReadLine()) != null)
+                {
+                    match = rxDbName.Match(nextLine);
+                    if (match.Success)
+                    {
+                        ParseDbProperty(reader, nextLine, dbo, server);
+                        break;
+                    }
+                }
+            }
+        }
+        private void ParseDbProperty(StreamReader reader, string line, DbObject dbo, MetadataServer server)
+        {
+            string[] lines = line.Split(',');
+            string fileName = lines[2].Replace("}", string.Empty);
+            string objectName = lines[3].Replace("\"", string.Empty);
+
+            DbProperty property = new DbProperty
+            {
+                Parent = dbo,
+                Name = objectName
+            };
+            dbo.Properties.Add(property);
+
+            if (server.DBNames.TryGetValue(fileName, out DBNameEntry entry))
+            {
+                foreach (var item in entry.DBNames)
+                {
+                    property.Fields.Add(
+                        new DbField()
+                        {
+                            Name = CreateDbFieldName(item)
+                        });
+                }
+            }
+            ParseDbPropertyTypes(reader, property, server);
+        }
+        private string CreateDbFieldName(DBName dbname)
+        {
+            return $"_{dbname.Token}{dbname.TypeCode}";
+        }
+        private void ParseDbPropertyTypes(StreamReader reader, DbProperty property, MetadataServer server)
+        {
+            string line = reader.ReadLine();
+            if (line == null) return;
+
+            while (line != "{\"Pattern\",")
+            {
+                line = reader.ReadLine();
+                if (line == null) return;
+            }
+
+            Match match;
+            while ((line = reader.ReadLine()) != null)
+            {
+                match = rxDbType.Match(line);
+                if (!match.Success) break;
+
+                int typeCode = 0;
+                string typeName = string.Empty;
+                string token = match.Value.Replace("{", string.Empty).Replace("\"", string.Empty);
+                switch (token)
+                {
+                    case DBToken.B: { typeCode = -1; typeName = "Boolean"; break; }
+                    case DBToken.S: { typeCode = -2; typeName = "String"; break; }
+                    case DBToken.D: { typeCode = -3; typeName = "DateTime"; break; }
+                    case DBToken.N: { typeCode = -4; typeName = "Numeric"; break; }
+                }
+                if (typeCode != 0)
+                {
+                    property.Types.Add(new DbType()
+                    {
+                        Name = typeName,
+                        TypeCode = typeCode
+                    });
+                }
+                else
+                {
+                    string[] lines = line.Split(',');
+                    string UUID = lines[1].Replace("}", string.Empty);
+
+                    if (UUID == "e199ca70-93cf-46ce-a54b-6edc88c3a296")
+                    {
+                        // ХранилищеЗначения - varbinary(max)
+                        property.Types.Add(new DbType()
+                        {
+                            Name = "BLOB",
+                            TypeCode = -5
+                        });
+                    }
+                    else if (UUID == "fc01b5df-97fe-449b-83d4-218a090e681e")
+                    {
+                        // УникальныйИдентификатор - binary(16)
+                        property.Types.Add(new DbType()
+                        {
+                            Name = "UUID",
+                            TypeCode = -6
+                        });
+                    }
+                    else if (server.UUIDs.TryGetValue(UUID, out DbObject dbo))
+                    {
+                        property.Types.Add(new DbType()
+                        {
+                            Name = dbo.TableName,
+                            TypeCode = dbo.TypeCode,
+                            UUID = UUID,
+                            DbObject = dbo
+                        });
+                    }
+                    else // UUID is not loaded yet - leave it for second pass
+                    {
+                        property.Types.Add(new DbType()
+                        {
+                            UUID = UUID
+                        });
+                    }
+                }
+            }
+        }
+        private void ParseNestedObjects(StreamReader reader, string line, DbObject dbo, MetadataServer server)
+        {
+            string[] lines = line.Split(',');
+            int count = int.Parse(lines[1]);
+            Match match;
+            string nextLine;
+            for (int i = 0; i < count; i++)
+            {
+                while ((nextLine = reader.ReadLine()) != null)
+                {
+                    match = rxDbName.Match(nextLine);
+                    if (match.Success)
+                    {
+                        ParseNestedObject(reader, nextLine, dbo, server);
+                        break;
+                    }
+                }
+            }
+        }
+        private void ParseNestedObject(StreamReader reader, string line, DbObject dbo, MetadataServer server)
+        {
+            string[] lines = line.Split(',');
+            string fileName = lines[2].Replace("}", string.Empty);
+            string objectName = lines[3].Replace("\"", string.Empty);
+
+            DbObject nested = new DbObject()
+            {
+                Owner = dbo,
+                Name = objectName,
+                Parent = dbo.Parent
+            };
+            dbo.NestedObjects.Add(nested);
+
+            if (server.DBNames.TryGetValue(fileName, out DBNameEntry entry))
+            {
+                DBName dbname = entry.DBNames.Where(i => i.IsMainTable).FirstOrDefault();
+                if (dbname != null)
+                {
+                    nested.Token = dbname.Token;
+                    nested.TypeCode = dbname.TypeCode;
+                    nested.TableName = CreateTableName(nested, dbname);
+                }
+            }
+            ParseNestedDbProperties(reader, nested, server);
+        }
+        private void ParseNestedDbProperties(StreamReader reader, DbObject dbo, MetadataServer server)
+        {
+            string line;
+            Match match;
+            while ((line = reader.ReadLine()) != null)
+            {
+                match = rxNestedProperties.Match(line);
+                if (match.Success)
+                {
+                    ParseDbProperties(reader, line, dbo, server);
+                    break;
+                }
+            }
+        }
         #endregion
-
+        public void MakeSecondPass(InfoBase infoBase, MetadataServer server)
+        {
+            foreach (var ns in infoBase.Namespaces)
+            {
+                foreach (var dbo in ns.DbObjects)
+                {
+                    foreach (var property in dbo.Properties)
+                    {
+                        foreach (var type in property.Types)
+                        {
+                            if (type.TypeCode == 0)
+                            {
+                                if (type.DbObject == null)
+                                {
+                                    if (!string.IsNullOrEmpty(type.UUID))
+                                    {
+                                        if (server.UUIDs.TryGetValue(type.UUID, out DbObject dbObject))
+                                        {
+                                            type.Name = dbObject.TableName;
+                                            type.DbObject = dbObject;
+                                            type.TypeCode = dbObject.TypeCode;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    type.Name = type.DbObject.TableName;
+                                    type.TypeCode = type.DbObject.TypeCode;
+                                }
+                            }
+                        }
+                    }
+                    foreach (var nested in dbo.NestedObjects)
+                    {
+                        foreach (var property in nested.Properties)
+                        {
+                            foreach (var type in property.Types)
+                            {
+                                if (type.TypeCode == 0)
+                                {
+                                    if (type.DbObject == null)
+                                    {
+                                        if (!string.IsNullOrEmpty(type.UUID))
+                                        {
+                                            if (server.UUIDs.TryGetValue(type.UUID, out DbObject dbObject))
+                                            {
+                                                type.Name = dbObject.TableName;
+                                                type.DbObject = dbObject;
+                                                type.TypeCode = dbObject.TypeCode;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        type.Name = type.DbObject.TableName;
+                                        type.TypeCode = type.DbObject.TypeCode;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         //public void ReadSQLMetadata(string connectionString, List<MetadataObject> metaObjects)
         //{
         //    SQLHelper SQL = new SQLHelper();

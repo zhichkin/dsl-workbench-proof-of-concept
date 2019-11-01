@@ -19,6 +19,7 @@ namespace OneCSharp.Metadata
     public sealed class DbObject
     {
         public Namespace Parent;
+        public string Token;
         public string Name;
         public int TypeCode;
         public string TableName;
@@ -30,8 +31,15 @@ namespace OneCSharp.Metadata
     {
         public DbObject Parent;
         public string Name;
-        public List<int> TypeCodes = new List<int>();
+        public List<DbType> Types = new List<DbType>();
         public List<DbField> Fields = new List<DbField>();
+    }
+    public sealed class DbType
+    {
+        public int TypeCode;
+        public string Name;
+        public string UUID;
+        public DbObject DbObject;
     }
     public sealed class DbField
     {
