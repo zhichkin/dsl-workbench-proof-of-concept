@@ -32,7 +32,7 @@ namespace OneCSharp.Metadata
                 _logger.WriteEntry($"   + {property.Name} ({typeCodesString})");
                 foreach (var field in property.Fields)
                 {
-                    _logger.WriteEntry($"      {field.Name}");
+                    _logger.WriteEntry($"      {field.Name} {field.TypeName}({(field.Length > 0 ? field.Length : field.Precision)}) {(field.IsNullable ? "NULL" : "NOT NULL")} [{field.Purpose}]");
                 }
             }
             foreach (var nested in dbo.NestedObjects)

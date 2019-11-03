@@ -30,8 +30,18 @@ namespace OneCSharp.Metadata
         private ILogger _logger;
         public MetadataReader()
         {
-            _SpecialParsers.Add("cf4abea7-37b2-11d4-940f-008048da11f9", ParseDbProperties); // DbObjects properties collection
-            _SpecialParsers.Add("932159f9-95b2-4e76-a8dd-8849fe5c5ded", ParseNestedObjects); // nested objects collection
+            _SpecialParsers.Add("cf4abea7-37b2-11d4-940f-008048da11f9", ParseDbProperties); // Catalogs properties collection
+            _SpecialParsers.Add("932159f9-95b2-4e76-a8dd-8849fe5c5ded", ParseNestedObjects); // Catalogs nested objects collection
+            _SpecialParsers.Add("45e46cbc-3e24-4165-8b7b-cc98a6f80211", ParseDbProperties); // Documents properties collection
+            _SpecialParsers.Add("21c53e09-8950-4b5e-a6a0-1054f1bbc274", ParseNestedObjects); // Documents nested objects collection
+
+            _SpecialParsers.Add("13134203-f60b-11d5-a3c7-0050bae0a776", ParseDbProperties); // Коллекция измерений регистра сведений
+            _SpecialParsers.Add("13134202-f60b-11d5-a3c7-0050bae0a776", ParseDbProperties); // Коллекция ресурсов регистра сведений
+            _SpecialParsers.Add("a2207540-1400-11d6-a3c7-0050bae0a776", ParseDbProperties); // Коллекция реквизитов регистра сведений
+
+            _SpecialParsers.Add("b64d9a43-1642-11d6-a3c7-0050bae0a776", ParseDbProperties); // Коллекция измерений регистра накопления
+            _SpecialParsers.Add("b64d9a41-1642-11d6-a3c7-0050bae0a776", ParseDbProperties); // Коллекция ресурсов регистра накопления
+            _SpecialParsers.Add("b64d9a42-1642-11d6-a3c7-0050bae0a776", ParseDbProperties); // Коллекция реквизитов регистра накопления
         }
         internal string ConnectionString { get; set; }
         private void WriteBinaryDataToFile(Stream binaryData, string fileName)
@@ -554,6 +564,11 @@ namespace OneCSharp.Metadata
                 if (server.DBNames.TryGetValue(fileName, out DBNameEntry entry))
                 {
                     dbo = entry.DbObject;
+                    DBName dbname = entry.DBNames.Where(i => i.Token == DBToken.Enum).FirstOrDefault();
+                    if (dbname != null)
+                    {
+                        dbo.Token = DBToken.Enum;
+                    }
                 }
                 else
                 {
@@ -604,7 +619,7 @@ namespace OneCSharp.Metadata
         private void ParseInternalIdentifier(string line, DbObject dbo, MetadataServer server)
         {
             string[] lines = line.Split(',');
-            string UUID = lines[3];
+            string UUID = (dbo.Token == DBToken.Enum ? lines[1] : lines[3]);
             server.UUIDs.Add(UUID, dbo);
         }
         private void ParseDbObjectNames(string line, string fileName, DbObject dbo, MetadataServer server)
@@ -653,9 +668,22 @@ namespace OneCSharp.Metadata
             Namespace ns = infoBase.Namespaces.Where(n => n.Name == dbo.Token).FirstOrDefault();
             if (ns == null)
             {
-                ns = new Namespace() { InfoBase = infoBase };
-                ns.Name = (string.IsNullOrEmpty(dbo.Token)) ? "Unknown" : dbo.Token;
-                infoBase.Namespaces.Add(ns);
+                if (string.IsNullOrEmpty(dbo.Token))
+                {
+                    ns = infoBase.Namespaces.Where(n => n.Name == "Unknown").FirstOrDefault();
+                    if (ns == null)
+                    {
+                        ns = new Namespace() { InfoBase = infoBase };
+                        ns.Name = "Unknown";
+                        infoBase.Namespaces.Add(ns);
+                    }
+                }
+                else
+                {
+                    ns = new Namespace() { InfoBase = infoBase };
+                    ns.Name = dbo.Token;
+                    infoBase.Namespaces.Add(ns);
+                }
             }
             dbo.Parent = ns;
             ns.DbObjects.Add(dbo);
@@ -705,7 +733,8 @@ namespace OneCSharp.Metadata
                 {
                     Parent = dbo,
                     Types = types,
-                    Name = "Владелец" // [_OwnerIDRRef] | [_OwnerID_TYPE] + [_OwnerID_RTRef] + [_OwnerID_RRRef]
+                    Name = "Владелец",
+                    DbName = "OwnerID" // [_OwnerIDRRef] | [_OwnerID_TYPE] + [_OwnerID_RTRef] + [_OwnerID_RRRef]
                     // TODO: add DbField at once ?
                 };
                 dbo.Properties.Add(property);
@@ -745,20 +774,23 @@ namespace OneCSharp.Metadata
 
             if (server.DBNames.TryGetValue(fileName, out DBNameEntry entry))
             {
-                foreach (var item in entry.DBNames)
+                if (entry.DBNames.Count == 1)
                 {
-                    property.Fields.Add(
-                        new DbField()
-                        {
-                            Name = CreateDbFieldName(item)
-                        });
+                    property.DbName = CreateDbFieldName(entry.DBNames[0]);
+                }
+                else if (entry.DBNames.Count > 1)
+                {
+                    foreach (var dbn in entry.DBNames.Where(dbn => dbn.Token == DBToken.Fld))
+                    {
+                        property.DbName = CreateDbFieldName(dbn);
+                    }
                 }
             }
             ParseDbPropertyTypes(reader, property, server);
         }
         private string CreateDbFieldName(DBName dbname)
         {
-            return $"_{dbname.Token}{dbname.TypeCode}";
+            return $"{dbname.Token}{dbname.TypeCode}";
         }
         private void ParseDbPropertyTypes(StreamReader reader, DbProperty property, MetadataServer server)
         {
@@ -962,10 +994,30 @@ namespace OneCSharp.Metadata
                 }
             }
         }
-        //public void ReadSQLMetadata(string connectionString, List<MetadataObject> metaObjects)
-        //{
-        //    SQLHelper SQL = new SQLHelper();
-        //    SQL.Load(connectionString, metaObjects);
-        //}
+        public void ReadSQLMetadata(InfoBase infoBase)
+        {
+            SQLHelper SQL = new SQLHelper();
+            SQL.ConnectionString = ConnectionString;
+            SQL.Load(infoBase);
+        }
+    
+
+        internal void SaveDbObjectToFile(DbObject dbo, MetadataServer server)
+        {
+            if (_logger == null) return;
+
+            var kv = server.DBNames
+                .Where(i => i.Value.DbObject == dbo)
+                .FirstOrDefault();
+            string fileName = kv.Key;
+
+            if (new Guid(fileName) == Guid.Empty) return;
+
+            SqlBytes binaryData = ReadConfigFromDatabase(fileName);
+            if (binaryData == null) return;
+
+            DeflateStream stream = new DeflateStream(binaryData.Stream, CompressionMode.Decompress);
+            WriteBinaryDataToFile(stream, $"{fileName}.txt");
+        }
     }
 }

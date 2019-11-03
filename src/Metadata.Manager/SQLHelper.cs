@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 
 namespace OneCSharp.Metadata
@@ -16,6 +17,7 @@ namespace OneCSharp.Metadata
             public byte NUMERIC_PRECISION;
             public int NUMERIC_SCALE;
             public bool IS_NULLABLE;
+            public bool IsFound;
         }
         private sealed class ClusteredIndexInfo
         {
@@ -161,104 +163,345 @@ namespace OneCSharp.Metadata
         }
 
 
+        public void UUID_1C_to_SQL(string UUID)
+        {
+            // TODO: convert one UUID to another
+            //61ac5c5b-6053-4846-bfee-1de510c2baf8 // 1C
+            //E51DEEBF-C210-F8BA-4846-605361AC5C5B // SQL
+        }
+        public void UUID_SQL_to_1C(string UUID)
+        {
+            // TODO: convert one UUID to another
+            //E51DEEBF-C210-F8BA-4846-605361AC5C5B // SQL
+            //61ac5c5b-6053-4846-bfee-1de510c2baf8 // 1C
+        }
+
         public string ConnectionString { get; set; }
-        //public void Load(string connectionString, List<MetadataObject> metaObjects)
-        //{
-        //    this.ConnectionString = connectionString;
-        //    foreach (MetadataObject item in metaObjects)
-        //    {
-        //        GetSQLMetadata(item);
-        //    }
-        //}
-        //private void GetSQLMetadata(MetadataObject metaObject)
-        //{
-        //    ReadSQLMetadata(metaObject);
-        //    foreach (MetadataObject nestedObject in metaObject.NestedObjects)
-        //    {
-        //        ReadSQLMetadata(nestedObject);
-        //    }
-        //}
-        //private void ReadSQLMetadata(MetadataObject metaObject)
-        //{
-        //    List<SqlFieldInfo> sql_fields = GetSqlFields(metaObject.Table);
-        //    if (sql_fields.Count == 0)
-        //    {
-        //        Logger.WriteEntry($"Fileds not found for {metaObject.Table} ({metaObject.Name})");
-        //        return;
-        //    }
-        //    ClusteredIndexInfo indexInfo = this.GetClusteredIndexInfo(metaObject.Table);
-        //    if (indexInfo == null)
-        //    {
-        //        Logger.WriteEntry($"Clustered index not found for {metaObject.Table} ({metaObject.Name})");
-        //    }
+        public void Load(InfoBase infoBase)
+        {
+            foreach (Namespace ns in infoBase.Namespaces)
+            {
+                foreach (var item in ns.DbObjects)
+                {
+                    GetSQLMetadata(item);
+                }
+            }
+        }
+        private void GetSQLMetadata(DbObject metaObject)
+        {
+            ReadSQLMetadata(metaObject);
+            foreach (var nestedObject in metaObject.NestedObjects)
+            {
+                ReadSQLMetadata(nestedObject);
+            }
+        }
+        private void ReadSQLMetadata(DbObject metaObject)
+        {
+            List<SqlFieldInfo> sql_fields = GetSqlFields(metaObject.TableName);
+            if (sql_fields.Count == 0) return;
 
-        //    foreach (SqlFieldInfo info in sql_fields)
-        //    {
-        //        bool found = false;
-        //        MetadataField field = null;
-        //        MetadataProperty property = null;
-        //        foreach (MetadataProperty p in metaObject.Properties)
-        //        {
-        //            string SDBL = info.COLUMN_NAME
-        //                .Replace("RRRef", string.Empty)
-        //                .Replace("RTRef", string.Empty)
-        //                .Replace("RRef", string.Empty)
-        //                .Replace("TRef", string.Empty)
-        //                .Replace("_TYPE", string.Empty)
-        //                .Replace("_S", string.Empty)
-        //                .Replace("_N", string.Empty)
-        //                .Replace("_L", string.Empty)
-        //                .Replace("_B", string.Empty)
-        //                .Replace("_T", string.Empty)
-        //                .Replace("_", string.Empty);
+            ClusteredIndexInfo indexInfo = this.GetClusteredIndexInfo(metaObject.TableName);
+            if (indexInfo == null) { /* TODO: handle situation somehow*/ }
 
-        //            if (p.SDBL == SDBL)
-        //            {
-        //                property = p;
-        //                foreach (MetadataField f in p.Fields)
-        //                {
-        //                    if (f.Name == info.COLUMN_NAME)
-        //                    {
-        //                        field = f;
-        //                        found = true;
-        //                        break;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        if (!found)
-        //        {
-        //            if (property == null)
-        //            {
-        //                property = new MetadataProperty()
-        //                {
-        //                    Name = info.COLUMN_NAME
-        //                };
-        //                metaObject.Properties.Add(property);
-        //            }
-        //            field = new MetadataField()
-        //            {
-        //                Name = info.COLUMN_NAME,
-        //                //Purpose = FieldPurpose.Value
-        //            };
-        //            property.Fields.Add(field);
-        //        }
-        //        field.TypeName = info.DATA_TYPE;
-        //        field.Length = info.CHARACTER_MAXIMUM_LENGTH;
-        //        field.Precision = info.NUMERIC_PRECISION;
-        //        field.Scale = info.NUMERIC_SCALE;
-        //        field.IsNullable = info.IS_NULLABLE;
+            foreach (var property in metaObject.Properties)
+            {
+                var fields = sql_fields.Where(f => f.COLUMN_NAME.Contains(property.DbName));
+                foreach (var field in fields)
+                {
+                    AddDbField(property, field, indexInfo);
+                    field.IsFound = true;
+                }
+            }
 
-        //        if (indexInfo != null)
-        //        {
-        //            ClusteredIndexColumnInfo columnInfo = indexInfo.GetColumnByName(info.COLUMN_NAME);
-        //            if (columnInfo != null)
-        //            {
-        //                //field.IsPrimaryKey = true;
-        //                //field.KeyOrdinal = columnInfo.KEY_ORDINAL;
-        //            }
-        //        }
-        //    }
-        //}
+            int position = 0;
+            var nonFounds = sql_fields.Where(f => f.IsFound == false);
+            foreach (var field in nonFounds)
+            {
+                AddDbProperty(metaObject, field, indexInfo, position);
+                position++;
+                //field.IsFound = true; СтандартныеРеквизиты
+            }
+        }
+        private void AddDbField(DbProperty property, SqlFieldInfo info, ClusteredIndexInfo indexInfo)
+        {
+            DbField field = new DbField()
+            {
+                Parent = property,
+                Name = info.COLUMN_NAME
+            };
+            property.Fields.Add(field);
+            
+            field.TypeName = info.DATA_TYPE;
+            field.Length = info.CHARACTER_MAXIMUM_LENGTH;
+            field.Precision = info.NUMERIC_PRECISION;
+            field.Scale = info.NUMERIC_SCALE;
+            field.IsNullable = info.IS_NULLABLE;
+
+            DefineDbFieldPurpose(field);
+
+            if (indexInfo != null)
+            {
+                ClusteredIndexColumnInfo columnInfo = indexInfo.GetColumnByName(info.COLUMN_NAME);
+                if (columnInfo != null)
+                {
+                    field.IsPrimaryKey = true;
+                    field.KeyOrdinal = columnInfo.KEY_ORDINAL;
+                }
+            }
+        }
+        private void AddDbProperty(DbObject metaObject, SqlFieldInfo info, ClusteredIndexInfo indexInfo, int position)
+        {
+            DbProperty property = new DbProperty
+            {
+                Parent = metaObject,
+                Name = info.COLUMN_NAME.Replace("_", string.Empty),
+                DbName = info.COLUMN_NAME
+            };
+            metaObject.Properties.Insert(position, property);
+            AddDbField(property, info, indexInfo);
+            DefineSystemPropertyType(property);
+        }
+        private void DefineSystemPropertyType(DbProperty property)
+        {
+            string name = property.Name;
+
+            if (name == DBToken.IDRRef)
+            {
+                property.Name = "Ссылка";
+                property.Types.Add(new DbType() { Name = "UUID", TypeCode = -6 });
+                return;
+            }
+            else if (name == DBToken.RecorderRRef) // TODO: определять при чтении метаданных из Config
+            {
+                property.Name = "Регистратор (ссылка)";
+                property.Types.Add(new DbType() { Name = "UUID", TypeCode = -6 });
+                return;
+            }
+            else if (name == DBToken.RecorderTRef) // TODO: определять при чтении метаданных из Config
+            {
+                property.Name = "Регистратор (тип)";
+                property.Types.Add(new DbType() { Name = "Numeric", TypeCode = -4 });
+                return;
+            }
+            if (name == DBToken.EnumOrder)
+            {
+                property.Name = "Порядок";
+                property.Types.Add(new DbType() { Name = "Numeric", TypeCode = -4 });
+                return;
+            }
+            else if (name == DBToken.Version)
+            {
+                if (property.Fields.Count > 0)
+                {
+                    property.Fields[0].Purpose = DbFieldPurpose.Version;
+                }
+                property.Name = "Версия";
+                property.Types.Add(new DbType() { Name = "Version", TypeCode = -7 });
+                return;
+            }
+            else if (name == DBToken.Marked)
+            {
+                property.Name = "ПометкаУдаления";
+                property.Types.Add(new DbType() { Name = "Boolean", TypeCode = -1 });
+                return;
+            }
+            else if (name == DBToken.DateTime)
+            {
+                property.Name = "Дата";
+                property.Types.Add(new DbType() { Name = "DateTime", TypeCode = -3 });
+                return;
+            }
+            else if (name == DBToken.NumberPrefix)
+            {
+                property.Name = "МоментВремени";
+                property.Types.Add(new DbType() { Name = "DateTime", TypeCode = -3 });
+                return;
+            }
+            else if (name == DBToken.Number)
+            {
+                property.Name = "Номер";
+                if (property.Fields.Count > 0)
+                {
+                    if (property.Fields[0].TypeName.Contains("char"))
+                    {
+                        property.Types.Add(new DbType() { Name = "String", TypeCode = -2 });
+                    }
+                    else
+                    {
+                        property.Types.Add(new DbType() { Name = "Numeric", TypeCode = -4 });
+                    }
+                }
+                else
+                {
+                    property.Types.Add(new DbType() { Name = "String", TypeCode = -2 });
+                }
+                return;
+            }
+            else if (name == DBToken.Posted)
+            {
+                property.Name = "Проведён";
+                property.Types.Add(new DbType() { Name = "Boolean", TypeCode = -1 });
+                return;
+            }
+            else if (name == DBToken.PredefinedID)
+            {
+                property.Name = "ИдентификаторПредопределённого";
+                property.Types.Add(new DbType() { Name = "UUID", TypeCode = -6 });
+                return;
+            }
+            else if (name == DBToken.Description)
+            {
+                property.Name = "Наименование";
+                property.Types.Add(new DbType() { Name = "String", TypeCode = -2 });
+                return;
+            }
+            else if (name == DBToken.Code)
+            {
+                property.Name = "Код";
+                if (property.Fields.Count > 0)
+                {
+                    if (property.Fields[0].TypeName.Contains("char"))
+                    {
+                        property.Types.Add(new DbType() { Name = "String", TypeCode = -2 });
+                    }
+                    else
+                    {
+                        property.Types.Add(new DbType() { Name = "Numeric", TypeCode = -4 });
+                    }
+                }
+                else
+                {
+                    property.Types.Add(new DbType() { Name = "String", TypeCode = -2 });
+                }
+                return;
+            }
+            else if (name == DBToken.Folder)
+            {
+                property.Name = "ЭтоГруппа";
+                property.Types.Add(new DbType() { Name = "Boolean", TypeCode = -1 });
+                return;
+            }
+            else if (name == DBToken.KeyField)
+            {
+                property.Name = "КлючСтроки";
+                property.Types.Add(new DbType() { Name = "Numeric", TypeCode = -4 });
+                return;
+            }
+            else if (name.Contains(DBToken.LineNo))
+            {
+                property.Name = "НомерСтроки";
+                property.Types.Add(new DbType() { Name = "Numeric", TypeCode = -4 });
+                return;
+            }
+            else if (name == DBToken.ParentIDRRef)
+            {
+                property.Name = "Родитель";
+                property.Types.Add(new DbType()
+                {
+                    Name = property.Parent.TableName,
+                    TypeCode = property.Parent.TypeCode,
+                    DbObject = property.Parent
+                });
+                return;
+            }
+            else if (name.Contains(DBToken.OwnerID))
+            {
+                // На самом деле определеяется при чтении метаданных из файла Config
+                // [_OwnerIDRRef] | [_OwnerID_TYPE] + [_OwnerID_RTRef] + [_OwnerID_RRRef]
+                return;
+            }
+            else if (name.Contains(DBToken.IDRRef)) // табличная часть
+            {
+                property.Name = "Ссылка";
+                property.Types.Add(new DbType() { Name = "UUID", TypeCode = -6 });
+                return;
+            }
+            else if (name == DBToken.Period)
+            {
+                property.Name = "Период";
+                property.Types.Add(new DbType() { Name = "DateTime", TypeCode = -3 });
+                return;
+            }
+            else if (name == DBToken.Active)
+            {
+                property.Name = "Активность";
+                property.Types.Add(new DbType() { Name = "Boolean", TypeCode = -1 });
+                return;
+            }
+            else if (name == DBToken.RecordKind) // Перечисление: Приход | Расход
+            {
+                property.Name = "ВидДвижения";
+                property.Types.Add(new DbType() { Name = "Numeric", TypeCode = -4 });
+                return;
+            }
+        }
+        private void DefineDbFieldPurpose(DbField field)
+        {
+            if (string.IsNullOrEmpty(field.Name))
+            {
+                field.Purpose = DbFieldPurpose.Value;
+                return;
+            }
+
+            if (field.TypeName == "image" || field.TypeName == "varbinary")
+            {
+                field.Purpose = DbFieldPurpose.Binary;
+                return;
+            }
+
+            if (char.IsDigit(field.Name[field.Name.Length - 1]))
+            {
+                field.Purpose = DbFieldPurpose.Value;
+                return;
+            }
+
+            if (field.Name.EndsWith(DBToken.RRRef))
+            {
+                field.Purpose = DbFieldPurpose.Object;
+                return;
+            }
+            else if (field.Name.EndsWith(DBToken.RTRef))
+            {
+                field.Purpose = DbFieldPurpose.TypeCode;
+                return;
+            }
+            else if (field.Name.EndsWith(DBToken.TYPE))
+            {
+                field.Purpose = DbFieldPurpose.Discriminator;
+                return;
+            }
+            else if (field.Name.EndsWith(DBToken.RRef))
+            {
+                field.Purpose = DbFieldPurpose.Object;
+                return;
+            }
+            else if (field.Name.EndsWith(DBToken.TRef))
+            {
+                field.Purpose = DbFieldPurpose.TypeCode;
+                return;
+            }
+            else if (field.Name.EndsWith(DBToken.S))
+            {
+                field.Purpose = DbFieldPurpose.String;
+                return;
+            }
+            else if (field.Name.EndsWith(DBToken.N))
+            {
+                field.Purpose = DbFieldPurpose.Numeric;
+                return;
+            }
+            else if (field.Name.EndsWith(DBToken.L))
+            {
+                field.Purpose = DbFieldPurpose.Boolean;
+                return;
+            }
+            else if (field.Name.EndsWith(DBToken.T))
+            {
+                field.Purpose = DbFieldPurpose.DateTime;
+                return;
+            }
+
+            field.Purpose = DbFieldPurpose.Value;
+        }
     }
 }

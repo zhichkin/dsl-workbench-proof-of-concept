@@ -31,6 +31,7 @@ namespace OneCSharp.Metadata
     {
         public DbObject Parent;
         public string Name;
+        public string DbName;
         public List<DbType> Types = new List<DbType>();
         public List<DbField> Fields = new List<DbField>();
     }
@@ -60,21 +61,23 @@ namespace OneCSharp.Metadata
         /// <summary>Value of the property (default).</summary>
         Value,
         /// <summary>Helps to locate fields having [boolean, string, number, binary, datetime, object] types</summary>
-        Locator,
+        Discriminator,
         /// <summary>Boolean value.</summary>
         Boolean,
         /// <summary>String value.</summary>
         String,
         /// <summary>Numeric value.</summary>
-        Number,
+        Numeric,
         /// <summary>Binary value (bytes array).</summary>
         Binary,
         /// <summary>Date and time value.</summary>
         DateTime,
         /// <summary>Reference type primary key value.</summary>
         Object,
-        /// <summary>Type code of the reference type (discriminator).</summary>
-        TypeCode
+        /// <summary>Type code of the reference type (class discriminator).</summary>
+        TypeCode,
+        /// <summary>Record's version (timestamp|rowversion).</summary>
+        Version
     }
     public sealed class DbProcedure // !?
     {

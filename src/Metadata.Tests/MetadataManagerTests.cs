@@ -8,7 +8,7 @@ namespace OneCSharp.Metadata.Tests
     public sealed class MetadataManagerTests
     {
         private string _catalogPath = "C:\\temp";
-        private string _infoBaseName = "reverse_engineering"; //"accounting_3_0_72_72_demo";
+        private string _infoBaseName = "trade_11_2_3_159_demo"; //"accounting_3_0_72_72_demo" "reverse_engineering" "trade_11_2_3_159_demo"
         private string _serverAddress = "ZHICHKIN";
 
         [TestMethod]
@@ -29,16 +29,54 @@ namespace OneCSharp.Metadata.Tests
                 return;
             }
 
+            manager.ImportMetadata(infoBase);
             //manager.ImportMetadata(infoBase, true);
-            manager.ImportMetadata(infoBase, false);
 
             //MetadataSerializer serializer = new MetadataSerializer();
             //serializer.UseLogger(logger);
-            //foreach (var ns in infoBase.Namespaces)
+
+            //foreach (var ns in infoBase.Namespaces.Where(ns => ns.Name == "Reference"))
             //{
-            //    foreach (var dbo in ns.DbObjects)
+            //    foreach (var dbo in ns.DbObjects.Where(dbo => dbo.Name == "АвансовыйОтчетПрисоединенныеФайлы"))
             //    {
             //        serializer.Serialize(dbo);
+            //        manager.SaveMetadataToFile(dbo);
+            //    }
+            //}
+
+            //foreach (var ns in infoBase.Namespaces.Where(ns => ns.Name == "Enum"))
+            //{
+            //    foreach (var dbo in ns.DbObjects.Where(dbo => dbo.Name == "Периодичность"))
+            //    {
+            //        serializer.Serialize(dbo);
+            //        manager.SaveMetadataToFile(dbo);
+            //    }
+            //}
+
+            //foreach (var ns in infoBase.Namespaces.Where(ns => ns.Name == "Document"))
+            //{
+            //    foreach (var dbo in ns.DbObjects.Where(dbo => dbo.Name == "ПоступлениеТоваровУслуг"))
+            //    {
+            //        serializer.Serialize(dbo);
+            //        manager.SaveMetadataToFile(dbo);
+            //    }
+            //}
+
+            //foreach (var ns in infoBase.Namespaces.Where(ns => ns.Name == "InfoRg"))
+            //{
+            //    foreach (var dbo in ns.DbObjects.Where(dbo => dbo.Name == "ЦеныНоменклатурыПоставщиков"))
+            //    {
+            //        serializer.Serialize(dbo);
+            //        manager.SaveMetadataToFile(dbo);
+            //    }
+            //}
+
+            //foreach (var ns in infoBase.Namespaces.Where(ns => ns.Name == "AccumRg"))
+            //{
+            //    foreach (var dbo in ns.DbObjects.Where(dbo => dbo.Name == "ПартииТоваровОрганизаций"))
+            //    {
+            //        serializer.Serialize(dbo);
+            //        manager.SaveMetadataToFile(dbo);
             //    }
             //}
         }

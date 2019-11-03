@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace OneCSharp.Metadata
@@ -29,6 +30,7 @@ namespace OneCSharp.Metadata
         }
         internal Dictionary<string, DbObject> UUIDs { get { return _UUIDs; } }
         internal Dictionary<string, DBNameEntry> DBNames { get { return _DBNames; } }
+        public void ImportMetadata(InfoBase infoBase) { ImportMetadata(infoBase, false); }
         public void ImportMetadata(InfoBase infoBase, bool saveFiles)
         {
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder()
@@ -55,8 +57,73 @@ namespace OneCSharp.Metadata
                     reader.ReadConfig(this, item.Key, infoBase);
                 }
                 reader.MakeSecondPass(infoBase, this);
-                //reader.ReadSQLMetadata(infoBase);
+                reader.ReadSQLMetadata(infoBase);
             }
+        }
+        public InfoBase GetInfoBase(DbObject dbo)
+        {
+            Type type;
+            object parent = GetParent(dbo);
+            while (parent != null)
+            {
+                type = parent.GetType();
+                if (type == typeof(DbObject))
+                {
+                    parent = GetParent((DbObject)parent);
+                }
+                else if (type == typeof(Namespace))
+                {
+                    parent = GetParent((Namespace)parent);
+                }
+                else if (type == typeof(InfoBase))
+                {
+                    return (InfoBase)parent;
+                }
+            }
+            return null;
+        }
+        private object GetParent(Namespace child)
+        {
+            object parent;
+            if (child.Parent == null)
+            {
+                parent = child.InfoBase;
+            }
+            else
+            {
+                parent = child.Parent;
+            }
+            return parent;
+        }
+        private object GetParent(DbObject child)
+        {
+            object parent;
+            if (child.Owner == null)
+            {
+                parent = child.Parent;
+            }
+            else
+            {
+                parent = child.Owner;
+            }
+            return parent;
+        }
+        public void SaveMetadataToFile(DbObject dbo)
+        {
+            InfoBase infoBase = GetInfoBase(dbo);
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder()
+            {
+                DataSource = this.ServerAddress,
+                InitialCatalog = infoBase.Database,
+                IntegratedSecurity = true,
+                PersistSecurityInfo = false
+            };
+            MetadataReader reader = new MetadataReader()
+            {
+                ConnectionString = csb.ConnectionString
+            };
+            reader.UseLogger(_logger);
+            reader.SaveDbObjectToFile(dbo, this);
         }
     }
 }
