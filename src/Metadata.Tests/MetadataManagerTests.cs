@@ -16,10 +16,13 @@ namespace OneCSharp.Metadata.Tests
         {
             string logPath = Path.Combine(_catalogPath, "log.txt");
             TextFileLogger logger = new TextFileLogger(logPath);
-            MetadataServer manager = new MetadataServer(_serverAddress);
+            DbServer server = new DbServer() { Address = _serverAddress };
+
+            MetadataProvider manager = new MetadataProvider();
+            manager.AddServer(server);
             manager.UseLogger(logger);
             
-            InfoBase infoBase = manager.GetInfoBases()
+            InfoBase infoBase = manager.GetInfoBases(server)
                 .Where(ib => ib.Database == _infoBaseName)
                 .FirstOrDefault();
 

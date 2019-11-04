@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualStudio", "VisualStudi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OQL.UI", "OQL.UI\OQL.UI.csproj", "{AF9A5DF6-EFBC-4B1D-A155-7BCBD9162B53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metadata.Manager", "Metadata.Manager\Metadata.Manager.csproj", "{7BC95A95-0242-4442-B4E9-110D0B752C22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metadata.Provider", "Metadata.Provider\Metadata.Provider.csproj", "{7BC95A95-0242-4442-B4E9-110D0B752C22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
