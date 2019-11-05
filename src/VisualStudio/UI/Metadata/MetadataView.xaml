@@ -34,6 +34,7 @@
                   PreviewMouseRightButtonDown="OnPreviewMouseRightButtonDown">
             <TreeView.Resources>
                 <ui:CompositeCollectionConverter x:Key="CompositeCollectionConverter" />
+                
                 <HierarchicalDataTemplate DataType="{x:Type ui:ServerViewModel}" ItemsSource="{Binding InfoBases}">
                     <StackPanel Orientation="Horizontal" Height="20">
                         <StackPanel.ContextMenu>
@@ -54,41 +55,64 @@
                         <TextBlock Text="{Binding Address}" Margin="2" VerticalAlignment="Center"/>
                     </StackPanel>
                 </HierarchicalDataTemplate>
+                
                 <HierarchicalDataTemplate DataType="{x:Type ui:InfoBaseViewModel}" ItemsSource="{Binding Namespaces}">
                     <StackPanel Orientation="Horizontal" Height="20">
                         <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Database}"/>
                         <TextBlock Text="{Binding Database}" Margin="2" VerticalAlignment="Center"/>
                     </StackPanel>
                 </HierarchicalDataTemplate>
-                <!--<HierarchicalDataTemplate DataType="{x:Type ui:InfoBaseViewModel}">
-                    -->
-                <!-- ItemsSource="{Binding Path=Entities}" -->
-                <!--
+                
+                <HierarchicalDataTemplate DataType="{x:Type ui:NamespaceViewModel}">
                     <HierarchicalDataTemplate.ItemsSource>
                         <MultiBinding Converter="{StaticResource CompositeCollectionConverter}">
-                            <Binding Path="ObservableNamespaces" />
-                            <Binding Path="ObservableEntities" />
-                            <Binding Path="ObservableRequests" />
+                            <Binding Path="Namespaces" />
+                            <Binding Path="DbObjects" />
+                            <!--<Binding Path="ObservableRequests" />-->
                         </MultiBinding>
                     </HierarchicalDataTemplate.ItemsSource>
-                        <TextBlock Text="{Binding Path=Name}" Margin="2"/>
-                </HierarchicalDataTemplate>-->
-
-                <!--<HierarchicalDataTemplate DataType="{x:Type Model:Table}" ItemsSource="{Binding Path=Fields}">
-                    <TextBlock Text="{Binding Path=Name}" ToolTip="{Binding Path=Purpose}" Margin="2"/>
+                    <StackPanel Orientation="Horizontal" Height="20">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Add procedure..." Click="AddProcedure_Click">
+                                    <MenuItem.Icon>
+                                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.AddMethod}"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.NamespacePublic}"/>
+                        <TextBlock Text="{Binding Name}" Margin="2" VerticalAlignment="Center"/>
+                    </StackPanel>
                 </HierarchicalDataTemplate>
+
+                <HierarchicalDataTemplate DataType="{x:Type ui:DbObjectViewModel}">
+                    <HierarchicalDataTemplate.ItemsSource>
+                        <MultiBinding Converter="{StaticResource CompositeCollectionConverter}">
+                            <Binding Path="Properties" />
+                            <Binding Path="NestedObjects" />
+                            <!--<Binding Path="ObservableRequests" />-->
+                        </MultiBinding>
+                    </HierarchicalDataTemplate.ItemsSource>
+                    <StackPanel Orientation="Horizontal" Height="20">
+                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Table}"/>
+                        <TextBlock Text="{Binding Name}" Margin="3,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                
+                <DataTemplate DataType="{x:Type ui:DbPropertyViewModel}">
+                    <StackPanel Orientation="Horizontal" Height="20">
+                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.FieldPublic}"/>
+                        <TextBlock Text="{Binding Name}" Margin="3,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </DataTemplate>
+
+                <!--
                 <DataTemplate DataType="{x:Type Model:Field}">
                     <TextBlock Text="{Binding Path=Name}" Margin="2" VerticalAlignment="Center"/>
                 </DataTemplate>
                 -->
-                
-                <DataTemplate DataType="{x:Type ui:NamespaceViewModel}">
-                    <StackPanel Orientation="Horizontal" Height="20">
-                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.NamespacePublic}"/>
-                        <TextBlock Text="{Binding Name}" Margin="2" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </DataTemplate>
-                
+
             </TreeView.Resources>
         </TreeView>
     </Grid>

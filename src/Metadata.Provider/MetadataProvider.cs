@@ -158,12 +158,13 @@ namespace OneCSharp.Metadata
             {
                 ConnectionString = csb.ConnectionString
             };
-            server.InfoBases = reader.GetInfoBases();
-            foreach (var ib in server.InfoBases)
-            {
-                ib.Server = server;
-            }
-            return server.InfoBases;
+            return reader.GetInfoBases();
+            //server.InfoBases = reader.GetInfoBases();
+            //foreach (var ib in server.InfoBases)
+            //{
+            //    ib.Server = server;
+            //}
+            //return server.InfoBases;
         }
         public bool CheckServerConnection(DbServer server)
         {

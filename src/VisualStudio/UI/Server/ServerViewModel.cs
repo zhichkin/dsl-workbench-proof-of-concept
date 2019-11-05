@@ -1,35 +1,57 @@
 ﻿using OneCSharp.Metadata;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace OneCSharp.VisualStudio.UI
 {
     public sealed class ServerViewModel : ViewModelBase
     {
-        private DbServer _server;
+        private DbServer _model;
         private readonly MetadataProvider _metadataProvider;
-        public ServerViewModel(DbServer server, MetadataProvider metadataProvider)
+        public ServerViewModel(DbServer model, MetadataProvider metadataProvider)
         {
-            _server = server ?? throw new ArgumentNullException(nameof(server));
+            _model = model ?? throw new ArgumentNullException(nameof(model));
             _metadataProvider = metadataProvider ?? throw new ArgumentNullException(nameof(metadataProvider));
             InitializeViewModel();
         }
-        private void InitializeViewModel()
+        public void InitializeViewModel()
         {
-            
+            if (_model.InfoBases.Count > 0)
+            {
+                InfoBases = new ObservableCollection<InfoBaseViewModel>();
+                foreach (var ns in _model.InfoBases)
+                {
+                    var vm = new InfoBaseViewModel(ns);
+                    vm.Parent = this;
+                    InfoBases.Add(vm);
+                    vm.InitializeViewModel();
+                }
+            }
         }
         public MetadataViewModel Parent { get; set; }
-        public DbServer Model { get { return _server; } }
+        public DbServer Model { get { return _model; } }
         public string Address
         {
-            get { return _server.Address; }
+            get { return _model.Address; }
             set
             {
-                _server.Address = value;
+                _model.Address = value;
                 OnPropertyChanged(nameof(Address));
             }
         }
         public ObservableCollection<InfoBaseViewModel> InfoBases { get; private set; } = new ObservableCollection<InfoBaseViewModel>();
+        public void AddInfoBase(InfoBaseViewModel child)
+        {
+            if (_model.InfoBases
+                .Where(ib => ib.Database == child.Model.Database)
+                .FirstOrDefault() != null) return;
+
+            child.Model.Server = _model;
+            child.Parent = this;
+            _model.InfoBases.Add(child.Model);
+            child.InitializeViewModel();
+            InfoBases.Add(child);
+        }
     }
 }

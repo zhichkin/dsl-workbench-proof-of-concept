@@ -75,16 +75,25 @@ namespace OneCSharp.VisualStudio.UI
                 if (dialog.Result != null)
                 {
                     InfoBaseViewModel selectedItem = (InfoBaseViewModel)dialog.Result;
-                    selectedItem.Parent = server;
-                    OnInfoBaseSelected(selectedItem);
+                    OnInfoBaseSelected(server, selectedItem);
                 }
             }
         }
-        private void OnInfoBaseSelected(InfoBaseViewModel viewModel)
+        private void OnInfoBaseSelected(ServerViewModel parent, InfoBaseViewModel child)
         {
-            _metadataProvider.ImportMetadata(viewModel.Model);
-            viewModel.InitializeViewModel();
-            viewModel.Parent.InfoBases.Add(viewModel);
+            if (parent.Model.InfoBases
+                .Where(ib => ib.Database == child.Model.Database)
+                .FirstOrDefault() != null) return;
+
+            child.Model.Server = parent.Model;
+            _metadataProvider.ImportMetadata(child.Model);
+            parent.AddInfoBase(child);
+        }
+
+
+        public void AddProcedure()
+        {
+            OpenCodeEditorWindow();
         }
         private void OpenCodeEditorWindow()
         {

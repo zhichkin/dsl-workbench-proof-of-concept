@@ -1,5 +1,6 @@
 ﻿using OneCSharp.Metadata;
 using System;
+using System.Collections.ObjectModel;
 
 namespace OneCSharp.VisualStudio.UI
 {
@@ -11,11 +12,32 @@ namespace OneCSharp.VisualStudio.UI
             _model = model ?? throw new ArgumentNullException(nameof(model));
             InitializeViewModel();
         }
-        private void InitializeViewModel()
+        public void InitializeViewModel()
         {
-
+            if (_model.Namespaces.Count > 0)
+            {
+                Namespaces = new ObservableCollection<NamespaceViewModel>();
+                foreach (var ns in _model.Namespaces)
+                {
+                    var vm = new NamespaceViewModel(ns);
+                    Namespaces.Add(vm);
+                    vm.Parent = this;
+                    vm.InitializeViewModel();
+                }
+            }
+            if (_model.DbObjects.Count > 0)
+            {
+                DbObjects = new ObservableCollection<DbObjectViewModel>();
+                foreach (var dbo in _model.DbObjects)
+                {
+                    var vm = new DbObjectViewModel(dbo);
+                    vm.Parent = this;
+                    DbObjects.Add(vm);
+                    vm.InitializeViewModel();
+                }
+            }
         }
-        public InfoBaseViewModel Parent { get; set; }
+        public ViewModelBase Parent { get; set; }
         public Namespace Model { get { return _model; } }
         public string Name
         {
@@ -26,5 +48,7 @@ namespace OneCSharp.VisualStudio.UI
                 OnPropertyChanged(nameof(Name));
             }
         }
+        public ObservableCollection<DbObjectViewModel> DbObjects { get; private set; } = new ObservableCollection<DbObjectViewModel>();
+        public ObservableCollection<NamespaceViewModel> Namespaces { get; private set; } = new ObservableCollection<NamespaceViewModel>();
     }
 }

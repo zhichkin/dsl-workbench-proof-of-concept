@@ -16,6 +16,10 @@ namespace OneCSharp.VisualStudio.UI
         {
             ((MetadataViewModel)DataContext).ImportInfoBase();
         }
+        private void AddProcedure_Click(object sender, RoutedEventArgs e)
+        {
+            ((MetadataViewModel)DataContext).AddProcedure();
+        }
 
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {

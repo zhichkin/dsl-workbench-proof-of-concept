@@ -21,7 +21,10 @@ namespace OneCSharp.VisualStudio.UI
                 Namespaces = new ObservableCollection<NamespaceViewModel>();
                 foreach (var ns in _model.Namespaces)
                 {
-                    Namespaces.Add(new NamespaceViewModel(ns));
+                    var vm = new NamespaceViewModel(ns);
+                    vm.Parent = this;
+                    Namespaces.Add(vm);
+                    vm.InitializeViewModel();
                 }
             }
         }

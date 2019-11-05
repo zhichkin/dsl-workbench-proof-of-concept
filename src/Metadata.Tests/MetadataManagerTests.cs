@@ -32,6 +32,7 @@ namespace OneCSharp.Metadata.Tests
                 return;
             }
 
+            infoBase.Server = server;
             manager.ImportMetadata(infoBase);
             //manager.ImportMetadata(infoBase, true);
 

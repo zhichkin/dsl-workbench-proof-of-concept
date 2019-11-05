@@ -58,6 +58,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OneCSharpPackage.cs" />
     <Compile Include="UI\CompositeCollectionConverter.cs" />
+    <Compile Include="UI\DbObject\DbObjectViewModel.cs" />
+    <Compile Include="UI\DbProperty\DbPropertyViewModel.cs" />
     <Compile Include="UI\Dialogs\AddServerDialog\AddServerDialog.cs" />
     <Compile Include="UI\Dialogs\AddServerDialog\AddServerDialogView.xaml.cs">
       <DependentUpon>AddServerDialogView.xaml</DependentUpon>
