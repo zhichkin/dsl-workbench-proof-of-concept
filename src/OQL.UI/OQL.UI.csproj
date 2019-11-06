@@ -48,10 +48,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Services\IOneCSharpCodeEditor.cs" />
     <Compile Include="Model\Procedure.cs" />
     <Compile Include="Model\Parameter.cs" />
     <Compile Include="Model\SelectStatement.cs" />
     <Compile Include="Model\SyntaxNode.cs" />
+    <Compile Include="Services\IOneCSharpCodeEditorConsumer.cs" />
+    <Compile Include="Services\IOneCSharpCodeProvider.cs" />
+    <Compile Include="Services\OneCSharpCodeProvider.cs" />
     <Compile Include="Services\UIServices.cs" />
     <Compile Include="UI\Dialogs\TreeNodeViewModel.cs" />
     <Compile Include="UI\Dialogs\OneCSharpDialog.cs" />
@@ -118,6 +122,12 @@
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>16.0.202</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Metadata.Provider\Metadata.Provider.csproj">
+      <Project>{7bc95a95-0242-4442-b4e9-110d0b752c22}</Project>
+      <Name>Metadata.Provider</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

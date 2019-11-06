@@ -1,10 +1,13 @@
 ﻿using OneCSharp.Metadata;
+using OneCSharp.OQL.UI;
+using OneCSharp.OQL.UI.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace OneCSharp.VisualStudio.UI
 {
-    public sealed class NamespaceViewModel : ViewModelBase
+    public sealed class NamespaceViewModel : ViewModelBase, IOneCSharpCodeEditorConsumer
     {
         private Namespace _model;
         public NamespaceViewModel(Namespace model)
@@ -50,5 +53,10 @@ namespace OneCSharp.VisualStudio.UI
         }
         public ObservableCollection<DbObjectViewModel> DbObjects { get; private set; } = new ObservableCollection<DbObjectViewModel>();
         public ObservableCollection<NamespaceViewModel> Namespaces { get; private set; } = new ObservableCollection<NamespaceViewModel>();
+
+        public void SaveSyntaxNode(IOneCSharpCodeEditor editor, CodeEditorEventArgs args)
+        {
+            _ = MessageBox.Show($"Save syntax node: {args.SyntaxNode}");
+        }
     }
 }

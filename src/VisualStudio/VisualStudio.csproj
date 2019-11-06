@@ -65,7 +65,6 @@
       <DependentUpon>AddServerDialogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\AddServerDialog\AddServerDialogViewModel.cs" />
-    <Compile Include="UI\Dialogs\MessageBoxDialog.cs" />
     <Compile Include="UI\Dialogs\SelectInfoBaseDialog\SelectInfoBaseDialog.cs" />
     <Compile Include="UI\Dialogs\SelectInfoBaseDialog\SelectInfoBaseDialogView.xaml.cs">
       <DependentUpon>SelectInfoBaseDialogView.xaml</DependentUpon>
@@ -79,6 +78,7 @@
     <Compile Include="UI\Namespace\NamespaceViewModel.cs" />
     <Compile Include="UI\Server\ServerViewModel.cs" />
     <Compile Include="UI\ViewModelBase.cs" />
+    <Compile Include="VisualStudioHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source.extension.vsixmanifest">

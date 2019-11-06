@@ -1,11 +1,32 @@
 ﻿using OneCSharp.OQL.Model;
+using System;
 using System.Collections.ObjectModel;
 
 namespace OneCSharp.OQL.UI
 {
-    public sealed class ProcedureViewModel : SyntaxNodeViewModel
+    public sealed class ProcedureViewModel : SyntaxNodeViewModel, IOneCSharpCodeEditor
     {
-        private readonly Procedure _model;
+        private Procedure _model;
+        public bool IsModified { get; private set; } = true;
+        public event SaveSyntaxNodeEventHandler Save;
+        public void EditSyntaxNode(ISyntaxNode node)
+        {
+            if (node == null) throw new ArgumentNullException(nameof(node));
+            if (!(node is Procedure)) throw new ArgumentException(nameof(node));
+            _model = (Procedure)node;
+            IsModified = false;
+        }
+        
+        private void OnSave()
+        {
+            CodeEditorEventArgs args = new CodeEditorEventArgs(_model);
+            Save?.Invoke(this, args);
+            if (args.Cancel == true)
+            {
+                throw new OperationCanceledException(args.ErrorMessage);
+            }
+        }
+
         public ProcedureViewModel()
         {
             _model = new Procedure();

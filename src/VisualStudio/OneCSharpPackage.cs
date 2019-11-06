@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.VisualStudio.Shell;
+using OneCSharp.OQL.UI.Services;
 using Task = System.Threading.Tasks.Task;
 
 namespace OneCSharp.VisualStudio
@@ -26,6 +28,7 @@ namespace OneCSharp.VisualStudio
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(OneCSharpPackage.PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideService(typeof(SOneCSharpCodeProvider))]
     [ProvideToolWindow(typeof(OneCSharpToolWindow), MultiInstances = true, Style = VsDockStyle.MDI)]
     [ProvideToolWindow(typeof(MetadataToolWindow), MultiInstances = false, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Left)]
     public sealed class OneCSharpPackage : AsyncPackage
@@ -54,8 +57,17 @@ namespace OneCSharp.VisualStudio
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await MetadataToolWindowCommand.InitializeAsync(this);
             await OneCSharpToolWindowCommand.InitializeAsync(this);
+            ServiceCreatorCallback callback = new ServiceCreatorCallback(CreateService);
+            ((IServiceContainer)this).AddService(typeof(SOneCSharpCodeProvider), callback);
         }
-
+        private object CreateService(IServiceContainer container, Type serviceType)
+        {
+            if (serviceType == typeof(SOneCSharpCodeProvider))
+            {
+                return new OneCSharpCodeProvider(this);
+            }
+            return null;
+        }
         #endregion
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using OneCSharp.Metadata;
 using OneCSharp.OQL.Model;
 using OneCSharp.OQL.UI;
+using OneCSharp.OQL.UI.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -44,18 +45,11 @@ namespace OneCSharp.VisualStudio.UI
             server = new DbServer() { Address = serverName };
             if (!_metadataProvider.CheckServerConnection(server))
             {
-                MessageBoxDialog msgBox = new MessageBoxDialog()
-                {
-                    Title = "Error",
-                    Content = new TextBlock()
-                    {
-                        Text = "Unable to connect server!",
-                        Margin = new Thickness(20),
-                        VerticalAlignment = VerticalAlignment.Center,
-                        HorizontalAlignment = HorizontalAlignment.Center
-                    }
-                };
-                _ = msgBox.ShowModal();
+                var result = MessageBox.Show(
+                    "Unable to connect server!",
+                    "ONE-C-SHARP",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
                 return;
             }
             _metadataProvider.AddServer(server);
@@ -93,35 +87,29 @@ namespace OneCSharp.VisualStudio.UI
 
         public void AddProcedure()
         {
-            OpenCodeEditorWindow();
-        }
-        private void OpenCodeEditorWindow()
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
+            if (SelectedItem == null)
+            {
+                _ = MessageBox.Show(
+                    "Procedure's owner is not selected!",
+                    "ONE-C-SHARP",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+            
+            IOneCSharpCodeEditorConsumer consumer = SelectedItem as IOneCSharpCodeEditorConsumer;
+            
+            if (consumer == null)
+            {
+                _ = MessageBox.Show(
+                    $"{SelectedItem.GetType()} does not implement IOneCSharpCodeEditorConsumer interface !",
+                    "ONE-C-SHARP",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
 
-            IVsUIShell vsUIShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
-            Guid guid = typeof(OneCSharpToolWindow).GUID;
-            IVsWindowFrame windowFrame = null;
-            for (uint i = 0; i < 10; i++)
-            {
-                int result = vsUIShell.FindToolWindowEx((uint)__VSFINDTOOLWIN.FTW_fFrameOnly, ref guid, i, out windowFrame);
-                if (result == VSConstants.S_OK)
-                {
-                    continue;
-                }
-                else
-                {
-                    _ = vsUIShell.FindToolWindowEx((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref guid, i, out windowFrame);
-                    break;
-                }
-            }
-            OneCSharpToolWindow codeEditorWindow = windowFrame as OneCSharpToolWindow;
-            if (codeEditorWindow != null)
-            {
-                var dataContext = new ProcedureViewModel(new Procedure());
-                codeEditorWindow.SetDataContext(dataContext);
-            }
-            ErrorHandler.ThrowOnFailure(windowFrame.Show());
+            VisualStudioHelper.OpenOneCSharpCodeEditorWindow(consumer, new Procedure());
         }
     }
 }
