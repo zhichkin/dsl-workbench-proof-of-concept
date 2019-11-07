@@ -27,33 +27,10 @@
     public class OneCSharpToolWindow : ToolWindowPane//, IVsWindowFrameNotify2
     {
         private const string TOOL_WINDOW_CAPTION = "ONE-C-SHARP CODE EDITOR";
-        
-        private IOneCSharpCodeEditor _codeEditor;
         public OneCSharpToolWindow() : base(null)
         {
             this.Caption = TOOL_WINDOW_CAPTION;
-            this.Content = new TextBlock() { Text = TOOL_WINDOW_CAPTION }; //new ProcedureView(new ProcedureViewModel(new Procedure()));
-        }
-        public void EditSyntaxNode(IOneCSharpCodeEditorConsumer consumer, ISyntaxNode node)
-        {
-            if (node == null) throw new ArgumentNullException(nameof(node));
-            if (consumer == null) throw new ArgumentNullException(nameof(consumer));
-
-            //(OneCSharpCodeProvider)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SOneCSharpCodeProvider));
-            OneCSharpCodeProvider codeProvider = (OneCSharpCodeProvider)this.GetService(typeof(SOneCSharpCodeProvider));
-            if (codeProvider == null)
-            {
-                _ = MessageBox.Show(
-                "Failed to get OneCSharp code provider!",
-                TOOL_WINDOW_CAPTION,
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-                return;
-            }
-
-            _codeEditor = codeProvider.GetCodeEditor(node);
-            _codeEditor.Save += consumer.SaveSyntaxNode;
-            this.Content = codeProvider.GetCodeEditorView(_codeEditor);
+            this.Content = new ContentControl();
         }
         //public int OnClose(ref uint pgrfSaveOptions)
         //{

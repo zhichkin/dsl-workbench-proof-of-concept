@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ToolWindows\ToolWindowManager.cs" />
     <Compile Include="ToolWindows\MetadataToolWindow.cs" />
     <Compile Include="ToolWindows\MetadataToolWindowCommand.cs" />
     <Compile Include="ToolWindows\MetadataToolWindowControl.xaml.cs">
@@ -78,7 +79,6 @@
     <Compile Include="UI\Namespace\NamespaceViewModel.cs" />
     <Compile Include="UI\Server\ServerViewModel.cs" />
     <Compile Include="UI\ViewModelBase.cs" />
-    <Compile Include="VisualStudioHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source.extension.vsixmanifest">

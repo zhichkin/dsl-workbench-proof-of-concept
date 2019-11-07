@@ -1,7 +1,7 @@
 ﻿using OneCSharp.OQL.Model;
 using System;
 
-namespace OneCSharp.OQL.UI
+namespace OneCSharp.OQL.UI.Services
 {
     public class CodeEditorEventArgs : EventArgs
     {

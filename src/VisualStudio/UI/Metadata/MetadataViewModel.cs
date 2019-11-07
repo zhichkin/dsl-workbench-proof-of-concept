@@ -109,7 +109,7 @@ namespace OneCSharp.VisualStudio.UI
                 return;
             }
 
-            VisualStudioHelper.OpenOneCSharpCodeEditorWindow(consumer, new Procedure());
+            ToolWindowManager.OpenOneCSharpCodeEditor("My caption...", consumer, new Procedure() { Name = "set the name of procedure..." });
         }
     }
 }

@@ -2,6 +2,9 @@
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
+using Microsoft;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using OneCSharp.OQL.UI.Services;
 using Task = System.Threading.Tasks.Task;
@@ -28,7 +31,7 @@ namespace OneCSharp.VisualStudio
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(OneCSharpPackage.PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideService(typeof(SOneCSharpCodeProvider))]
+    //[ProvideService(typeof(SOneCSharpCodeProvider), IsAsyncQueryable = true)]
     [ProvideToolWindow(typeof(OneCSharpToolWindow), MultiInstances = true, Style = VsDockStyle.MDI)]
     [ProvideToolWindow(typeof(MetadataToolWindow), MultiInstances = false, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Left)]
     public sealed class OneCSharpPackage : AsyncPackage
@@ -57,17 +60,28 @@ namespace OneCSharp.VisualStudio
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await MetadataToolWindowCommand.InitializeAsync(this);
             await OneCSharpToolWindowCommand.InitializeAsync(this);
-            ServiceCreatorCallback callback = new ServiceCreatorCallback(CreateService);
-            ((IServiceContainer)this).AddService(typeof(SOneCSharpCodeProvider), callback);
-        }
-        private object CreateService(IServiceContainer container, Type serviceType)
-        {
-            if (serviceType == typeof(SOneCSharpCodeProvider))
+            IComponentModel MEF = (IComponentModel)GetService(typeof(SComponentModel));
+            if (MEF != null)
             {
-                return new OneCSharpCodeProvider(this);
+                // TODO: make twm private field so as to manage it's life time !?
+                IToolWindowManager twm = MEF.GetService<IToolWindowManager>();
+                twm.Initialize(this);
             }
-            return null;
         }
+        //private object CreateService(IServiceContainer container, Type serviceType)
+        //{
+        //    if (serviceType == typeof(SOneCSharpCodeProvider))
+        //    {
+        //        return new OneCSharpCodeProvider(this);
+        //    }
+        //    return null;
+        //}
+        //public async Task<object> CreateServiceAsync(IAsyncServiceContainer container, CancellationToken cancellationToken, Type serviceType)
+        //{
+        //    OneCSharpCodeProvider service = new OneCSharpCodeProvider(this);
+        //    await service.InitializeAsync(cancellationToken);
+        //    return service;
+        //}
         #endregion
     }
 }

@@ -54,8 +54,6 @@
     <Compile Include="Model\SelectStatement.cs" />
     <Compile Include="Model\SyntaxNode.cs" />
     <Compile Include="Services\IOneCSharpCodeEditorConsumer.cs" />
-    <Compile Include="Services\IOneCSharpCodeProvider.cs" />
-    <Compile Include="Services\OneCSharpCodeProvider.cs" />
     <Compile Include="Services\UIServices.cs" />
     <Compile Include="UI\Dialogs\TreeNodeViewModel.cs" />
     <Compile Include="UI\Dialogs\OneCSharpDialog.cs" />
