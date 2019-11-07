@@ -16,10 +16,7 @@ namespace OneCSharp.VisualStudio.UI
         {
             ((MetadataViewModel)DataContext).ImportInfoBase();
         }
-        private void AddProcedure_Click(object sender, RoutedEventArgs e)
-        {
-            ((MetadataViewModel)DataContext).AddProcedure();
-        }
+        
 
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -35,13 +32,25 @@ namespace OneCSharp.VisualStudio.UI
                 e.Handled = true;
             }
         }
-
         static TreeViewItem VisualUpwardSearch(DependencyObject source)
         {
             while (source != null && !(source is TreeViewItem))
                 source = VisualTreeHelper.GetParent(source);
 
             return source as TreeViewItem;
+        }
+
+        private void AddWebService_Click(object sender, RoutedEventArgs e)
+        {
+            ((MetadataViewModel)DataContext).AddWebService();
+        }
+        private void AddNamespace_Click(object sender, RoutedEventArgs e)
+        {
+            ((MetadataViewModel)DataContext).AddNamespace();
+        }
+        private void AddProcedure_Click(object sender, RoutedEventArgs e)
+        {
+            ((MetadataViewModel)DataContext).AddProcedure();
         }
     }
 }

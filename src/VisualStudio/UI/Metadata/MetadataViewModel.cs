@@ -85,20 +85,98 @@ namespace OneCSharp.VisualStudio.UI
         }
 
 
-        public void AddProcedure()
+        public void AddWebService()
         {
             if (SelectedItem == null)
             {
                 _ = MessageBox.Show(
-                    "Procedure's owner is not selected!",
+                    "Web service owner is not selected!",
                     "ONE-C-SHARP",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 return;
             }
-            
+
+            string dbCatalogAddress;
+            AddServerDialog dialog = new AddServerDialog();
+            _ = dialog.ShowModal();
+            if (dialog.Result == null)
+            {
+                return;
+            }
+            dbCatalogAddress = (string)dialog.Result;
+
+            if (SelectedItem is ServerViewModel)
+            {
+                ServerViewModel server = (ServerViewModel)SelectedItem;
+                server.CreateInfoBase(dbCatalogAddress);
+            }
+        }
+        public void AddNamespace()
+        {
+            if (SelectedItem == null)
+            {
+                _ = MessageBox.Show(
+                    "Namespace owner is not selected!",
+                    "ONE-C-SHARP",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            string namespaceName;
+            AddServerDialog dialog = new AddServerDialog();
+            _ = dialog.ShowModal();
+            if (dialog.Result == null)
+            {
+                return;
+            }
+            namespaceName = (string)dialog.Result;
+
+            if (SelectedItem is InfoBaseViewModel)
+            {
+                InfoBaseViewModel ib = (InfoBaseViewModel)SelectedItem;
+                ib.CreateNamespaceViewModel(namespaceName);
+
+            }
+            else if (SelectedItem is NamespaceViewModel)
+            {
+                NamespaceViewModel ns = (NamespaceViewModel)SelectedItem;
+                ns.CreateNamespaceViewModel(namespaceName);
+            }
+        }
+        public void AddProcedure() // TODO: !!!
+        {
+            if (SelectedItem == null)
+            {
+                _ = MessageBox.Show(
+                    "Procedure owner is not selected!",
+                    "ONE-C-SHARP",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            _ = MessageBox.Show(
+                "Create procedure ...",
+                "ONE-C-SHARP",
+                MessageBoxButton.OK,
+                MessageBoxImage.Exclamation);
+        }
+        public void EditProcedure() // TODO: !!!
+        {
+            if (SelectedItem == null)
+            {
+                _ = MessageBox.Show(
+                    "Procedure is not selected!",
+                    "ONE-C-SHARP",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
             IOneCSharpCodeEditorConsumer consumer = SelectedItem as IOneCSharpCodeEditorConsumer;
-            
+
             if (consumer == null)
             {
                 _ = MessageBox.Show(

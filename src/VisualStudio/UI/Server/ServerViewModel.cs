@@ -53,5 +53,20 @@ namespace OneCSharp.VisualStudio.UI
             child.InitializeViewModel();
             InfoBases.Add(child);
         }
+        public void CreateInfoBase(string address)
+        {
+            if (_model.InfoBases
+                .Where(ib => ib.Database == address)
+                .FirstOrDefault() != null) return;
+
+            InfoBase infoBase = new InfoBase()
+            {
+                Server = _model,
+                Name = address,
+                Database = address
+            };
+            InfoBaseViewModel child = new InfoBaseViewModel(infoBase);
+            AddInfoBase(child);
+        }
     }
 }

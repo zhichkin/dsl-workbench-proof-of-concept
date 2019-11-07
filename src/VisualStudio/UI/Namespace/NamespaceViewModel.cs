@@ -2,6 +2,7 @@
 using OneCSharp.OQL.UI.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 
 namespace OneCSharp.VisualStudio.UI
@@ -56,6 +57,26 @@ namespace OneCSharp.VisualStudio.UI
         public void SaveSyntaxNode(IOneCSharpCodeEditor editor, CodeEditorEventArgs args)
         {
             _ = MessageBox.Show($"Save syntax node: {args.SyntaxNode}");
+        }
+
+
+        public void AddChild(NamespaceViewModel child)
+        {
+            if (_model.Namespaces
+                .Where(i => i.Name == child.Name)
+                .FirstOrDefault() != null) return;
+
+            child.Model.InfoBase = _model.InfoBase;
+            child.Parent = this;
+            _model.Namespaces.Add(child.Model);
+            child.InitializeViewModel();
+            Namespaces.Add(child);
+        }
+        public void CreateNamespaceViewModel(string name)
+        {
+            Namespace ns = new Namespace() { Name = name };
+            NamespaceViewModel child = new NamespaceViewModel(ns);
+            AddChild(child);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using OneCSharp.Metadata;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace OneCSharp.VisualStudio.UI
 {
@@ -37,6 +38,25 @@ namespace OneCSharp.VisualStudio.UI
                 OnPropertyChanged(nameof(Database));
             }
         }
-        public ObservableCollection<NamespaceViewModel> Namespaces { get; private set; }
+        public ObservableCollection<NamespaceViewModel> Namespaces { get; private set; } = new ObservableCollection<NamespaceViewModel>();
+
+        public void AddChild(NamespaceViewModel child)
+        {
+            if (_model.Namespaces
+                .Where(i => i.Name == child.Name)
+                .FirstOrDefault() != null) return;
+
+            child.Model.InfoBase = _model;
+            child.Parent = this;
+            _model.Namespaces.Add(child.Model);
+            child.InitializeViewModel();
+            Namespaces.Add(child);
+        }
+        public void CreateNamespaceViewModel(string name)
+        {
+            Namespace ns = new Namespace() { Name = name };
+            NamespaceViewModel child = new NamespaceViewModel(ns);
+            AddChild(child);
+        }
     }
 }

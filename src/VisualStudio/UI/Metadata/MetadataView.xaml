@@ -44,9 +44,9 @@
                                         <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.ConnectToDatabase}"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Create database...">
+                                <MenuItem Header="Create web service..." Click="AddWebService_Click">
                                     <MenuItem.Icon>
-                                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.AddDatabase}"/>
+                                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.AddWebService}"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
                             </ContextMenu>
@@ -58,11 +58,20 @@
                 
                 <HierarchicalDataTemplate DataType="{x:Type ui:InfoBaseViewModel}" ItemsSource="{Binding Namespaces}">
                     <StackPanel Orientation="Horizontal" Height="20">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Add namespace..." Click="AddNamespace_Click">
+                                    <MenuItem.Icon>
+                                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.AddNamespace}"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
                         <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Database}"/>
                         <TextBlock Text="{Binding Database}" Margin="2" VerticalAlignment="Center"/>
                     </StackPanel>
                 </HierarchicalDataTemplate>
-                
+
                 <HierarchicalDataTemplate DataType="{x:Type ui:NamespaceViewModel}">
                     <HierarchicalDataTemplate.ItemsSource>
                         <MultiBinding Converter="{StaticResource CompositeCollectionConverter}">
@@ -74,6 +83,11 @@
                     <StackPanel Orientation="Horizontal" Height="20">
                         <StackPanel.ContextMenu>
                             <ContextMenu>
+                                <MenuItem Header="Add namespace..." Click="AddNamespace_Click">
+                                    <MenuItem.Icon>
+                                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.AddNamespace}"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
                                 <MenuItem Header="Add procedure..." Click="AddProcedure_Click">
                                     <MenuItem.Icon>
                                         <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.AddMethod}"/>
