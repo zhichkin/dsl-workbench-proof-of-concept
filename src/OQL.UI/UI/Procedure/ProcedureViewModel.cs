@@ -1,33 +1,18 @@
-﻿using OneCSharp.OQL.Model;
+﻿using Microsoft.VisualStudio.PlatformUI;
+using OneCSharp.OQL.Model;
 using OneCSharp.OQL.UI.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
 
 namespace OneCSharp.OQL.UI
 {
     public sealed class ProcedureViewModel : SyntaxNodeViewModel, IOneCSharpCodeEditor
     {
         private Procedure _model;
-        public bool IsModified { get; private set; } = true;
         public event SaveSyntaxNodeEventHandler Save;
-        public void EditSyntaxNode(ISyntaxNode node)
-        {
-            if (node == null) throw new ArgumentNullException(nameof(node));
-            if (!(node is Procedure)) throw new ArgumentException(nameof(node));
-            _model = (Procedure)node;
-            IsModified = false;
-        }
         
-        private void OnSave()
-        {
-            CodeEditorEventArgs args = new CodeEditorEventArgs(_model);
-            Save?.Invoke(this, args);
-            if (args.Cancel == true)
-            {
-                throw new OperationCanceledException(args.ErrorMessage);
-            }
-        }
-
         public ProcedureViewModel()
         {
             _model = new Procedure();
@@ -40,6 +25,8 @@ namespace OneCSharp.OQL.UI
         }
         private void InitializeViewModel()
         {
+            this.SaveProcedureCommand = new DelegateCommand(SaveProcedure);
+
             this.Parameters = new ObservableCollection<SyntaxNodeViewModel>();
             if (_model.Parameters != null && _model.Parameters.Count > 0)
             {
@@ -58,6 +45,30 @@ namespace OneCSharp.OQL.UI
         public ObservableCollection<SyntaxNodeViewModel> Parameters { get; private set; }
         public SyntaxNodes Statements { get { return _model.Statements; } }
 
+
+        public bool IsModified { get; private set; } = true; // new procedure is unmodified by default
+        public void EditSyntaxNode(ISyntaxNode node)
+        {
+            if (node == null) throw new ArgumentNullException(nameof(node));
+            if (!(node is Procedure)) throw new ArgumentException(nameof(node));
+            _model = (Procedure)node;
+            IsModified = false;
+        }
+        public ICommand SaveProcedureCommand { get; private set; }
+        public void SaveProcedure()
+        {
+            CodeEditorEventArgs args = new CodeEditorEventArgs(_model);
+            Save?.Invoke(this, args);
+            if (args.Cancel == true)
+            {
+                // Save command was canceled by user
+                // Take some action ...
+            }
+            else
+            {
+                IsModified = false;
+            }
+        }
 
 
         public void AddParameter()

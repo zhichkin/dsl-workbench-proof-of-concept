@@ -1,23 +1,18 @@
-﻿using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+﻿using Microsoft.VisualStudio.PlatformUI;
 using OneCSharp.Metadata;
 using OneCSharp.OQL.Model;
-using OneCSharp.OQL.UI;
 using OneCSharp.OQL.UI.Services;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace OneCSharp.VisualStudio.UI
 {
     public sealed class MetadataViewModel : ViewModelBase
     {
+        private const string ONE_C_SHARP = "ONE-C-SHARP";
         private readonly MetadataProvider _metadataProvider = new MetadataProvider();
         public MetadataViewModel()
         {
@@ -47,7 +42,7 @@ namespace OneCSharp.VisualStudio.UI
             {
                 var result = MessageBox.Show(
                     "Unable to connect server!",
-                    "ONE-C-SHARP",
+                    ONE_C_SHARP,
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 return;
@@ -91,7 +86,7 @@ namespace OneCSharp.VisualStudio.UI
             {
                 _ = MessageBox.Show(
                     "Web service owner is not selected!",
-                    "ONE-C-SHARP",
+                    ONE_C_SHARP,
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 return;
@@ -118,7 +113,7 @@ namespace OneCSharp.VisualStudio.UI
             {
                 _ = MessageBox.Show(
                     "Namespace owner is not selected!",
-                    "ONE-C-SHARP",
+                    ONE_C_SHARP,
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 return;
@@ -145,49 +140,93 @@ namespace OneCSharp.VisualStudio.UI
                 ns.CreateNamespaceViewModel(namespaceName);
             }
         }
-        public void AddProcedure() // TODO: !!!
+        public void AddProcedure()
         {
             if (SelectedItem == null)
             {
                 _ = MessageBox.Show(
                     "Procedure owner is not selected!",
-                    "ONE-C-SHARP",
+                    ONE_C_SHARP,
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 return;
             }
 
-            _ = MessageBox.Show(
-                "Create procedure ...",
-                "ONE-C-SHARP",
-                MessageBoxButton.OK,
-                MessageBoxImage.Exclamation);
+            string name;
+            AddServerDialog dialog = new AddServerDialog();
+            _ = dialog.ShowModal();
+            if (dialog.Result == null)
+            {
+                return;
+            }
+            name = (string)dialog.Result;
+
+            if (SelectedItem is NamespaceViewModel)
+            {
+                NamespaceViewModel ns = (NamespaceViewModel)SelectedItem;
+                ns.CreateProcedureViewModel(name);
+            }
         }
-        public void EditProcedure() // TODO: !!!
+        public void RenameProcedure()
         {
             if (SelectedItem == null)
             {
                 _ = MessageBox.Show(
                     "Procedure is not selected!",
-                    "ONE-C-SHARP",
+                    ONE_C_SHARP,
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 return;
             }
 
-            IOneCSharpCodeEditorConsumer consumer = SelectedItem as IOneCSharpCodeEditorConsumer;
+            string name;
+            AddServerDialog dialog = new AddServerDialog();
+            _ = dialog.ShowModal();
+            if (dialog.Result == null)
+            {
+                return;
+            }
+            name = (string)dialog.Result;
 
-            if (consumer == null)
+            if (SelectedItem is DbProcedureViewModel)
+            {
+                DbProcedureViewModel vm = (DbProcedureViewModel)SelectedItem;
+                vm.Name = name;
+                //TODO: think how to save changes !
+            }
+        }
+        public void EditProcedure()
+        {
+            if (SelectedItem == null)
+            {
+                _ = MessageBox.Show(
+                    "Procedure is not selected!",
+                    ONE_C_SHARP,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+            if (!(SelectedItem is DbProcedureViewModel procedure))
+            {
+                _ = MessageBox.Show(
+                    $"{SelectedItem.GetType()} is not procedure !",
+                    ONE_C_SHARP,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+            if (!(SelectedItem is IOneCSharpCodeEditorConsumer consumer))
             {
                 _ = MessageBox.Show(
                     $"{SelectedItem.GetType()} does not implement IOneCSharpCodeEditorConsumer interface !",
-                    "ONE-C-SHARP",
+                    ONE_C_SHARP,
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 return;
             }
-
-            ToolWindowManager.OpenOneCSharpCodeEditor("My caption...", consumer, new Procedure() { Name = "set the name of procedure..." });
+            // TODO: get Procedure from storage (ex. file)
+            Procedure syntaxNode = new Procedure() { Name = procedure.Name };
+            ToolWindowManager.OpenOneCSharpCodeEditor(procedure.Name, consumer, syntaxNode);
         }
     }
 }

@@ -21,6 +21,7 @@ namespace OneCSharp.Metadata
         public string Name;
         public List<Namespace> Namespaces = new List<Namespace>();
         public List<DbObject> DbObjects = new List<DbObject>();
+        public List<DbProcedure> DbProcedures = new List<DbProcedure>();
     }
     public sealed class DbObject
     {
@@ -85,8 +86,10 @@ namespace OneCSharp.Metadata
         /// <summary>Record's version (timestamp|rowversion).</summary>
         Version
     }
-    public sealed class DbProcedure // !?
+    public sealed class DbProcedure
     {
+        public Namespace Parent;
         public string Name;
+        // TODO: parameters collection
     }
 }

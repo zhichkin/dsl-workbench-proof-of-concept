@@ -4,11 +4,28 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ui="clr-namespace:OneCSharp.OQL.UI"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <StackPanel Orientation="Vertical" Margin="10">
 
+        <!-- Command panel -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Menu >
+                <MenuItem Command="{Binding SaveProcedureCommand}">
+                    <MenuItem.Header>
+                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Save}"/>
+                    </MenuItem.Header>
+                    <MenuItem.ToolTip>
+                        <TextBlock Text="Save procedure..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </MenuItem.ToolTip>
+                </MenuItem>
+            </Menu>
+        </StackPanel>
+
+        <!-- Procedure declaration -->
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="{Binding Keyword}" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="Blue" MouseEnter="Keyword_MouseEnter">
                 <TextBlock.ContextMenu>
@@ -21,17 +38,11 @@
                     </ContextMenu>
                 </TextBlock.ContextMenu>
             </TextBlock>
-            <TextBox Text="{Binding Name}" MinWidth="50" VerticalContentAlignment="Center" Margin="10,0,0,0" BorderThickness="1" BorderBrush="LightGray"/>
+            <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     MinWidth="50" VerticalContentAlignment="Center" Margin="10,0,0,0" BorderThickness="1" BorderBrush="LightGray"/>
         </StackPanel>
 
-        <!--<ItemsControl ItemsSource="{Binding Parameters}" Margin="30,5,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <ItemsControl.Resources>
-                <DataTemplate DataType="{x:Type ui:ParameterViewModel}">
-                    <ui:ParameterView Margin="0,5,0,0"/>
-                </DataTemplate>
-            </ItemsControl.Resources>
-        </ItemsControl>-->
-
+        <!-- Procedure's parameters list -->
         <ui:ParametersListView DataContext="{Binding Parameters}" Margin="30,5,0,0"/>
 
         <ItemsControl ItemsSource="{Binding Statements}"

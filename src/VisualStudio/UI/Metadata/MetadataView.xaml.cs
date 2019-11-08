@@ -52,5 +52,13 @@ namespace OneCSharp.VisualStudio.UI
         {
             ((MetadataViewModel)DataContext).AddProcedure();
         }
+        private void RenameProcedure_Click(object sender, RoutedEventArgs e)
+        {
+            ((MetadataViewModel)DataContext).RenameProcedure();
+        }
+        private void EditProcedure_Click(object sender, RoutedEventArgs e)
+        {
+            ((MetadataViewModel)DataContext).EditProcedure();
+        }
     }
 }

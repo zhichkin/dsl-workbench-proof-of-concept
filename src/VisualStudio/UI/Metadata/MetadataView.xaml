@@ -67,7 +67,7 @@
                                 </MenuItem>
                             </ContextMenu>
                         </StackPanel.ContextMenu>
-                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Database}"/>
+                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Database}"/> <!--KnownMonikers.WebServer-->
                         <TextBlock Text="{Binding Database}" Margin="2" VerticalAlignment="Center"/>
                     </StackPanel>
                 </HierarchicalDataTemplate>
@@ -77,7 +77,7 @@
                         <MultiBinding Converter="{StaticResource CompositeCollectionConverter}">
                             <Binding Path="Namespaces" />
                             <Binding Path="DbObjects" />
-                            <!--<Binding Path="ObservableRequests" />-->
+                            <Binding Path="DbProcedures" />
                         </MultiBinding>
                     </HierarchicalDataTemplate.ItemsSource>
                     <StackPanel Orientation="Horizontal" Height="20">
@@ -105,7 +105,6 @@
                         <MultiBinding Converter="{StaticResource CompositeCollectionConverter}">
                             <Binding Path="Properties" />
                             <Binding Path="NestedObjects" />
-                            <!--<Binding Path="ObservableRequests" />-->
                         </MultiBinding>
                     </HierarchicalDataTemplate.ItemsSource>
                     <StackPanel Orientation="Horizontal" Height="20">
@@ -120,12 +119,27 @@
                         <TextBlock Text="{Binding Name}" Margin="3,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </DataTemplate>
-
-                <!--
-                <DataTemplate DataType="{x:Type Model:Field}">
-                    <TextBlock Text="{Binding Path=Name}" Margin="2" VerticalAlignment="Center"/>
+                
+                <DataTemplate DataType="{x:Type ui:DbProcedureViewModel}">
+                    <StackPanel Orientation="Horizontal" Height="20">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Rename procedure..." Click="RenameProcedure_Click">
+                                    <MenuItem.Icon>
+                                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.RenameMethod}"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Edit procedure..." Click="EditProcedure_Click">
+                                    <MenuItem.Icon>
+                                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.ModifyMethod}"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Method}"/>
+                        <TextBlock Text="{Binding Name}" Margin="3,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
                 </DataTemplate>
-                -->
 
             </TreeView.Resources>
         </TreeView>
