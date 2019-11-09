@@ -8,7 +8,7 @@
             Statements = new SyntaxNodes(this);
         }
         public Procedure(ISyntaxNode parent) : this() { _parent = parent; }
-        public string Keyword { get { return "PROCEDURE"; } }
+        public string Keyword { get { return Keywords.PROCEDURE; } }
         public string Name { get; set; }
         public SyntaxNodes Parameters { get; set; }
         public SyntaxNodes Statements { get; set; }

@@ -39,20 +39,20 @@
                 </TextBlock.ContextMenu>
             </TextBlock>
             <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     MinWidth="50" VerticalContentAlignment="Center" Margin="10,0,0,0" BorderThickness="1" BorderBrush="LightGray"/>
+                     MinWidth="50" VerticalContentAlignment="Center" Margin="5,0,0,0" BorderThickness="1" BorderBrush="LightGray"/>
         </StackPanel>
 
         <!-- Procedure's parameters list -->
         <ui:ParametersListView DataContext="{Binding Parameters}" Margin="30,5,0,0"/>
 
         <ItemsControl ItemsSource="{Binding Statements}"
-                          Margin="30,20,0,0"
-                          VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <!--<ItemsControl.Resources>
+                      Margin="30,15,0,0"
+                      VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type ui:SelectStatementViewModel}">
-                    <ui:SelectStatementView/>
+                    <ui:SelectStatementView Margin="0,0,0,10"/>
                 </DataTemplate>
-            </ItemsControl.Resources>-->
+            </ItemsControl.Resources>
         </ItemsControl>
 
     </StackPanel>

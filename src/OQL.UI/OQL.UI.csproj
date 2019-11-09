@@ -48,6 +48,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Keywords.cs" />
     <Compile Include="Services\IOneCSharpCodeEditor.cs" />
     <Compile Include="Model\Procedure.cs" />
     <Compile Include="Model\Parameter.cs" />
@@ -84,6 +85,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="UI\SELECT\SelectClauseViewModel.cs" />
+    <Compile Include="UI\SELECT\SelectStatementView.xaml.cs">
+      <DependentUpon>SelectStatementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SELECT\WhereClauseViewModel.cs" />
+    <Compile Include="UI\SELECT\FromClauseViewModel.cs" />
+    <Compile Include="UI\SELECT\SelectStatementViewModel.cs" />
     <Compile Include="UI\SyntaxNodeViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -114,6 +122,10 @@
     <Page Include="UI\Procedure\ProcedureView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\SELECT\SelectStatementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

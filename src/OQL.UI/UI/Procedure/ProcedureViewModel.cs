@@ -27,12 +27,25 @@ namespace OneCSharp.OQL.UI
         {
             this.SaveProcedureCommand = new DelegateCommand(SaveProcedure);
 
-            this.Parameters = new ObservableCollection<SyntaxNodeViewModel>();
+            this.Parameters = new SyntaxNodesViewModel(); // ObservableCollection<SyntaxNodeViewModel>();
+            this.Statements = new SyntaxNodesViewModel();
+
             if (_model.Parameters != null && _model.Parameters.Count > 0)
             {
                 foreach (var parameter in _model.Parameters)
                 {
                     this.Parameters.Add(new ParameterViewModel((Parameter)parameter));
+                }
+            }
+
+            if (_model.Statements != null && _model.Statements.Count > 0)
+            {
+                foreach (var statement in _model.Statements)
+                {
+                    if (statement is SelectStatement)
+                    {
+                        this.Statements.Add(new SelectStatementViewModel((SelectStatement)statement));
+                    }
                 }
             }
         }
@@ -42,8 +55,8 @@ namespace OneCSharp.OQL.UI
             get { return string.IsNullOrEmpty(_model.Name) ? "<procedure name>" : _model.Name; }
             set { _model.Name = value; OnPropertyChanged(nameof(Name)); }
         }
-        public ObservableCollection<SyntaxNodeViewModel> Parameters { get; private set; }
-        public SyntaxNodes Statements { get { return _model.Statements; } }
+        public SyntaxNodesViewModel Parameters { get; private set; } // ObservableCollection<SyntaxNodeViewModel>
+        public SyntaxNodesViewModel Statements { get; private set; }
 
 
         public bool IsModified { get; private set; } = true; // new procedure is unmodified by default
@@ -113,10 +126,7 @@ namespace OneCSharp.OQL.UI
 
         public void AddSelectStatement()
         {
-            this.Statements.Add(new SelectStatement()
-            {
-                Alias = "<type statement's alias here>"
-            });
+            this.Statements.Add(new SelectStatementViewModel());
         }
     }
 }
