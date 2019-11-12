@@ -1,4 +1,5 @@
-﻿using OneCSharp.OQL.UI.Dialogs;
+﻿using OneCSharp.Metadata;
+using OneCSharp.OQL.UI.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,77 @@ namespace OneCSharp.OQL.UI.Services
                 return name;
             }
             return "Unknown";
+        }
+
+
+        private static Popup _TableSourceSelectionPopup;
+        public static void OpenTableSourceSelectionPopup(MetadataProvider metadataProvider, Action<TreeNodeViewModel> callback)
+        {
+            TreeNodeViewModel model = GetTableSourceSelectionTree(metadataProvider);
+            if (model == null) return;
+
+            _TypeSelectionDialog = new TypeSelectionDialog(model);
+
+            _TableSourceSelectionPopup = new Popup
+            {
+                Placement = PlacementMode.Mouse,
+                AllowsTransparency = true,
+                Child = _TypeSelectionDialog
+            };
+            //_TypeSelectionPopup.PlacementTarget = target;
+            _TypeSelectionDialog.OnSelectionChanged = callback;
+            _TableSourceSelectionPopup.IsOpen = true;
+        }
+        public static void CloseTableSourceSelectionPopup()
+        {
+            if (_TableSourceSelectionPopup == null) return;
+            _TableSourceSelectionPopup.IsOpen = false;
+            _TableSourceSelectionPopup = null;
+            if (_TypeSelectionDialog == null) return;
+            _TypeSelectionDialog.OnSelectionChanged = null;
+            _TypeSelectionDialog = null;
+        }
+        private static TreeNodeViewModel GetTableSourceSelectionTree(MetadataProvider metadataProvider)
+        {
+            if (metadataProvider.Servers == null || metadataProvider.Servers.Count == 0) return null;
+            if (metadataProvider.Servers[0].InfoBases == null || metadataProvider.Servers[0].InfoBases.Count == 0) return null;
+
+            var root = new TreeNodeViewModel(null, metadataProvider.Servers[0].Address);
+
+            foreach (InfoBase infoBase in metadataProvider.Servers[0].InfoBases)
+            {
+                if (IsWebServicesInfoBase(infoBase)) continue;
+
+                var node = new TreeNodeViewModel(root, infoBase.Database, infoBase);
+                root.Children.Add(node);
+
+                foreach (Namespace ns in infoBase.Namespaces)
+                {
+                    var nsNode = new TreeNodeViewModel(node, ns.Name, ns);
+                    node.Children.Add(nsNode);
+
+                    foreach (DbObject dbo in ns.DbObjects)
+                    {
+                        var dboNode = new TreeNodeViewModel(nsNode, dbo.Name, dbo);
+                        nsNode.Children.Add(dboNode);
+
+                        foreach (DbObject nested in dbo.NestedObjects)
+                        {
+                            var nestedNode = new TreeNodeViewModel(dboNode, nested.Name, nested);
+                            dboNode.Children.Add(nestedNode);
+                        }
+                    }
+                }
+            }
+            return (root.Children.Count > 0 ? root : null);
+        }
+        private static bool IsWebServicesInfoBase(InfoBase infoBase)
+        {
+            foreach (Namespace ns in infoBase.Namespaces)
+            {
+                if (ns.DbObjects != null && ns.DbObjects.Count > 0) return false;
+            }
+            return true;
         }
     }
 }

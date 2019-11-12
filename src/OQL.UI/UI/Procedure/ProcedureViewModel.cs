@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
+using OneCSharp.Metadata;
 using OneCSharp.OQL.Model;
 using OneCSharp.OQL.UI.Services;
 using System;
@@ -12,7 +13,8 @@ namespace OneCSharp.OQL.UI
     {
         private Procedure _model;
         public event SaveSyntaxNodeEventHandler Save;
-        
+        public MetadataProvider Metadata { get; set; }
+
         public ProcedureViewModel()
         {
             _model = new Procedure();
@@ -86,9 +88,9 @@ namespace OneCSharp.OQL.UI
 
         public void AddParameter()
         {
-            Parameter p = new Parameter(_model);
-            _model.Parameters.Add(p);
-            this.Parameters.Add(new ParameterViewModel(p) { Parent = this });
+            Parameter parameter = new Parameter(_model);
+            _model.Parameters.Add(parameter);
+            this.Parameters.Add(new ParameterViewModel(parameter) { Parent = this });
         }
         public void RemoveParameter(ParameterViewModel parameter)
         {
@@ -126,7 +128,9 @@ namespace OneCSharp.OQL.UI
 
         public void AddSelectStatement()
         {
-            this.Statements.Add(new SelectStatementViewModel());
+            SelectStatement select = new SelectStatement(_model);
+            _model.Statements.Add(select);
+            this.Statements.Add(new SelectStatementViewModel(select) { Parent = this });
         }
     }
 }

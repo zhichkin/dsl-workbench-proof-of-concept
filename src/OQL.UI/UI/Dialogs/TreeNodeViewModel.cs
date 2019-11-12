@@ -17,7 +17,7 @@ namespace OneCSharp.OQL.UI.Dialogs
             this.Payload = payload;
         }
         public object Payload { get; set; }
-        public TreeNodeViewModel Parent { get; set; }
+        //public TreeNodeViewModel Parent { get; set; }
         public string Caption
         {
             get { return _caption; }

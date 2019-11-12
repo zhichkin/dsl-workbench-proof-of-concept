@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace OneCSharp.VisualStudio.UI
 {
@@ -8,6 +9,10 @@ namespace OneCSharp.VisualStudio.UI
         {
             InitializeComponent();
             DataContext = viewModel;
+        }
+        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Keyboard.Focus(ServerNameTextBox);
         }
     }
 }

@@ -225,6 +225,7 @@ namespace OneCSharp.VisualStudio.UI
                 return;
             }
             // TODO: get Procedure from storage (ex. file)
+            consumer.Metadata = _metadataProvider;
             Procedure syntaxNode = new Procedure() { Name = procedure.Name };
             ToolWindowManager.OpenOneCSharpCodeEditor(procedure.Name, consumer, syntaxNode);
         }

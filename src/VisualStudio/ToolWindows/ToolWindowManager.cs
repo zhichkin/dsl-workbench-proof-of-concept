@@ -71,6 +71,7 @@ namespace OneCSharp.VisualStudio
                     }
 
                     var _codeEditor = GetCodeEditor(node);
+                    _codeEditor.Metadata = consumer.Metadata;
                     _codeEditor.Save += consumer.SaveSyntaxNode;
                     codeEditorWindow.Caption = caption;
                     ((ContentControl)codeEditorWindow.Content).Content = GetCodeEditorView(_codeEditor);

@@ -1,4 +1,5 @@
-﻿using OneCSharp.OQL.Model;
+﻿using OneCSharp.Metadata;
+using OneCSharp.OQL.Model;
 using System;
 
 namespace OneCSharp.OQL.UI.Services
@@ -17,7 +18,7 @@ namespace OneCSharp.OQL.UI.Services
     public interface IOneCSharpCodeEditor
     {
         bool IsModified { get; }
-        void EditSyntaxNode(ISyntaxNode node);
         event SaveSyntaxNodeEventHandler Save;
+        MetadataProvider Metadata { get; set; }
     }
 }

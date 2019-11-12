@@ -9,6 +9,7 @@ namespace OneCSharp.VisualStudio.UI
     public sealed class DbProcedureViewModel : ViewModelBase, IOneCSharpCodeEditorConsumer
     {
         private DbProcedure _model;
+        public MetadataProvider Metadata { get; set; }
         public DbProcedureViewModel(DbProcedure model)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));

@@ -7,10 +7,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <StackPanel Orientation="Horizontal">
-        <TextBlock Text="{Binding Keyword}" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="Blue" Cursor="Hand"/>
-        <TextBox Text="{Binding Alias, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+    <StackPanel Orientation="Vertical">
+        
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Keyword}" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="Blue" Cursor="Hand"/>
+            <TextBox Text="{Binding Alias, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  MinWidth="50" VerticalContentAlignment="Center" Margin="5,0,0,0" BorderThickness="1" BorderBrush="LightGray"/>
+        </StackPanel>
+
+        <ui:FromClauseView DataContext="{Binding FROM}"/>
+        
     </StackPanel>
 
 </UserControl>

@@ -7,12 +7,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <TreeView ItemsSource="{Binding Children}"
+    <TreeView ItemsSource="{Binding Children}" Margin="10"
               SelectedItemChanged="TreeView_SelectedItemChanged"
               HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <TreeView.Resources>
             <HierarchicalDataTemplate DataType="{x:Type ui:TreeNodeViewModel}" ItemsSource="{Binding Children}">
-                <TextBlock Text="{Binding Caption}" Margin="2" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Caption}" VerticalAlignment="Center"/>
             </HierarchicalDataTemplate>
         </TreeView.Resources>
     </TreeView>

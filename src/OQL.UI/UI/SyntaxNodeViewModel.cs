@@ -5,15 +5,15 @@ namespace OneCSharp.OQL.UI
 {
     public interface ISyntaxNodeViewModel
     {
-        SyntaxNodeViewModel Parent { get; set; }
+        ISyntaxNodeViewModel Parent { get; set; }
         // TODO: add functions to add and remove children, so as children could ask parent to remove them from parent's collections
     }
     public abstract class SyntaxNodeViewModel : ISyntaxNodeViewModel, INotifyPropertyChanged
     {
-        protected SyntaxNodeViewModel _parent;
+        protected ISyntaxNodeViewModel _parent;
         public SyntaxNodeViewModel() { }
-        public SyntaxNodeViewModel(SyntaxNodeViewModel parent) { _parent = parent; }
-        public SyntaxNodeViewModel Parent
+        public SyntaxNodeViewModel(ISyntaxNodeViewModel parent) { _parent = parent; }
+        public ISyntaxNodeViewModel Parent
         {
             get { return _parent; }
             set { _parent = value; }
@@ -24,12 +24,17 @@ namespace OneCSharp.OQL.UI
         }
         public event PropertyChangedEventHandler PropertyChanged;
     }
-    public class SyntaxNodesViewModel : ObservableCollection<SyntaxNodeViewModel>, ISyntaxNodeViewModel
+    public class SyntaxNodesViewModel : ObservableCollection<SyntaxNodeViewModel>, ISyntaxNodeViewModel, INotifyPropertyChanged
     {
-        protected SyntaxNodeViewModel _parent;
+        protected ISyntaxNodeViewModel _parent;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
         public SyntaxNodesViewModel() { }
-        public SyntaxNodesViewModel(SyntaxNodeViewModel parent) { _parent = parent; }
-        public SyntaxNodeViewModel Parent
+        public SyntaxNodesViewModel(ISyntaxNodeViewModel parent) { _parent = parent; }
+        public ISyntaxNodeViewModel Parent
         {
             get { return _parent; }
             set { _parent = value; }

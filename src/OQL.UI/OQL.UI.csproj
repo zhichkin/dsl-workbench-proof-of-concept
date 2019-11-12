@@ -48,7 +48,11 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Enums.cs" />
     <Compile Include="Model\Keywords.cs" />
+    <Compile Include="Model\TableExpression.cs" />
+    <Compile Include="MVVM\EventCommandsCollection.cs" />
+    <Compile Include="MVVM\EventToCommand.cs" />
     <Compile Include="Services\IOneCSharpCodeEditor.cs" />
     <Compile Include="Model\Procedure.cs" />
     <Compile Include="Model\Parameter.cs" />
@@ -85,6 +89,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="UI\SELECT\FromClauseView.xaml.cs">
+      <DependentUpon>FromClauseView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\SELECT\SelectClauseViewModel.cs" />
     <Compile Include="UI\SELECT\SelectStatementView.xaml.cs">
       <DependentUpon>SelectStatementView.xaml</DependentUpon>
@@ -93,6 +100,7 @@
     <Compile Include="UI\SELECT\FromClauseViewModel.cs" />
     <Compile Include="UI\SELECT\SelectStatementViewModel.cs" />
     <Compile Include="UI\SyntaxNodeViewModel.cs" />
+    <Compile Include="UI\TableSourceViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -123,6 +131,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\SELECT\FromClauseView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\SELECT\SelectStatementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -131,6 +143,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>16.0.202</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf">
+      <Version>1.1.3</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
