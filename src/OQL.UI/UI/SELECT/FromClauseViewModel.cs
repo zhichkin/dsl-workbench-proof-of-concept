@@ -55,9 +55,12 @@ namespace OneCSharp.OQL.UI
             DbObject table = selectedNode.Payload as DbObject;
             if (table == null) return;
 
-            TableSource model = new TableSource(_model, table);
-            _model.Add(model);
-            TableSourceViewModel viewModel = new TableSourceViewModel(model) { Parent = this };
+            AliasExpression alias = new AliasExpression(_model);
+            alias.Alias = $"T{_model.Count}";
+            alias.Expression = new TableObject(alias) { Table = table };
+            _model.Add(alias);
+
+            AliasExpressionViewModel viewModel = new AliasExpressionViewModel(alias) { Parent = this };
             Tables.Add(viewModel);
         }
     }

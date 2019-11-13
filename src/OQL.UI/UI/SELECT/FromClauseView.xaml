@@ -9,31 +9,37 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <StackPanel Orientation="Vertical">
-    
-    <StackPanel Orientation="Horizontal" Background="{Binding MyBackground}">
-        <behaviors:Interaction.Triggers>
-            <behaviors:EventTrigger EventName="MouseEnter">
-                <behaviors:CallMethodAction TargetObject="{Binding}" MethodName="OnMouseEnter"/>
-            </behaviors:EventTrigger>
-            <behaviors:EventTrigger EventName="MouseLeave">
-                <behaviors:CallMethodAction TargetObject="{Binding}" MethodName="OnMouseLeave"/>
-            </behaviors:EventTrigger>
-        </behaviors:Interaction.Triggers>
-        
-        <TextBlock Text="{Binding Keyword}" VerticalAlignment="Center"
+
+        <StackPanel Orientation="Horizontal" Background="{Binding MyBackground}">
+            <behaviors:Interaction.Triggers>
+                <behaviors:EventTrigger EventName="MouseEnter">
+                    <behaviors:CallMethodAction TargetObject="{Binding}" MethodName="OnMouseEnter"/>
+                </behaviors:EventTrigger>
+                <behaviors:EventTrigger EventName="MouseLeave">
+                    <behaviors:CallMethodAction TargetObject="{Binding}" MethodName="OnMouseLeave"/>
+                </behaviors:EventTrigger>
+            </behaviors:Interaction.Triggers>
+
+            <TextBlock Text="{Binding Keyword}" VerticalAlignment="Center"
                    FontWeight="SemiBold" Foreground="Blue" Cursor="Hand"
                    MouseLeftButtonUp="TextBlock_MouseLeftButtonUp"/>
-        
-    </StackPanel>
 
-        <ItemsControl ItemsSource="{Binding Tables}">
+        </StackPanel>
+
+        <ItemsControl ItemsSource="{Binding Tables}" Margin="20,0,0,0">
             <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Name}"/>
+                
+                <DataTemplate DataType="{x:Type ui:AliasExpressionViewModel}">
+                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                        <TextBlock Text="{Binding Alias}" FontWeight="SemiBold"/>
+                        <TextBlock Text=" = "/>
+                        <TextBlock Text="{Binding Expression.Name}"/>
+                    </StackPanel>
                 </DataTemplate>
+                
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        
+
     </StackPanel>
 
 </UserControl>

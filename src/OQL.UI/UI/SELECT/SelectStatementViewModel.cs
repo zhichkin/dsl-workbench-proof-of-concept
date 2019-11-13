@@ -16,7 +16,7 @@ namespace OneCSharp.OQL.UI
             _model = model;
             InitializeViewModel();
         }
-        private void InitializeViewModel()
+        public override void InitializeViewModel()
         {
             this.FROM = new FromClauseViewModel(this);
             this.WHERE = new WhereClauseViewModel(this);

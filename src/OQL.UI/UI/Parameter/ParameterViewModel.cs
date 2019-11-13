@@ -9,10 +9,7 @@ namespace OneCSharp.OQL.UI
         private readonly Parameter _model;
         public ParameterViewModel() { _model = new Parameter(); InitializeViewModel(); }
         public ParameterViewModel(Parameter model) { _model = model; InitializeViewModel(); }
-        private void InitializeViewModel()
-        {
-            // TODO
-        }
+        public override void InitializeViewModel() { }
         public string Name
         {
             get { return string.IsNullOrEmpty(_model.Name) ? "<parameter name>" : _model.Name; }

@@ -100,7 +100,8 @@
     <Compile Include="UI\SELECT\FromClauseViewModel.cs" />
     <Compile Include="UI\SELECT\SelectStatementViewModel.cs" />
     <Compile Include="UI\SyntaxNodeViewModel.cs" />
-    <Compile Include="UI\TableSourceViewModel.cs" />
+    <Compile Include="UI\TableObject\AliasExpressionViewModel.cs" />
+    <Compile Include="UI\TableObject\TableObjectViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

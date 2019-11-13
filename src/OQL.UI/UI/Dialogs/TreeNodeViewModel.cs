@@ -12,6 +12,7 @@ namespace OneCSharp.OQL.UI.Dialogs
             _caption = caption;
             this.Parent = parent;
         }
+        public override void InitializeViewModel() { }
         public TreeNodeViewModel(TreeNodeViewModel parent, string caption, object payload) : this(parent, caption)
         {
             this.Payload = payload;

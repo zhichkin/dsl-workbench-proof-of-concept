@@ -2,15 +2,15 @@
 
 namespace OneCSharp.OQL.UI
 {
-    public sealed class TableSourceViewModel : SyntaxNodeViewModel
+    public sealed class TableObjectViewModel : SyntaxNodeViewModel
     {
-        private readonly TableSource _model;
-        public TableSourceViewModel(TableSource model)
+        private readonly TableObject _model;
+        public TableObjectViewModel(TableObject model)
         {
             _model = model;
             InitializeViewModel();
         }
-        private void InitializeViewModel()
+        public override void InitializeViewModel()
         {
             
         }

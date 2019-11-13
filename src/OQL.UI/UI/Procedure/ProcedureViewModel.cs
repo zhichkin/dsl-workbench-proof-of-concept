@@ -25,7 +25,7 @@ namespace OneCSharp.OQL.UI
             _model = model;
             InitializeViewModel();
         }
-        private void InitializeViewModel()
+        public override void InitializeViewModel()
         {
             this.SaveProcedureCommand = new DelegateCommand(SaveProcedure);
 

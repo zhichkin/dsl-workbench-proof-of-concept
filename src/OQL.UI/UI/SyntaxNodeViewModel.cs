@@ -6,6 +6,7 @@ namespace OneCSharp.OQL.UI
     public interface ISyntaxNodeViewModel
     {
         ISyntaxNodeViewModel Parent { get; set; }
+        void InitializeViewModel();
         // TODO: add functions to add and remove children, so as children could ask parent to remove them from parent's collections
     }
     public abstract class SyntaxNodeViewModel : ISyntaxNodeViewModel, INotifyPropertyChanged
@@ -18,6 +19,7 @@ namespace OneCSharp.OQL.UI
             get { return _parent; }
             set { _parent = value; }
         }
+        public abstract void InitializeViewModel();
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -39,5 +41,6 @@ namespace OneCSharp.OQL.UI
             get { return _parent; }
             set { _parent = value; }
         }
+        public virtual void InitializeViewModel() { }
     }
 }

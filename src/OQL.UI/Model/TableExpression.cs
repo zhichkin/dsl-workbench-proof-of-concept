@@ -3,23 +3,19 @@ using System.Collections.Generic;
 
 namespace OneCSharp.OQL.Model
 {
-    public abstract class TableExpression : SyntaxNode
+    public sealed class TableObject : SyntaxNode
     {
-        public TableExpression(ISyntaxNode parent, DbObject metadata) : base(parent)
-        {
-            Metadata = metadata;
-        }
-        public DbObject Metadata { get; protected set; }
-        public string Name { get { return Metadata.Name; } }
-        public string FullName
+        public TableObject(ISyntaxNode parent) : base(parent) { }
+        public DbObject Table { get; set; }
+        public string Name
         {
             get
             {
-                string fullName = Metadata.Parent.InfoBase.Database;
+                string fullName = Table.Parent.InfoBase.Database;
                 List<DbObject> owners = new List<DbObject>();
                 List<Namespace> parents = new List<Namespace>();
-                
-                Namespace parent = Metadata.Parent;
+
+                Namespace parent = Table.Parent;
                 while (parent != null)
                 {
                     parents.Add(parent);
@@ -31,7 +27,7 @@ namespace OneCSharp.OQL.Model
                     fullName += "." + item.Name;
                 }
 
-                DbObject owner = Metadata.Owner;
+                DbObject owner = Table.Owner;
                 while (owner != null)
                 {
                     owners.Add(owner);
@@ -43,21 +39,27 @@ namespace OneCSharp.OQL.Model
                     fullName += "." + item.Name;
                 }
 
-                return fullName + "." + Metadata.Name;
+                return fullName + "." + Table.Name;
             }
         }
     }
-    public sealed class TableSource : TableExpression
+    public sealed class AliasExpression : SyntaxNode
     {
-        public TableSource(ISyntaxNode parent, DbObject metadata) : base(parent, metadata)
-        {
-            Hint = HintTypes.None;
-            Alias = Metadata.Name;
-            JoinType = JoinTypes.None;
-        }
-        public string Hint { get; set; }
-        public string Alias { get; set; }
+        public AliasExpression(ISyntaxNode parent) : base(parent) { }
+        public string Alias { get; set; } = string.Empty;
+        public ISyntaxNode Expression { get; set; }
+    }
+    public sealed class HintExpression : SyntaxNode
+    {
+        public HintExpression(ISyntaxNode parent) : base(parent) { }
+        public string HintType { get; set; }
+        public ISyntaxNode Expression { get; set; }
+    }
+    public sealed class JoinOperator : SyntaxNode
+    {
+        public JoinOperator(ISyntaxNode parent) : base(parent) { }
         public string JoinType { get; set; }
-        //public BooleanFunction ON { get; set; }
+        public ISyntaxNode Expression { get; set; }
+        public ISyntaxNode ON { get; set; }
     }
 }
