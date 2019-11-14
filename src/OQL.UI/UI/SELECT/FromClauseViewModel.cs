@@ -16,7 +16,7 @@ namespace OneCSharp.OQL.UI
             InitializeViewModel();
         }
         public ISyntaxNode Model { get { return _model; } }
-        private void InitializeViewModel()
+        public override void InitializeViewModel()
         {
             Tables = new SyntaxNodesViewModel();
 
@@ -55,12 +55,16 @@ namespace OneCSharp.OQL.UI
             DbObject table = selectedNode.Payload as DbObject;
             if (table == null) return;
 
-            AliasExpression alias = new AliasExpression(_model);
-            alias.Alias = $"T{_model.Count}";
-            alias.Expression = new TableObject(alias) { Table = table };
-            _model.Add(alias);
-
-            AliasExpressionViewModel viewModel = new AliasExpressionViewModel(alias) { Parent = this };
+            // TODO: implement SyntaxTreeBuilder !!!
+            JoinOperator join = new JoinOperator(_model);
+            _model.Add(join);
+            AliasExpression alias = new AliasExpression(join) { Alias = $"T{_model.Count}" };
+            join.Expression = alias;
+            HintExpression hint = new HintExpression(alias);
+            alias.Expression = hint;
+            hint.Expression = new TableObject(hint) { Table = table };
+            
+            JoinOperatorViewModel viewModel = new JoinOperatorViewModel(join) { Parent = this };
             Tables.Add(viewModel);
         }
     }

@@ -10,5 +10,6 @@
         public const string ON = "ON";
         public const string OR = "AND";
         public const string NOT = "NOT";
+        public const string WITH = "WITH";
     }
 }

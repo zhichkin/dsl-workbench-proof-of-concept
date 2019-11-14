@@ -43,23 +43,4 @@ namespace OneCSharp.OQL.Model
             }
         }
     }
-    public sealed class AliasExpression : SyntaxNode
-    {
-        public AliasExpression(ISyntaxNode parent) : base(parent) { }
-        public string Alias { get; set; } = string.Empty;
-        public ISyntaxNode Expression { get; set; }
-    }
-    public sealed class HintExpression : SyntaxNode
-    {
-        public HintExpression(ISyntaxNode parent) : base(parent) { }
-        public string HintType { get; set; }
-        public ISyntaxNode Expression { get; set; }
-    }
-    public sealed class JoinOperator : SyntaxNode
-    {
-        public JoinOperator(ISyntaxNode parent) : base(parent) { }
-        public string JoinType { get; set; }
-        public ISyntaxNode Expression { get; set; }
-        public ISyntaxNode ON { get; set; }
-    }
 }

@@ -48,7 +48,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\AliasExpression.cs" />
     <Compile Include="Model\Enums.cs" />
+    <Compile Include="Model\HintExpression.cs" />
+    <Compile Include="Model\JoinOperator.cs" />
     <Compile Include="Model\Keywords.cs" />
     <Compile Include="Model\TableExpression.cs" />
     <Compile Include="MVVM\EventCommandsCollection.cs" />
@@ -101,6 +104,8 @@
     <Compile Include="UI\SELECT\SelectStatementViewModel.cs" />
     <Compile Include="UI\SyntaxNodeViewModel.cs" />
     <Compile Include="UI\TableObject\AliasExpressionViewModel.cs" />
+    <Compile Include="UI\TableObject\HintExpressionViewModel.cs" />
+    <Compile Include="UI\TableObject\JoinOperatorViewModel.cs" />
     <Compile Include="UI\TableObject\TableObjectViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

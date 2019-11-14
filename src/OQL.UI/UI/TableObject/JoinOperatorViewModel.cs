@@ -2,19 +2,25 @@
 
 namespace OneCSharp.OQL.UI
 {
-    public sealed class AliasExpressionViewModel : SyntaxNodeViewModel
+    public sealed class JoinOperatorViewModel : SyntaxNodeViewModel
     {
-        private readonly AliasExpression _model;
-        public AliasExpressionViewModel(AliasExpression model)
+        private readonly JoinOperator _model;
+        public JoinOperatorViewModel(JoinOperator model)
         {
             _model = model;
             InitializeViewModel();
         }
         public override void InitializeViewModel()
         {
+            _model.JoinType = _model.JoinType ?? JoinTypes.LeftJoin;
+
             if (_model.Expression is TableObject)
             {
                 Expression = new TableObjectViewModel((TableObject)_model.Expression) { Parent = this };
+            }
+            else if (_model.Expression is AliasExpression)
+            {
+                Expression = new AliasExpressionViewModel((AliasExpression)_model.Expression) { Parent = this };
             }
             else if (_model.Expression is HintExpression)
             {
@@ -23,10 +29,10 @@ namespace OneCSharp.OQL.UI
             Expression.InitializeViewModel();
         }
         public ISyntaxNode Model { get { return _model; } }
-        public string Alias
+        public string JoinType
         {
-            get { return _model.Alias; }
-            set { _model.Alias = value; OnPropertyChanged(nameof(Alias)); }
+            get { return _model.JoinType; }
+            set { _model.JoinType = value; OnPropertyChanged(nameof(JoinType)); }
         }
         public SyntaxNodeViewModel Expression { get; set; }
     }
