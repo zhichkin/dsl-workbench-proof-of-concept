@@ -5,19 +5,18 @@ namespace OneCSharp.OQL.Model
     public static class JoinTypes
     {
         public static string None = string.Empty;
-        public static string InnerJoin = "INNER JOIN";
-        public static string LeftJoin = "LEFT JOIN";
-        public static string RightJoin = "RIGHT JOIN";
-        public static string FullJoin = "FULL JOIN";
+        public static string Inner = "INNER";
+        public static string Left = "LEFT";
+        public static string Right = "RIGHT";
+        public static string Full = "FULL";
         public static List<string> JoinTypesList = new List<string>()
         {
-            JoinTypes.InnerJoin,
-            JoinTypes.LeftJoin,
-            JoinTypes.RightJoin,
-            JoinTypes.FullJoin
+            JoinTypes.Inner,
+            JoinTypes.Left,
+            JoinTypes.Right,
+            JoinTypes.Full
         };
     }
-
     public static class HintTypes
     {
         public static string None = string.Empty;
@@ -31,15 +30,44 @@ namespace OneCSharp.OQL.Model
         public static string RowLock = "ROWLOCK";
         public static List<string> HintTypesList = new List<string>()
         {
-            HintTypes.None,
             HintTypes.ReadUncommited, //NOLOCK
             HintTypes.ReadCommited,
             HintTypes.ReadCommitedLock,
+            HintTypes.ReadPast,
             HintTypes.RepeatableRead,
             HintTypes.Serializable,
             HintTypes.UpdateLock,
-            HintTypes.ReadPast,
             HintTypes.RowLock
+        };
+    }
+    public static class BooleanOperators
+    {
+        public const string AND = "AND";
+        public const string OR = "OR";
+        public const string NOT = "NOT";
+        public static List<string> BooleanOperatorsList = new List<string>()
+        {
+            BooleanOperators.AND,
+            BooleanOperators.OR,
+            BooleanOperators.NOT
+        };
+    }
+    public static class ComparisonOperators
+    {
+        public const string Equal = "=";
+        public const string NotEqual = "<>";
+        public const string Greater = ">";
+        public const string GreaterOrEqual = ">=";
+        public const string Less = "<";
+        public const string LessOrEqual = "<=";
+        public static List<string> ComparisonOperatorsList = new List<string>()
+        {
+            ComparisonOperators.Equal,
+            ComparisonOperators.NotEqual,
+            ComparisonOperators.Greater,
+            ComparisonOperators.GreaterOrEqual,
+            ComparisonOperators.Less,
+            ComparisonOperators.LessOrEqual
         };
     }
 }

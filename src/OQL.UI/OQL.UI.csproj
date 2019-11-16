@@ -48,12 +48,13 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\AliasExpression.cs" />
+    <Compile Include="Model\AliasSyntaxNode.cs" />
+    <Compile Include="Model\BooleanExpression.cs" />
     <Compile Include="Model\Enums.cs" />
-    <Compile Include="Model\HintExpression.cs" />
+    <Compile Include="Model\HintSyntaxNode.cs" />
     <Compile Include="Model\JoinOperator.cs" />
     <Compile Include="Model\Keywords.cs" />
-    <Compile Include="Model\TableExpression.cs" />
+    <Compile Include="Model\TableObject.cs" />
     <Compile Include="MVVM\EventCommandsCollection.cs" />
     <Compile Include="MVVM\EventToCommand.cs" />
     <Compile Include="Services\IOneCSharpCodeEditor.cs" />
@@ -63,10 +64,35 @@
     <Compile Include="Model\SyntaxNode.cs" />
     <Compile Include="Services\IOneCSharpCodeEditorConsumer.cs" />
     <Compile Include="Services\UIServices.cs" />
+    <Compile Include="UI\BooleanExpression\BooleanOperatorView.xaml.cs">
+      <DependentUpon>BooleanOperatorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\BooleanExpression\BooleanOperatorViewModel.cs" />
+    <Compile Include="UI\BooleanExpression\ComparisonOperatorView.xaml.cs">
+      <DependentUpon>ComparisonOperatorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\BooleanExpression\ComparisonOperatorViewModel.cs" />
+    <Compile Include="UI\BooleanExpression\OnSyntaxNodeDataTemplateSelector.cs" />
+    <Compile Include="UI\BooleanExpression\OnSyntaxNodeView.xaml.cs">
+      <DependentUpon>OnSyntaxNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\BooleanExpression\OnSyntaxNodeViewModel.cs" />
     <Compile Include="UI\Dialogs\TreeNodeViewModel.cs" />
     <Compile Include="UI\Dialogs\OneCSharpDialog.cs" />
     <Compile Include="UI\Dialogs\TypeSelectionDialog.xaml.cs">
       <DependentUpon>TypeSelectionDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\JoinOperator\AliasSyntaxNodeView.xaml.cs">
+      <DependentUpon>AliasSyntaxNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\JoinOperator\HintSyntaxNodeView.xaml.cs">
+      <DependentUpon>HintSyntaxNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\JoinOperator\JoinOperatorView.xaml.cs">
+      <DependentUpon>JoinOperatorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\JoinOperator\TableObjectView.xaml.cs">
+      <DependentUpon>TableObjectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Parameter\ParametersListView.xaml.cs">
       <DependentUpon>ParametersListView.xaml</DependentUpon>
@@ -103,10 +129,10 @@
     <Compile Include="UI\SELECT\FromClauseViewModel.cs" />
     <Compile Include="UI\SELECT\SelectStatementViewModel.cs" />
     <Compile Include="UI\SyntaxNodeViewModel.cs" />
-    <Compile Include="UI\TableObject\AliasExpressionViewModel.cs" />
-    <Compile Include="UI\TableObject\HintExpressionViewModel.cs" />
-    <Compile Include="UI\TableObject\JoinOperatorViewModel.cs" />
-    <Compile Include="UI\TableObject\TableObjectViewModel.cs" />
+    <Compile Include="UI\JoinOperator\AliasSyntaxNodeViewModel.cs" />
+    <Compile Include="UI\JoinOperator\HintSyntaxNodeViewModel.cs" />
+    <Compile Include="UI\JoinOperator\JoinOperatorViewModel.cs" />
+    <Compile Include="UI\JoinOperator\TableObjectViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -121,7 +147,35 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\BooleanExpression\BooleanOperatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\BooleanExpression\ComparisonOperatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\BooleanExpression\OnSyntaxNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Dialogs\TypeSelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\JoinOperator\AliasSyntaxNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\JoinOperator\HintSyntaxNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\JoinOperator\JoinOperatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\JoinOperator\TableObjectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -160,5 +214,6 @@
       <Name>Metadata.Provider</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -29,8 +29,8 @@ namespace OneCSharp.OQL.UI
         {
             this.SaveProcedureCommand = new DelegateCommand(SaveProcedure);
 
-            this.Parameters = new SyntaxNodesViewModel(); // ObservableCollection<SyntaxNodeViewModel>();
-            this.Statements = new SyntaxNodesViewModel();
+            this.Parameters = new SyntaxNodeListViewModel();
+            this.Statements = new SyntaxNodeListViewModel();
 
             if (_model.Parameters != null && _model.Parameters.Count > 0)
             {
@@ -57,8 +57,8 @@ namespace OneCSharp.OQL.UI
             get { return string.IsNullOrEmpty(_model.Name) ? "<procedure name>" : _model.Name; }
             set { _model.Name = value; OnPropertyChanged(nameof(Name)); }
         }
-        public SyntaxNodesViewModel Parameters { get; private set; } // ObservableCollection<SyntaxNodeViewModel>
-        public SyntaxNodesViewModel Statements { get; private set; }
+        public SyntaxNodeListViewModel Parameters { get; private set; } // ObservableCollection<SyntaxNodeViewModel>
+        public SyntaxNodeListViewModel Statements { get; private set; }
 
 
         public bool IsModified { get; private set; } = true; // new procedure is unmodified by default

@@ -27,30 +27,17 @@
         </StackPanel>
 
         <ItemsControl ItemsSource="{Binding Tables}" Margin="20,0,0,0">
-            <ItemsControl.ItemTemplate>
+            <ItemsControl.Resources>
                 
-                <!--<DataTemplate DataType="{x:Type ui:AliasExpressionViewModel}">
-                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                        <TextBlock Text="{Binding Alias}" FontWeight="SemiBold"/>
-                        <TextBlock Text=" = "/>
-                        <TextBlock Text="{Binding Expression.Name}"/>
-                    </StackPanel>
-                </DataTemplate>-->
-
-                <DataTemplate DataType="{x:Type ui:JoinOperatorViewModel}">
-                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                        <TextBlock Text="{Binding JoinType}" FontWeight="SemiBold" Foreground="Blue"/>
-                        <TextBlock Text="{Binding Expression.Alias}" FontWeight="SemiBold"/>
-                        <TextBlock Text=" = "/>
-                        <TextBlock Text="{Binding Expression.Expression.Expression.Name}"/>
-                        <TextBlock Text="WITH" FontWeight="SemiBold" Foreground="Blue"/>
-                        <TextBlock Text="("/>
-                        <TextBlock Text="{Binding Expression.Expression.HintType}"/>
-                        <TextBlock Text=")"/>
-                    </StackPanel>
+                <DataTemplate DataType="{x:Type ui:AliasSyntaxNodeViewModel}">
+                    <ui:AliasSyntaxNodeView Margin="0,3,0,0"/>
                 </DataTemplate>
 
-            </ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type ui:JoinOperatorViewModel}">
+                    <ui:JoinOperatorView Margin="0,3,0,0"/>
+                </DataTemplate>
+
+            </ItemsControl.Resources>
         </ItemsControl>
 
     </StackPanel>

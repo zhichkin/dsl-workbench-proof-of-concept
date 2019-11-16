@@ -1,11 +1,12 @@
 ﻿using OneCSharp.OQL.Model;
+using OneCSharp.OQL.UI.Services;
 
 namespace OneCSharp.OQL.UI
 {
-    public sealed class HintExpressionViewModel : SyntaxNodeViewModel
+    public sealed class HintSyntaxNodeViewModel : SyntaxNodeViewModel
     {
-        private readonly HintExpression _model;
-        public HintExpressionViewModel(HintExpression model)
+        private readonly HintSyntaxNode _model;
+        public HintSyntaxNodeViewModel(HintSyntaxNode model)
         {
             _model = model;
             InitializeViewModel();
@@ -21,11 +22,23 @@ namespace OneCSharp.OQL.UI
             Expression.InitializeViewModel();
         }
         public ISyntaxNode Model { get { return _model; } }
+        public string Keyword { get { return _model.Keyword; } }
         public string HintType
         {
             get { return _model.HintType; }
             set { _model.HintType = value; OnPropertyChanged(nameof(HintType)); }
         }
         public SyntaxNodeViewModel Expression { get; set; }
+
+
+        public void SelectHintType()
+        {
+            UIServices.OpenHintTypeSelectionPopup(HintTypeSelected);
+        }
+        private void HintTypeSelected(string hintType)
+        {
+            if (string.IsNullOrWhiteSpace(hintType)) return;
+            HintType = hintType;
+        }
     }
 }

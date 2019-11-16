@@ -2,10 +2,10 @@
 
 namespace OneCSharp.OQL.UI
 {
-    public sealed class AliasExpressionViewModel : SyntaxNodeViewModel
+    public sealed class AliasSyntaxNodeViewModel : SyntaxNodeViewModel
     {
-        private readonly AliasExpression _model;
-        public AliasExpressionViewModel(AliasExpression model)
+        private readonly AliasSyntaxNode _model;
+        public AliasSyntaxNodeViewModel(AliasSyntaxNode model)
         {
             _model = model;
             InitializeViewModel();
@@ -16,9 +16,9 @@ namespace OneCSharp.OQL.UI
             {
                 Expression = new TableObjectViewModel((TableObject)_model.Expression) { Parent = this };
             }
-            else if (_model.Expression is HintExpression)
+            else if (_model.Expression is HintSyntaxNode)
             {
-                Expression = new HintExpressionViewModel((HintExpression)_model.Expression) { Parent = this };
+                Expression = new HintSyntaxNodeViewModel((HintSyntaxNode)_model.Expression) { Parent = this };
             }
             Expression.InitializeViewModel();
         }

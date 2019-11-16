@@ -20,6 +20,7 @@ namespace OneCSharp.OQL.UI.Dialogs
             if (viewModel == null) return;
             viewModel.SelectedNode = (TreeNodeViewModel)e.NewValue;
             this.OnSelectionChanged?.Invoke(viewModel.SelectedNode);
+            e.Handled = true;
         }
         public Action<TreeNodeViewModel> OnSelectionChanged;
     }

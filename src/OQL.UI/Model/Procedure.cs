@@ -4,13 +4,13 @@
     {
         public Procedure()
         {
-            Parameters = new SyntaxNodes(this);
-            Statements = new SyntaxNodes(this);
+            Parameters = new SyntaxNodeList(this);
+            Statements = new SyntaxNodeList(this);
         }
         public Procedure(ISyntaxNode parent) : this() { _parent = parent; }
         public string Keyword { get { return Keywords.PROCEDURE; } }
         public string Name { get; set; }
-        public SyntaxNodes Parameters { get; set; }
-        public SyntaxNodes Statements { get; set; }
+        public SyntaxNodeList Parameters { get; set; }
+        public SyntaxNodeList Statements { get; set; }
     }
 }

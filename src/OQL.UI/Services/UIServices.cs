@@ -1,11 +1,10 @@
 ﻿using OneCSharp.Metadata;
+using OneCSharp.OQL.Model;
 using OneCSharp.OQL.UI.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 namespace OneCSharp.OQL.UI.Services
@@ -146,6 +145,68 @@ namespace OneCSharp.OQL.UI.Services
                 if (ns.DbObjects != null && ns.DbObjects.Count > 0) return false;
             }
             return true;
+        }
+
+
+        private static Popup _popup;
+        private static Action<string> _callback;
+        public static void OpenJoinTypeSelectionPopup(Action<string> callback)
+        {
+            _callback = callback;
+
+            ListView selectionList = new ListView() { ItemsSource = JoinTypes.JoinTypesList };
+            selectionList.SelectionChanged += JoinType_Selected;
+
+            _popup = new Popup
+            {
+                Placement = PlacementMode.Mouse,
+                AllowsTransparency = true,
+                Child = selectionList
+            };
+            _popup.IsOpen = true;
+        }
+        private static void JoinType_Selected(object sender, SelectionChangedEventArgs e)
+        {
+            if (_popup == null) return;
+
+            _popup.IsOpen = false;
+            _popup = null;
+
+            if (sender is ListView view)
+            {
+                _callback((string)view.SelectedItem);
+            }
+            _callback = null;
+            e.Handled = true;
+        }
+        public static void OpenHintTypeSelectionPopup(Action<string> callback)
+        {
+            _callback = callback;
+
+            ListView selectionList = new ListView() { ItemsSource = HintTypes.HintTypesList };
+            selectionList.SelectionChanged += HintType_Selected;
+
+            _popup = new Popup
+            {
+                Placement = PlacementMode.Mouse,
+                AllowsTransparency = true,
+                Child = selectionList
+            };
+            _popup.IsOpen = true;
+        }
+        private static void HintType_Selected(object sender, SelectionChangedEventArgs e)
+        {
+            if (_popup == null) return;
+
+            _popup.IsOpen = false;
+            _popup = null;
+
+            if (sender is ListView view)
+            {
+                _callback((string)view.SelectedItem);
+            }
+            _callback = null;
+            e.Handled = true;
         }
     }
 }

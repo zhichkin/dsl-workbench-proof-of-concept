@@ -15,17 +15,17 @@
         public WhereClauseSyntaxNode WHERE { get; set; }
         public SelectClauseSyntaxNode SELECT { get; set; }
     }
-    public sealed class FromClauseSyntaxNode : SyntaxNodes, IKeyword
+    public sealed class FromClauseSyntaxNode : SyntaxNodeList, IKeyword
     {
         public string Keyword { get { return Keywords.FROM; } }
         public FromClauseSyntaxNode(SelectStatement parent) { Parent = parent; }
     }
-    public sealed class WhereClauseSyntaxNode : SyntaxNodes, IKeyword
+    public sealed class WhereClauseSyntaxNode : SyntaxNodeList, IKeyword
     {
         public string Keyword { get { return Keywords.WHERE; } }
         public WhereClauseSyntaxNode(SelectStatement parent) { Parent = parent; }
     }
-    public sealed class SelectClauseSyntaxNode : SyntaxNodes, IKeyword
+    public sealed class SelectClauseSyntaxNode : SyntaxNodeList, IKeyword
     {
         public string Keyword { get { return Keywords.SELECT; } }
         public SelectClauseSyntaxNode(SelectStatement parent) { Parent = parent; }

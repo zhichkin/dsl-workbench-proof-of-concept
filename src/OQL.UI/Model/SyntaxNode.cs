@@ -14,11 +14,11 @@ namespace OneCSharp.OQL.Model
         public SyntaxNode(ISyntaxNode parent) { _parent = parent; }
         public ISyntaxNode Parent { get { return _parent; } set { _parent = value; } }
     }
-    public class SyntaxNodes : ObservableCollection<ISyntaxNode>, ISyntaxNode
+    public class SyntaxNodeList : ObservableCollection<ISyntaxNode>, ISyntaxNode
     {
         protected ISyntaxNode _parent = null;
-        public SyntaxNodes() { }
-        public SyntaxNodes(ISyntaxNode parent) { _parent = parent; }
+        public SyntaxNodeList() { }
+        public SyntaxNodeList(ISyntaxNode parent) { _parent = parent; }
         public ISyntaxNode Parent { get { return _parent; } set { _parent = value; } }
     }
     public interface IKeyword

@@ -13,7 +13,7 @@
 
         <!-- Command panel -->
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <Menu >
+            <Menu>
                 <MenuItem Command="{Binding SaveProcedureCommand}">
                     <MenuItem.Header>
                         <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Save}"/>

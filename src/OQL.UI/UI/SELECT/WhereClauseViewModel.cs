@@ -1,6 +1,6 @@
 ﻿namespace OneCSharp.OQL.UI
 {
-    public sealed class WhereClauseViewModel : SyntaxNodesViewModel
+    public sealed class WhereClauseViewModel : SyntaxNodeListViewModel
     {
         public WhereClauseViewModel(SelectStatementViewModel parent) { Parent = parent; }
     }
