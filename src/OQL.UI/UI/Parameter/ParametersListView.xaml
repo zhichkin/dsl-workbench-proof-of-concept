@@ -40,8 +40,10 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Margin="-6,0,0,0">
                                 <TextBlock Text="@" FontWeight="SemiBold" Margin="0,0,2,0" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding Name}" MinWidth="50" Margin="0" VerticalContentAlignment="Center"
-                                         BorderThickness="1" BorderBrush="LightGray" TextChanged="Name_TextChanged"/>
+                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                         MinWidth="50" Margin="0" VerticalContentAlignment="Center"
+                                         BorderThickness="1" BorderBrush="LightGray"
+                                         TextChanged="Name_TextChanged"/>
                             </StackPanel>
                         </DataTemplate>
                     </GridViewColumn.CellTemplate>

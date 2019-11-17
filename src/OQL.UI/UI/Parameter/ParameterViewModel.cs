@@ -6,30 +6,31 @@ namespace OneCSharp.OQL.UI
 {
     public sealed class ParameterViewModel : SyntaxNodeViewModel
     {
-        private readonly Parameter _model;
-        public ParameterViewModel() { _model = new Parameter(); InitializeViewModel(); }
-        public ParameterViewModel(Parameter model) { _model = model; InitializeViewModel(); }
+        public ParameterViewModel(ISyntaxNodeViewModel parent, Parameter model) : base(parent, model)
+        {
+            InitializeViewModel();
+        }
         public override void InitializeViewModel() { }
         public string Name
         {
-            get { return string.IsNullOrEmpty(_model.Name) ? "<parameter name>" : _model.Name; }
-            set { _model.Name = value; OnPropertyChanged(nameof(Name)); }
+            get { return string.IsNullOrEmpty(((Parameter)Model).Name) ? "<parameter name>" : ((Parameter)Model).Name; }
+            set { ((Parameter)Model).Name = value; OnPropertyChanged(nameof(Name)); }
         }
-        public string TypeName { get { return UIServices.GetTypeName(_model.Type); } }
+        public string TypeName { get { return UIServices.GetTypeName(((Parameter)Model).Type); } }
         public Type Type
         {
-            get { return _model.Type; }
-            set { _model.Type = value; OnPropertyChanged(nameof(TypeName)); }
+            get { return ((Parameter)Model).Type; }
+            set { ((Parameter)Model).Type = value; OnPropertyChanged(nameof(TypeName)); }
         }
         public bool IsInput
         {
-            get { return _model.IsInput; }
-            set { _model.IsInput = value; OnPropertyChanged(nameof(IsInput)); }
+            get { return ((Parameter)Model).IsInput; }
+            set { ((Parameter)Model).IsInput = value; OnPropertyChanged(nameof(IsInput)); }
         }
         public bool IsOutput
         {
-            get { return _model.IsOutput; }
-            set { _model.IsOutput = value; OnPropertyChanged(nameof(IsOutput)); }
+            get { return ((Parameter)Model).IsOutput; }
+            set { ((Parameter)Model).IsOutput = value; OnPropertyChanged(nameof(IsOutput)); }
         }
 
         private bool _IsRemoveButtonVisible = false;
@@ -41,10 +42,10 @@ namespace OneCSharp.OQL.UI
         public void RemoveParameter()
         {
             // TODO: child should ask parent to remove it from parent's collections !
-            if (_model == null || _model.Parent == null) return;
+            if (Model == null || ((Parameter)Model).Parent == null) return;
             Procedure parent = _model.Parent as Procedure;
             if (parent == null) return;
-            parent.Parameters.Remove(_model);
+            parent.Parameters.Remove(((Parameter)Model));
 
             ProcedureViewModel vm = this.Parent as ProcedureViewModel;
             if (vm == null) return;
@@ -53,8 +54,8 @@ namespace OneCSharp.OQL.UI
         public void MoveParameterUp()
         {
             // TODO: child should ask parent to remove it from parent's collections !
-            if (_model == null || _model.Parent == null) return;
-            Procedure parent = _model.Parent as Procedure;
+            if (Model == null || ((Parameter)Model).Parent == null) return;
+            Procedure parent = ((Parameter)Model).Parent as Procedure;
             if (parent == null) return;
             // TODO: parent.Parameters.Remove(_model);
 
@@ -65,8 +66,8 @@ namespace OneCSharp.OQL.UI
         public void MoveParameterDown()
         {
             // TODO: child should ask parent to remove it from parent's collections !
-            if (_model == null || _model.Parent == null) return;
-            Procedure parent = _model.Parent as Procedure;
+            if (Model == null || ((Parameter)Model).Parent == null) return;
+            Procedure parent = ((Parameter)Model).Parent as Procedure;
             if (parent == null) return;
             // TODO: parent.Parameters.Remove(_model);
 

@@ -1,41 +1,38 @@
 ﻿using OneCSharp.OQL.Model;
 using OneCSharp.OQL.UI.Services;
-using System;
 
 namespace OneCSharp.OQL.UI
 {
     public sealed class JoinOperatorViewModel : SyntaxNodeViewModel
     {
-        private readonly JoinOperator _model;
-        public JoinOperatorViewModel(JoinOperator model)
+        public JoinOperatorViewModel(ISyntaxNodeViewModel parent, JoinOperator model) : base(parent, model)
         {
-            _model = model ?? throw new ArgumentNullException(nameof(model));
             InitializeViewModel();
         }
         public override void InitializeViewModel()
         {
-            _model.JoinType = _model.JoinType ?? JoinTypes.Left;
+            JoinOperator model = Model as JoinOperator;
+            model.JoinType = model.JoinType ?? JoinTypes.Left;
 
-            if (_model.Expression is TableObject)
+            if (model.Expression is TableObject)
             {
-                Expression = new TableObjectViewModel((TableObject)_model.Expression) { Parent = this };
+                Expression = new TableObjectViewModel(this, (TableObject)model.Expression);
             }
-            else if (_model.Expression is AliasSyntaxNode)
+            else if (model.Expression is AliasSyntaxNode)
             {
-                Expression = new AliasSyntaxNodeViewModel((AliasSyntaxNode)_model.Expression) { Parent = this };
+                Expression = new AliasSyntaxNodeViewModel(this, (AliasSyntaxNode)model.Expression);
             }
-            else if (_model.Expression is HintSyntaxNode)
+            else if (model.Expression is HintSyntaxNode)
             {
-                Expression = new HintSyntaxNodeViewModel((HintSyntaxNode)_model.Expression) { Parent = this };
+                Expression = new HintSyntaxNodeViewModel(this, (HintSyntaxNode)model.Expression);
             }
 
-            OnExpression = new OnSyntaxNodeViewModel(_model.ON);
+            OnExpression = new OnSyntaxNodeViewModel(this, model.ON);
         }
-        public ISyntaxNode Model { get { return _model; } }
         public string Keyword
         {
-            get { return $"{_model.JoinType} {_model.Keyword}"; }
-            set { _model.JoinType = value; OnPropertyChanged(nameof(Keyword)); }
+            get { return $"{((JoinOperator)Model).JoinType} {((JoinOperator)Model).Keyword}"; }
+            set { ((JoinOperator)Model).JoinType = value; OnPropertyChanged(nameof(Keyword)); }
         }
         public SyntaxNodeViewModel Expression { get; set; }
         public SyntaxNodeViewModel OnExpression { get; set; }

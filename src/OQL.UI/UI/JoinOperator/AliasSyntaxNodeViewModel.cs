@@ -4,29 +4,27 @@ namespace OneCSharp.OQL.UI
 {
     public sealed class AliasSyntaxNodeViewModel : SyntaxNodeViewModel
     {
-        private readonly AliasSyntaxNode _model;
-        public AliasSyntaxNodeViewModel(AliasSyntaxNode model)
+        public AliasSyntaxNodeViewModel(ISyntaxNodeViewModel parent, AliasSyntaxNode model) : base(parent, model)
         {
-            _model = model;
             InitializeViewModel();
         }
         public override void InitializeViewModel()
         {
-            if (_model.Expression is TableObject)
+            AliasSyntaxNode model = Model as AliasSyntaxNode;
+            if (model.Expression is TableObject)
             {
-                Expression = new TableObjectViewModel((TableObject)_model.Expression) { Parent = this };
+                Expression = new TableObjectViewModel(this, (TableObject)model.Expression);
             }
-            else if (_model.Expression is HintSyntaxNode)
+            else if (model.Expression is HintSyntaxNode)
             {
-                Expression = new HintSyntaxNodeViewModel((HintSyntaxNode)_model.Expression) { Parent = this };
+                Expression = new HintSyntaxNodeViewModel(this, (HintSyntaxNode)model.Expression);
             }
             Expression.InitializeViewModel();
         }
-        public ISyntaxNode Model { get { return _model; } }
         public string Alias
         {
-            get { return _model.Alias; }
-            set { _model.Alias = value; OnPropertyChanged(nameof(Alias)); }
+            get { return ((AliasSyntaxNode)Model).Alias; }
+            set { ((AliasSyntaxNode)Model).Alias = value; OnPropertyChanged(nameof(Alias)); }
         }
         public SyntaxNodeViewModel Expression { get; set; }
     }

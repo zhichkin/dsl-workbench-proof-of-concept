@@ -4,17 +4,11 @@ namespace OneCSharp.OQL.UI
 {
     public sealed class TableObjectViewModel : SyntaxNodeViewModel
     {
-        private readonly TableObject _model;
-        public TableObjectViewModel(TableObject model)
+        public TableObjectViewModel(ISyntaxNodeViewModel parent, TableObject model) : base(parent, model)
         {
-            _model = model;
             InitializeViewModel();
         }
-        public override void InitializeViewModel()
-        {
-            
-        }
-        public ISyntaxNode Model { get { return _model; } }
-        public string Name { get { return _model.Name; } }
+        public override void InitializeViewModel() { }
+        public string Name { get { return ((TableObject)Model).Name; } }
     }
 }

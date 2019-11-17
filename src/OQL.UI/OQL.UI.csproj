@@ -54,6 +54,7 @@
     <Compile Include="Model\HintSyntaxNode.cs" />
     <Compile Include="Model\JoinOperator.cs" />
     <Compile Include="Model\Keywords.cs" />
+    <Compile Include="Model\PropertyObject.cs" />
     <Compile Include="Model\TableObject.cs" />
     <Compile Include="MVVM\EventCommandsCollection.cs" />
     <Compile Include="MVVM\EventToCommand.cs" />
@@ -72,7 +73,11 @@
       <DependentUpon>ComparisonOperatorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\BooleanExpression\ComparisonOperatorViewModel.cs" />
-    <Compile Include="UI\BooleanExpression\OnSyntaxNodeDataTemplateSelector.cs" />
+    <Compile Include="UI\Parameter\ParameterReferenceView.xaml.cs">
+      <DependentUpon>ParameterReferenceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Parameter\ParameterReferenceViewModel.cs" />
+    <Compile Include="UI\SyntaxNodeDataTemplateSelector.cs" />
     <Compile Include="UI\BooleanExpression\OnSyntaxNodeView.xaml.cs">
       <DependentUpon>OnSyntaxNodeView.xaml</DependentUpon>
     </Compile>
@@ -97,9 +102,6 @@
     <Compile Include="UI\Parameter\ParametersListView.xaml.cs">
       <DependentUpon>ParametersListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Parameter\ParameterView.xaml.cs">
-      <DependentUpon>ParameterView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\Parameter\ParameterViewModel.cs" />
     <Compile Include="UI\Procedure\ProcedureView.xaml.cs">
       <DependentUpon>ProcedureView.xaml</DependentUpon>
@@ -117,6 +119,14 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="UI\Property\PropertyReferenceView.xaml.cs">
+      <DependentUpon>PropertyReferenceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Property\PropertyObjectViewModel.cs" />
+    <Compile Include="UI\Property\PropertyReferenceViewModel.cs" />
+    <Compile Include="UI\Property\PropertyObjectView.xaml.cs">
+      <DependentUpon>PropertyObjectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\SELECT\FromClauseView.xaml.cs">
       <DependentUpon>FromClauseView.xaml</DependentUpon>
@@ -179,15 +189,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Parameter\ParameterReferenceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Parameter\ParametersListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Parameter\ParameterView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="UI\Procedure\ProcedureView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Property\PropertyReferenceView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Property\PropertyObjectView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

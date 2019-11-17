@@ -4,18 +4,15 @@ namespace OneCSharp.OQL.UI
 {
     public sealed class BooleanOperatorViewModel : SyntaxNodeViewModel
     {
-        private readonly BooleanOperator _model;
-        public BooleanOperatorViewModel(SyntaxNodeViewModel parent, BooleanOperator model)
+        public BooleanOperatorViewModel(ISyntaxNodeViewModel parent, BooleanOperator model) : base(parent, model)
         {
-            _model = model;
-            Parent = parent;
             InitializeViewModel();
         }
         public override void InitializeViewModel()
         {
-            Operands = new SyntaxNodeListViewModel(this);
+            Operands = new SyntaxNodeListViewModel(this, ((BooleanOperator)Model).Operands);
 
-            foreach (var operand in _model.Operands)
+            foreach (var operand in ((BooleanOperator)Model).Operands)
             {
                 if (operand is BooleanOperator)
                 {
@@ -27,11 +24,10 @@ namespace OneCSharp.OQL.UI
                 }
             }
         }
-        public ISyntaxNode Model { get { return _model; } }
         public string Keyword
         {
-            get { return _model.Keyword; }
-            set { _model.Keyword = value; OnPropertyChanged(nameof(Keyword)); }
+            get { return ((BooleanOperator)Model).Keyword; }
+            set { ((BooleanOperator)Model).Keyword = value; OnPropertyChanged(nameof(Keyword)); }
         }
         public SyntaxNodeListViewModel Operands { get; set; }
     }

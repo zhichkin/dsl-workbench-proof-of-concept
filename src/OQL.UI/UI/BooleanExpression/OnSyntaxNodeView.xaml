@@ -15,7 +15,7 @@
         <DataTemplate x:Key="ComparisonOperatorTemplate">
             <ui:ComparisonOperatorView/>
         </DataTemplate>
-        <ui:OnSyntaxNodeDataTemplateSelector x:Key="Selector"
+        <ui:SyntaxNodeDataTemplateSelector x:Key="Selector"
             BooleanOperatorTemplate="{StaticResource BooleanOperatorTemplate}"
             ComparisonOperatorTemplate="{StaticResource ComparisonOperatorTemplate}"/>
     </UserControl.Resources>

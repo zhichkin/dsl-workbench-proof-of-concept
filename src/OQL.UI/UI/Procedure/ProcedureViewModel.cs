@@ -2,18 +2,14 @@
 using OneCSharp.Metadata;
 using OneCSharp.OQL.Model;
 using OneCSharp.OQL.UI.Services;
-using System;
-using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 
 namespace OneCSharp.OQL.UI
 {
     public sealed class ProcedureViewModel : SyntaxNodeViewModel, IOneCSharpCodeEditor
     {
-        private Procedure _model;
-        public event SaveSyntaxNodeEventHandler Save;
         public MetadataProvider Metadata { get; set; }
+        public event SaveSyntaxNodeEventHandler Save;
 
         public ProcedureViewModel()
         {
@@ -29,47 +25,45 @@ namespace OneCSharp.OQL.UI
         {
             this.SaveProcedureCommand = new DelegateCommand(SaveProcedure);
 
-            this.Parameters = new SyntaxNodeListViewModel();
-            this.Statements = new SyntaxNodeListViewModel();
+            Procedure model = Model as Procedure;
 
-            if (_model.Parameters != null && _model.Parameters.Count > 0)
+            this.Parameters = new SyntaxNodeListViewModel(this, model.Parameters);
+            this.Statements = new SyntaxNodeListViewModel(this, model.Statements);
+
+            if (model.Parameters != null && model.Parameters.Count > 0)
             {
-                foreach (var parameter in _model.Parameters)
+                foreach (var parameter in model.Parameters)
                 {
-                    this.Parameters.Add(new ParameterViewModel((Parameter)parameter));
+                    ParameterViewModel child = new ParameterViewModel(this, (Parameter)parameter);
+                    this.Parameters.Add(child);
                 }
             }
 
-            if (_model.Statements != null && _model.Statements.Count > 0)
+            if (model.Statements != null && model.Statements.Count > 0)
             {
-                foreach (var statement in _model.Statements)
+                foreach (var statement in model.Statements)
                 {
                     if (statement is SelectStatement)
                     {
-                        this.Statements.Add(new SelectStatementViewModel((SelectStatement)statement));
+                        SelectStatementViewModel child = new SelectStatementViewModel(this, (SelectStatement)statement);
+                        this.Statements.Add(child);
                     }
                 }
             }
         }
-        public string Keyword { get { return _model.Keyword; } }
+        public string Keyword { get { return ((Procedure)Model).Keyword; } }
         public string Name
         {
-            get { return string.IsNullOrEmpty(_model.Name) ? "<procedure name>" : _model.Name; }
-            set { _model.Name = value; OnPropertyChanged(nameof(Name)); }
+            get { return string.IsNullOrEmpty(((Procedure)Model).Name) ? "<procedure name>" : ((Procedure)Model).Name; }
+            set { ((Procedure)Model).Name = value; OnPropertyChanged(nameof(Name)); }
         }
-        public SyntaxNodeListViewModel Parameters { get; private set; } // ObservableCollection<SyntaxNodeViewModel>
+        public SyntaxNodeListViewModel Parameters { get; private set; }
         public SyntaxNodeListViewModel Statements { get; private set; }
 
 
         public bool IsModified { get; private set; } = true; // new procedure is unmodified by default
-        public void EditSyntaxNode(ISyntaxNode node)
-        {
-            if (node == null) throw new ArgumentNullException(nameof(node));
-            if (!(node is Procedure)) throw new ArgumentException(nameof(node));
-            _model = (Procedure)node;
-            IsModified = false;
-        }
         public ICommand SaveProcedureCommand { get; private set; }
+
         public void SaveProcedure()
         {
             CodeEditorEventArgs args = new CodeEditorEventArgs(_model);
@@ -89,8 +83,8 @@ namespace OneCSharp.OQL.UI
         public void AddParameter()
         {
             Parameter parameter = new Parameter(_model);
-            _model.Parameters.Add(parameter);
-            this.Parameters.Add(new ParameterViewModel(parameter) { Parent = this });
+            ((Procedure)Model).Parameters.Add(parameter);
+            this.Parameters.Add(new ParameterViewModel(this, parameter));
         }
         public void RemoveParameter(ParameterViewModel parameter)
         {
@@ -129,8 +123,8 @@ namespace OneCSharp.OQL.UI
         public void AddSelectStatement()
         {
             SelectStatement select = new SelectStatement(_model);
-            _model.Statements.Add(select);
-            this.Statements.Add(new SelectStatementViewModel(select) { Parent = this });
+            ((Procedure)Model).Statements.Add(select);
+            this.Statements.Add(new SelectStatementViewModel(this, select));
         }
     }
 }

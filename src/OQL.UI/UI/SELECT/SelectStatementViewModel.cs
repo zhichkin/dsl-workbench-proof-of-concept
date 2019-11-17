@@ -5,29 +5,22 @@ namespace OneCSharp.OQL.UI
     public sealed class SelectStatementViewModel : SyntaxNodeViewModel
     {
         private const string ALIAS_PLACEHOLDER = "<alias>";
-        private readonly SelectStatement _model;
-        public SelectStatementViewModel()
+        public SelectStatementViewModel(ISyntaxNodeViewModel parent, SelectStatement model) : base(parent, model)
         {
-            _model = new SelectStatement();
-            InitializeViewModel();
-        }
-        public SelectStatementViewModel(SelectStatement model)
-        {
-            _model = model;
             InitializeViewModel();
         }
         public override void InitializeViewModel()
         {
-            this.FROM = new FromClauseViewModel(this);
-            this.WHERE = new WhereClauseViewModel(this);
-            this.SELECT = new SelectClauseViewModel(this);
+            SelectStatement model = Model as SelectStatement;
+            this.FROM = new FromClauseViewModel(this, model.FROM);
+            this.WHERE = new WhereClauseViewModel(this, model.WHERE);
+            this.SELECT = new SelectClauseViewModel(this, model.SELECT);
         }
-        public ISyntaxNode Model { get { return _model; } }
-        public string Keyword { get { return _model.Keyword; } }
+        public string Keyword { get { return ((SelectStatement)Model).Keyword; } }
         public string Alias
         {
-            get { return string.IsNullOrEmpty(_model.Alias) ? ALIAS_PLACEHOLDER : _model.Alias; }
-            set { _model.Alias = value; OnPropertyChanged(nameof(Alias)); }
+            get { return string.IsNullOrEmpty(((SelectStatement)Model).Alias) ? ALIAS_PLACEHOLDER : ((SelectStatement)Model).Alias; }
+            set { ((SelectStatement)Model).Alias = value; OnPropertyChanged(nameof(Alias)); }
         }
         public FromClauseViewModel FROM { get; private set; }
         public WhereClauseViewModel WHERE { get; private set; }

@@ -11,6 +11,33 @@ namespace OneCSharp.OQL.UI.Services
 {
     public static class UIServices
     {
+        public static TParent GetParent<TParent>(ISyntaxNode child) where TParent : ISyntaxNode
+        {
+            ISyntaxNode parent = child.Parent;
+            while (parent != null && parent.GetType() != typeof(TParent))
+            {
+                parent = parent.Parent;
+            }
+            return (TParent)parent;
+        }
+        public static TParent GetParent<TParent>(ISyntaxNodeViewModel child) where TParent : ISyntaxNodeViewModel
+        {
+            ISyntaxNodeViewModel parent = child.Parent;
+            while (parent != null && parent.GetType() != typeof(TParent))
+            {
+                parent = parent.Parent;
+            }
+            return (TParent)parent;
+        }
+        public static MetadataProvider GetMetadataProvider(ISyntaxNodeViewModel viewModel)
+        {
+            ProcedureViewModel parent = GetParent<ProcedureViewModel>(viewModel);
+            if (parent == null) return null;
+            return parent.Metadata;
+        }
+
+
+
         private static Popup _TypeSelectionPopup;
         private static TypeSelectionDialog _TypeSelectionDialog;
         private static TreeNodeViewModel GetTypesTreeForSelection()
@@ -26,17 +53,16 @@ namespace OneCSharp.OQL.UI.Services
         }
         public static void OpenTypeSelectionPopup(UIElement target, Action<TreeNodeViewModel> callback)
         {
-            if (_TypeSelectionPopup == null)
+            if (_TypeSelectionPopup != null) CloseTypeSelectionPopup();
+
+            TreeNodeViewModel model = GetTypesTreeForSelection();
+            _TypeSelectionDialog = new TypeSelectionDialog(model);
+            _TypeSelectionPopup = new Popup
             {
-                TreeNodeViewModel model = GetTypesTreeForSelection();
-                _TypeSelectionDialog = new TypeSelectionDialog(model);
-                _TypeSelectionPopup = new Popup
-                {
-                    Placement = PlacementMode.Bottom,
-                    AllowsTransparency = true,
-                    Child = _TypeSelectionDialog
-                };
-            }
+                Placement = PlacementMode.Bottom,
+                AllowsTransparency = true,
+                Child = _TypeSelectionDialog
+            };
             _TypeSelectionPopup.PlacementTarget = target;
             _TypeSelectionDialog.OnSelectionChanged = callback;
             _TypeSelectionPopup.IsOpen = true;
@@ -150,6 +176,7 @@ namespace OneCSharp.OQL.UI.Services
 
         private static Popup _popup;
         private static Action<string> _callback;
+        private static Action<object> _callbackObject;
         public static void OpenJoinTypeSelectionPopup(Action<string> callback)
         {
             _callback = callback;
@@ -207,6 +234,199 @@ namespace OneCSharp.OQL.UI.Services
             }
             _callback = null;
             e.Handled = true;
+        }
+        public static void OpenComparisonOperatorSelectionPopup(Action<string> callback)
+        {
+            _callback = callback;
+
+            ListView selectionList = new ListView() { ItemsSource = ComparisonOperators.ComparisonOperatorsList };
+            selectionList.SelectionChanged += ComparisonOperator_Selected; // TODO: use WeakEventManager class
+
+            _popup = new Popup
+            {
+                Placement = PlacementMode.Mouse,
+                AllowsTransparency = true,
+                Child = selectionList
+            };
+            _popup.IsOpen = true;
+        }
+        private static void ComparisonOperator_Selected(object sender, SelectionChangedEventArgs e)
+        {
+            if (_popup == null) return;
+
+            _popup.IsOpen = false;
+            _popup = null;
+
+            if (sender is ListView view)
+            {
+                _callback((string)view.SelectedItem);
+                view.SelectionChanged -= ComparisonOperator_Selected; // TODO: use WeakEventManager class
+            }
+            _callback = null;
+            e.Handled = true;
+        }
+        public static void OpenPropertyReferenceSelectionPopup(ISyntaxNode caller, Action<object> callback)
+        {
+            var root = new TreeNodeViewModel(null, "");
+            var parameters = ParametersToSelect(caller);
+            var properties = PropertiesToSelect(caller);
+            if (parameters == null && properties == null) return;
+
+            if (parameters != null)
+            {
+                parameters.Parent = root;
+                root.Children.Add(parameters);
+            }
+
+            if (properties != null)
+            {
+                foreach (var child in properties.Children)
+                {
+                    child.Parent = root;
+                    root.Children.Add(child);
+                }
+            }
+
+            _callbackObject = callback;
+            TypeSelectionDialog dialog = new TypeSelectionDialog(root);
+            dialog.OnSelectionChanged = PropertyReference_Selected;
+
+            _popup = new Popup
+            {
+                Placement = PlacementMode.Mouse,
+                AllowsTransparency = true,
+                Child = dialog
+            };
+            _popup.IsOpen = true;
+        }
+        private static void PropertyReference_Selected(TreeNodeViewModel selectedItem)
+        {
+            if (_popup == null) return;
+
+            _popup.IsOpen = false;
+            _popup = null;
+
+            _callbackObject(selectedItem);
+            _callbackObject = null;
+        }
+        private static TreeNodeViewModel ParametersToSelect(ISyntaxNode caller)
+        {
+            Procedure procedure = GetParent<Procedure>(caller);
+            if (procedure == null || procedure.Parameters == null || procedure.Parameters.Count == 0) return null;
+
+            var root = new TreeNodeViewModel(null, "Parameters");
+            foreach (Parameter parameter in procedure.Parameters)
+            {
+                var child = new TreeNodeViewModel(root, $"@{parameter.Name} ({GetTypeName(parameter.Type)})", parameter);
+                root.Children.Add(child);
+            }
+            return root;
+        }
+        private static TreeNodeViewModel PropertiesToSelect(ISyntaxNode caller)
+        {
+            JoinOperator parent = GetParent<JoinOperator>(caller);
+            if (parent == null) return null;
+            if (!(parent.Parent is FromClauseSyntaxNode from)) return null;
+
+            List<ISyntaxNode> tables = new List<ISyntaxNode>();
+            int index = from.IndexOf(parent);
+            for (int i = 0; i <= index; i++)
+            {
+                tables.Add(from[i]);
+            }
+            // TODO: inspect FROM clause to contain SelectStatement
+            if (tables.Count == 0) return null;
+
+            var root = new TreeNodeViewModel(null, "");
+            foreach (ISyntaxNode table in tables)
+            {
+                string caption = string.Empty;
+                AliasSyntaxNode payload = null;
+                if (table is AliasSyntaxNode alias)
+                {
+                    caption = alias.Alias;
+                    payload = alias;
+                }
+                else if (table is JoinOperator join)
+                {
+                    caption = ((AliasSyntaxNode)join.Expression).Alias;
+                    payload = (AliasSyntaxNode)join.Expression;
+                }
+                var tableNode = new TreeNodeViewModel(root, caption, payload);
+                root.Children.Add(tableNode);
+
+                TableObject source = ((HintSyntaxNode)payload.Expression).Expression as TableObject;
+                foreach (DbProperty dbp in source.Table.Properties)
+                {
+                    PropertyObject property = new PropertyObject(source) { Property = dbp };
+                    tableNode.Children.Add(new TreeNodeViewModel(tableNode, dbp.Name, property));
+                }
+            }
+
+            return root.Children.Count == 0 ? null : root;
+        }
+
+        #region " SyntaxNode ViewModel Factory"
+        public static ISyntaxNodeViewModel CreateViewModel(ISyntaxNodeViewModel parent, ISyntaxNode model)
+        {
+            if (model is Parameter)
+            {
+                return new ParameterReferenceViewModel(parent, (Parameter)model);
+            }
+            else if (model is PropertyReference)
+            {
+                return new PropertyReferenceViewModel(parent, (PropertyReference)model);
+            }
+            else if (model is PropertyObject)
+            {
+                return new PropertyObjectViewModel(parent, (PropertyObject)model);
+            }
+            return null;
+        }
+        #endregion
+
+        public static TableObject GetTableObject(ISyntaxNodeViewModel viewModel)
+        {
+            if (viewModel == null) return null;
+
+            TableObject table = null;
+            if (viewModel is JoinOperatorViewModel)
+            {
+                table = ((JoinOperatorViewModel)viewModel).Expression.Model as TableObject;
+                if (table == null)
+                {
+                    return GetTableObject(((JoinOperatorViewModel)viewModel).Expression);
+                }
+                else
+                {
+                    return table;
+                }
+            }
+            else if (viewModel is AliasSyntaxNodeViewModel)
+            {
+                table = ((AliasSyntaxNodeViewModel)viewModel).Expression.Model as TableObject;
+                if (table == null)
+                {
+                    return GetTableObject(((AliasSyntaxNodeViewModel)viewModel).Expression);
+                }
+                else
+                {
+                    return table;
+                }
+            }
+            else if (viewModel is HintSyntaxNodeViewModel)
+            {
+                table = ((HintSyntaxNodeViewModel)viewModel).Expression.Model as TableObject;
+                if (table == null)
+                {
+                    return GetTableObject(((HintSyntaxNodeViewModel)viewModel).Expression);
+                }
+                else
+                {
+                    return table;
+                }
+            }
+            return table;
         }
     }
 }
