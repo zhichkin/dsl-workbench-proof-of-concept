@@ -1,5 +1,4 @@
-﻿using OneCSharp.Metadata;
-using OneCSharp.OQL.Model;
+﻿using OneCSharp.OQL.Model;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,7 +8,7 @@ namespace OneCSharp.OQL.UI
     public interface ISyntaxNodeViewModel
     {
         ISyntaxNode Model { get; }
-        ISyntaxNodeViewModel Parent { get; }
+        ISyntaxNodeViewModel Parent { get; set; }
         // TODO: add functions to add and remove children, so as children could ask parent to remove them from parent's collections
     }
     public abstract class SyntaxNodeViewModel : ISyntaxNodeViewModel, INotifyPropertyChanged
@@ -31,7 +30,7 @@ namespace OneCSharp.OQL.UI
         }
         public event PropertyChangedEventHandler PropertyChanged;
     }
-    public class SyntaxNodeListViewModel : ObservableCollection<SyntaxNodeViewModel>, ISyntaxNodeViewModel
+    public class SyntaxNodeListViewModel : ObservableCollection<ISyntaxNodeViewModel>, ISyntaxNodeViewModel
     {
         protected ISyntaxNode _model;
         protected ISyntaxNodeViewModel _parent;

@@ -4,7 +4,7 @@ namespace OneCSharp.OQL.UI
 {
     public sealed class OnSyntaxNodeViewModel : SyntaxNodeViewModel
     {
-        private SyntaxNodeViewModel _Expression;
+        private ISyntaxNodeViewModel _Expression;
         public OnSyntaxNodeViewModel(ISyntaxNodeViewModel parent, OnSyntaxNode model) : base(parent, model)
         {
             InitializeViewModel();
@@ -22,7 +22,7 @@ namespace OneCSharp.OQL.UI
             }
         }
         public string Keyword { get { return ((OnSyntaxNode)Model).Keyword; } }
-        public SyntaxNodeViewModel Expression
+        public ISyntaxNodeViewModel Expression
         {
             get { return _Expression; }
             set { _Expression = value; OnPropertyChanged(nameof(Expression)); }
