@@ -5,6 +5,7 @@ namespace OneCSharp.OQL.UI
 {
     public class SyntaxNodeDataTemplateSelector : DataTemplateSelector
     {
+        public DataTemplate HintSyntaxNodeTemplate { get; set; }
         public DataTemplate BooleanOperatorTemplate { get; set; }
         public DataTemplate ComparisonOperatorTemplate { get; set; }
         public DataTemplate ParameterReferenceTemplate { get; set; }
@@ -13,7 +14,8 @@ namespace OneCSharp.OQL.UI
         {
             if (item == null) return null;
 
-            if (item is BooleanOperatorViewModel) return BooleanOperatorTemplate;
+            if (item is HintSyntaxNodeViewModel) return HintSyntaxNodeTemplate;
+            else if (item is BooleanOperatorViewModel) return BooleanOperatorTemplate;
             else if (item is ComparisonOperatorViewModel) return ComparisonOperatorTemplate;
             else if (item is PropertyReferenceViewModel) return PropertyReferenceTemplate;
             else if (item is ParameterReferenceViewModel) return ParameterReferenceTemplate;

@@ -8,7 +8,7 @@ namespace OneCSharp.OQL.UI
     {
         private ISyntaxNodeViewModel _LeftExpression;
         private ISyntaxNodeViewModel _RightExpression;
-        public ComparisonOperatorViewModel(SyntaxNodeViewModel parent, ComparisonOperator model) : base(parent, model)
+        public ComparisonOperatorViewModel(ISyntaxNodeViewModel parent, ComparisonOperator model) : base(parent, model)
         {
             InitializeViewModel();
         }
@@ -74,7 +74,7 @@ namespace OneCSharp.OQL.UI
         private void PropertySelected(ISyntaxNodeViewModel sender, PropertyObject property)
         {
             ComparisonOperator parent = Model as ComparisonOperator;
-            var alias = GetTableSource((TableObject)property.Parent);
+            var alias = UIServices.GetTableSource(this, (TableObject)property.Parent);
 
             PropertyReference model = new PropertyReference(parent)
             {
@@ -98,7 +98,7 @@ namespace OneCSharp.OQL.UI
         private void ParameterSelected(ISyntaxNodeViewModel sender, Parameter parameter)
         {
             ComparisonOperator model = Model as ComparisonOperator;
-            var viewModel = GetParameterViewModel(parameter);
+            ParameterViewModel viewModel = UIServices.GetParameterViewModel(this, parameter);
 
             if (LeftExpression == sender)
             {   
@@ -113,29 +113,6 @@ namespace OneCSharp.OQL.UI
                 viewModel.PropertyChanged += RightName_PropertyChanged; //TODO: use WeakEventManager !
             }
         }
-        private AliasSyntaxNodeViewModel GetTableSource(TableObject table)
-        {
-            FromClauseViewModel from = UIServices.GetParent<FromClauseViewModel>(this);
-            if (from == null) return null;
-
-            AliasSyntaxNodeViewModel alias = null;
-            foreach (var item in from)
-            {
-                if (table == UIServices.GetTableObject(item))
-                {
-                    if (item is AliasSyntaxNodeViewModel)
-                    {
-                        alias = (AliasSyntaxNodeViewModel)item;
-                    }
-                    else if (item is JoinOperatorViewModel)
-                    {
-                        alias = ((JoinOperatorViewModel)item).Expression as AliasSyntaxNodeViewModel;
-                    }
-                    break;
-                }
-            }
-            return alias;
-        }
         private void LeftAlias_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Alias" && LeftExpression != null)
@@ -149,22 +126,6 @@ namespace OneCSharp.OQL.UI
             {
                 ((SyntaxNodeViewModel)RightExpression).InitializeViewModel();
             }
-        }
-        private ParameterViewModel GetParameterViewModel(Parameter parameter)
-        {
-            ProcedureViewModel procedure = UIServices.GetParent<ProcedureViewModel>(this);
-            if (procedure == null) return null;
-
-            ParameterViewModel viewModel = null;
-            foreach (var item in procedure.Parameters)
-            {
-                if (((ParameterViewModel)item).Model == parameter)
-                {
-                    viewModel = (ParameterViewModel)item;
-                    break;
-                }
-            }
-            return viewModel;
         }
         private void LeftName_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {

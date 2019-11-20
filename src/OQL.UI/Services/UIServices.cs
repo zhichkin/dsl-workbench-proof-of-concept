@@ -13,6 +13,9 @@ namespace OneCSharp.OQL.UI.Services
     {
         public static TParent GetParent<TParent>(ISyntaxNode child) where TParent : ISyntaxNode
         {
+            if (child == null) return default;
+            if (child.GetType() == typeof(TParent)) return (TParent)child;
+
             ISyntaxNode parent = child.Parent;
             while (parent != null && parent.GetType() != typeof(TParent))
             {
@@ -22,6 +25,9 @@ namespace OneCSharp.OQL.UI.Services
         }
         public static TParent GetParent<TParent>(ISyntaxNodeViewModel child) where TParent : ISyntaxNodeViewModel
         {
+            if (child == null) return default;
+            if (child.GetType() == typeof(TParent)) return (TParent)child;
+
             ISyntaxNodeViewModel parent = child.Parent;
             while (parent != null && parent.GetType() != typeof(TParent))
             {
@@ -36,6 +42,94 @@ namespace OneCSharp.OQL.UI.Services
             return parent.Metadata;
         }
 
+
+        public static TableObject GetTableObject(ISyntaxNodeViewModel viewModel)
+        {
+            if (viewModel == null) return null;
+
+            TableObject table = null;
+            if (viewModel is JoinOperatorViewModel)
+            {
+                table = ((JoinOperatorViewModel)viewModel).Expression.Model as TableObject;
+                if (table == null)
+                {
+                    return GetTableObject(((JoinOperatorViewModel)viewModel).Expression);
+                }
+                else
+                {
+                    return table;
+                }
+            }
+            else if (viewModel is AliasSyntaxNodeViewModel)
+            {
+                table = ((AliasSyntaxNodeViewModel)viewModel).Expression.Model as TableObject;
+                if (table == null)
+                {
+                    return GetTableObject(((AliasSyntaxNodeViewModel)viewModel).Expression);
+                }
+                else
+                {
+                    return table;
+                }
+            }
+            else if (viewModel is HintSyntaxNodeViewModel)
+            {
+                table = ((HintSyntaxNodeViewModel)viewModel).Expression.Model as TableObject;
+                if (table == null)
+                {
+                    return GetTableObject(((HintSyntaxNodeViewModel)viewModel).Expression);
+                }
+                else
+                {
+                    return table;
+                }
+            }
+            return table;
+        }
+        public static AliasSyntaxNodeViewModel GetTableSource(ISyntaxNodeViewModel viewModel, TableObject table)
+        {
+            FromClauseViewModel from = GetParent<FromClauseViewModel>(viewModel);
+            if (from == null)
+            {
+                // we are in WHERE clause
+                from = GetParent<SelectStatementViewModel>(viewModel).FROM;
+            }
+            if (from == null) return null;
+
+            AliasSyntaxNodeViewModel alias = null;
+            foreach (var item in from)
+            {
+                if (table == GetTableObject(item))
+                {
+                    if (item is AliasSyntaxNodeViewModel)
+                    {
+                        alias = (AliasSyntaxNodeViewModel)item;
+                    }
+                    else if (item is JoinOperatorViewModel)
+                    {
+                        alias = ((JoinOperatorViewModel)item).Expression as AliasSyntaxNodeViewModel;
+                    }
+                    break;
+                }
+            }
+            return alias;
+        }
+        public static ParameterViewModel GetParameterViewModel(ISyntaxNodeViewModel viewModel, Parameter parameter)
+        {
+            ProcedureViewModel procedure = GetParent<ProcedureViewModel>(viewModel);
+            if (procedure == null) return null;
+
+            ParameterViewModel result = null;
+            foreach (var item in procedure.Parameters)
+            {
+                if (((ParameterViewModel)item).Model == parameter)
+                {
+                    result = (ParameterViewModel)item;
+                    break;
+                }
+            }
+            return result;
+        }
 
 
         private static Popup _TypeSelectionPopup;
@@ -324,17 +418,30 @@ namespace OneCSharp.OQL.UI.Services
         }
         private static TreeNodeViewModel PropertiesToSelect(ISyntaxNode caller)
         {
-            JoinOperator parent = GetParent<JoinOperator>(caller);
-            if (parent == null) return null;
-            if (!(parent.Parent is FromClauseSyntaxNode from)) return null;
+            ISyntaxNode parent = GetParent<JoinOperator>(caller);
+            if (parent == null) parent = GetParent<AliasSyntaxNode>(caller);
+            FromClauseSyntaxNode from;
+            if (parent == null)
+            {
+                // we are in WHERE clause
+                SelectStatement select = GetParent<SelectStatement>(caller);
+                if (select.FROM == null || select.FROM.Count == 0) return null;
+                from = select.FROM;
+                parent = from[from.Count - 1];
+            }
+            else
+            {
+                from = parent.Parent as FromClauseSyntaxNode; // JoinOperator | AliasSyntaxNode (first table in FROM clause)
+            }
+            if (from == null) return null;
 
-            List<ISyntaxNode> tables = new List<ISyntaxNode>();
             int index = from.IndexOf(parent);
+            List<ISyntaxNode> tables = new List<ISyntaxNode>();
             for (int i = 0; i <= index; i++)
             {
                 tables.Add(from[i]);
             }
-            // TODO: inspect FROM clause to contain SelectStatement
+            // TODO: inspect FROM clause to contain SelectStatement !
             if (tables.Count == 0) return null;
 
             var root = new TreeNodeViewModel(null, "");
@@ -381,52 +488,28 @@ namespace OneCSharp.OQL.UI.Services
             {
                 return new PropertyObjectViewModel(parent, (PropertyObject)model);
             }
+            else if (model is TableObject)
+            {
+                return new TableObjectViewModel(parent, (TableObject)model);
+            }
+            else if (model is AliasSyntaxNode)
+            {
+                return new AliasSyntaxNodeViewModel(parent, (AliasSyntaxNode)model);
+            }
+            else if (model is HintSyntaxNode)
+            {
+                return new HintSyntaxNodeViewModel(parent, (HintSyntaxNode)model);
+            }
+            else if (model is BooleanOperator)
+            {
+                return new BooleanOperatorViewModel(parent, (BooleanOperator)model);
+            }
+            else if (model is ComparisonOperator)
+            {
+                return new ComparisonOperatorViewModel(parent, (ComparisonOperator)model);
+            }
             return null;
         }
         #endregion
-
-        public static TableObject GetTableObject(ISyntaxNodeViewModel viewModel)
-        {
-            if (viewModel == null) return null;
-
-            TableObject table = null;
-            if (viewModel is JoinOperatorViewModel)
-            {
-                table = ((JoinOperatorViewModel)viewModel).Expression.Model as TableObject;
-                if (table == null)
-                {
-                    return GetTableObject(((JoinOperatorViewModel)viewModel).Expression);
-                }
-                else
-                {
-                    return table;
-                }
-            }
-            else if (viewModel is AliasSyntaxNodeViewModel)
-            {
-                table = ((AliasSyntaxNodeViewModel)viewModel).Expression.Model as TableObject;
-                if (table == null)
-                {
-                    return GetTableObject(((AliasSyntaxNodeViewModel)viewModel).Expression);
-                }
-                else
-                {
-                    return table;
-                }
-            }
-            else if (viewModel is HintSyntaxNodeViewModel)
-            {
-                table = ((HintSyntaxNodeViewModel)viewModel).Expression.Model as TableObject;
-                if (table == null)
-                {
-                    return GetTableObject(((HintSyntaxNodeViewModel)viewModel).Expression);
-                }
-                else
-                {
-                    return table;
-                }
-            }
-            return table;
-        }
     }
 }

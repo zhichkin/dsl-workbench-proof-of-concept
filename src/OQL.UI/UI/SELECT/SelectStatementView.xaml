@@ -7,16 +7,41 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <StackPanel Orientation="Vertical">
         
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding Keyword}" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="Blue" Cursor="Hand"/>
+
+            <TextBlock Text="{Binding Keyword}" FontWeight="SemiBold" Foreground="Blue" Cursor="Hand"
+                       VerticalAlignment="Center" ContextMenuService.Placement="Bottom">
+                <TextBlock.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Add property" Command="{Binding AddPropertyCommand}" />
+                        <Separator/>
+                        <MenuItem Header="WHERE" Command="{Binding AddWhereClauseCommand}" />
+                        <MenuItem Header="HAVING" Command="{Binding AddHavingClauseCommand}" />
+                        <MenuItem Header="INTO" Command="{Binding AddIntoClauseCommand}" />
+                    </ContextMenu>
+                </TextBlock.ContextMenu>
+            </TextBlock>
+
             <TextBox Text="{Binding Alias, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 MinWidth="50" VerticalContentAlignment="Center" Margin="5,0,0,0" BorderThickness="1" BorderBrush="LightGray"/>
+                     MinWidth="50" VerticalContentAlignment="Center" Margin="5,0,0,0" BorderThickness="1" BorderBrush="LightGray"/>
+            
         </StackPanel>
 
+        <ui:SelectClauseView DataContext="{Binding SELECT}" Margin="20,0,0,3"/>
+
         <ui:FromClauseView DataContext="{Binding FROM}"/>
-        
+
+        <ui:WhereClauseView DataContext="{Binding WHERE}"
+                            Visibility="{Binding IsWhereClauseVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
     </StackPanel>
 
 </UserControl>

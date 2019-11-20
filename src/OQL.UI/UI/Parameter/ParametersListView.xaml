@@ -13,7 +13,6 @@
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </ResourceDictionary>
-        
     </UserControl.Resources>
 
     <ListView x:Name="MyListView" Background="Transparent" BorderThickness="0" Padding="0">

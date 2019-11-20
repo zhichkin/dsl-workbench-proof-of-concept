@@ -7,14 +7,31 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
+    <UserControl.Resources>
+        <DataTemplate x:Key="HintSyntaxNodeTemplate">
+            <ui:HintSyntaxNodeView/>
+        </DataTemplate>
+        <DataTemplate x:Key="PropertyReferenceTemplate">
+            <ui:PropertyReferenceView/>
+        </DataTemplate>
+        <DataTemplate x:Key="ParameterReferenceTemplate">
+            <ui:ParameterReferenceView/>
+        </DataTemplate>
+        <ui:SyntaxNodeDataTemplateSelector x:Key="TemplateSelector"
+            HintSyntaxNodeTemplate="{StaticResource HintSyntaxNodeTemplate}"
+            PropertyReferenceTemplate="{StaticResource PropertyReferenceTemplate}"
+            ParameterReferenceTemplate="{StaticResource ParameterReferenceTemplate}"/>
+    </UserControl.Resources>
+
     <StackPanel Orientation="Horizontal">
         
         <TextBox Text="{Binding Alias, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  MinWidth="25" Height="18"
                  VerticalContentAlignment="Center" BorderThickness="1" BorderBrush="LightGray"/>
 
-        <!--<ui:TableObjectView DataContext="{Binding Expression}" VerticalAlignment="Center"/>-->
-        <ui:HintSyntaxNodeView DataContext="{Binding Expression}" VerticalAlignment="Center" Margin="3,0,0,0"/>
+        <ContentControl Content="{Binding Expression}"
+                        VerticalAlignment="Center" Margin="3,0,0,0"
+                        ContentTemplateSelector="{StaticResource TemplateSelector}"/>
         
     </StackPanel>
     

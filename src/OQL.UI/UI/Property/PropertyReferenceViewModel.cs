@@ -1,6 +1,7 @@
 ﻿using OneCSharp.OQL.Model;
 using OneCSharp.OQL.UI.Dialogs;
 using OneCSharp.OQL.UI.Services;
+using System.ComponentModel;
 
 namespace OneCSharp.OQL.UI
 {
@@ -40,6 +41,10 @@ namespace OneCSharp.OQL.UI
             {
                 parent.ComparisonExpressionSelected(this, (ISyntaxNode)selection.Payload);
             }
+        }
+        public void TableAliasChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Alias") OnPropertyChanged(nameof(Name));
         }
     }
 }

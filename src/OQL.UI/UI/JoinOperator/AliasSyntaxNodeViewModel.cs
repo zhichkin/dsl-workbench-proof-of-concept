@@ -1,9 +1,11 @@
 ﻿using OneCSharp.OQL.Model;
+using OneCSharp.OQL.UI.Services;
 
 namespace OneCSharp.OQL.UI
 {
     public sealed class AliasSyntaxNodeViewModel : SyntaxNodeViewModel
     {
+        private ISyntaxNodeViewModel _Expression;
         public AliasSyntaxNodeViewModel(ISyntaxNodeViewModel parent, AliasSyntaxNode model) : base(parent, model)
         {
             InitializeViewModel();
@@ -11,21 +13,20 @@ namespace OneCSharp.OQL.UI
         public override void InitializeViewModel()
         {
             AliasSyntaxNode model = Model as AliasSyntaxNode;
-            if (model.Expression is TableObject)
+            if (model.Expression != null)
             {
-                Expression = new TableObjectViewModel(this, (TableObject)model.Expression);
+                Expression = UIServices.CreateViewModel(this, model.Expression);
             }
-            else if (model.Expression is HintSyntaxNode)
-            {
-                Expression = new HintSyntaxNodeViewModel(this, (HintSyntaxNode)model.Expression);
-            }
-            Expression.InitializeViewModel();
         }
         public string Alias
         {
             get { return ((AliasSyntaxNode)Model).Alias; }
             set { ((AliasSyntaxNode)Model).Alias = value; OnPropertyChanged(nameof(Alias)); }
         }
-        public SyntaxNodeViewModel Expression { get; set; }
+        public ISyntaxNodeViewModel Expression
+        {
+            get { return _Expression; }
+            set { _Expression = value; OnPropertyChanged(nameof(Expression)); }
+        }
     }
 }

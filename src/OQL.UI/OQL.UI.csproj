@@ -77,6 +77,12 @@
       <DependentUpon>ParameterReferenceView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Parameter\ParameterReferenceViewModel.cs" />
+    <Compile Include="UI\SELECT\SelectClauseView.xaml.cs">
+      <DependentUpon>SelectClauseView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SELECT\WhereClauseView.xaml.cs">
+      <DependentUpon>WhereClauseView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\SyntaxNodeDataTemplateSelector.cs" />
     <Compile Include="UI\BooleanExpression\OnSyntaxNodeView.xaml.cs">
       <DependentUpon>OnSyntaxNodeView.xaml</DependentUpon>
@@ -213,7 +219,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\SELECT\SelectClauseView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\SELECT\SelectStatementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\SELECT\WhereClauseView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
