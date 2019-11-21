@@ -9,6 +9,6 @@ namespace OneCSharp.OQL.UI
             InitializeViewModel();
         }
         public override void InitializeViewModel() { }
-        public string Name { get { return ((TableObject)Model).Name; } }
+        public string FullName { get { return ((TableObject)Model).FullName; } }
     }
 }

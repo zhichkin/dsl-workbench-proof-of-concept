@@ -23,7 +23,8 @@ namespace OneCSharp.OQL.UI
         }
         public override void InitializeViewModel()
         {
-            this.SaveProcedureCommand = new DelegateCommand(SaveProcedure);
+            RunProcedureCommand = new DelegateCommand(RunProcedure);
+            SaveProcedureCommand = new DelegateCommand(SaveProcedure);
 
             Procedure model = Model as Procedure;
 
@@ -62,6 +63,7 @@ namespace OneCSharp.OQL.UI
 
 
         public bool IsModified { get; private set; } = true; // new procedure is unmodified by default
+        public ICommand RunProcedureCommand { get; private set; }
         public ICommand SaveProcedureCommand { get; private set; }
 
         public void SaveProcedure()
@@ -125,6 +127,13 @@ namespace OneCSharp.OQL.UI
             SelectStatement select = new SelectStatement(_model);
             ((Procedure)Model).Statements.Add(select);
             this.Statements.Add(new SelectStatementViewModel(this, select));
+        }
+
+
+        public void RunProcedure()
+        {
+            Procedure model = (Procedure)Model;
+            string sql = new SQLServerQueryBuilder().Build(model);
         }
     }
 }

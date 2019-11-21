@@ -7,7 +7,7 @@ namespace OneCSharp.OQL.Model
     {
         public TableObject(ISyntaxNode parent) : base(parent) { }
         public DbObject Table { get; set; }
-        public string Name
+        public string FullName
         {
             get
             {

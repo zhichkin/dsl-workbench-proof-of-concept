@@ -58,12 +58,15 @@
     <Compile Include="Model\TableObject.cs" />
     <Compile Include="MVVM\EventCommandsCollection.cs" />
     <Compile Include="MVVM\EventToCommand.cs" />
+    <Compile Include="Services\DbUtilities.cs" />
     <Compile Include="Services\IOneCSharpCodeEditor.cs" />
     <Compile Include="Model\Procedure.cs" />
     <Compile Include="Model\Parameter.cs" />
     <Compile Include="Model\SelectStatement.cs" />
     <Compile Include="Model\SyntaxNode.cs" />
     <Compile Include="Services\IOneCSharpCodeEditorConsumer.cs" />
+    <Compile Include="Services\SelectPropertyManager.cs" />
+    <Compile Include="Services\SQLQueryBuilder.cs" />
     <Compile Include="Services\UIServices.cs" />
     <Compile Include="UI\BooleanExpression\BooleanOperatorView.xaml.cs">
       <DependentUpon>BooleanOperatorView.xaml</DependentUpon>

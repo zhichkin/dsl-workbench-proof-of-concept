@@ -22,6 +22,14 @@
                         <TextBlock Text="Save procedure..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </MenuItem.ToolTip>
                 </MenuItem>
+                <MenuItem Command="{Binding RunProcedureCommand}">
+                    <MenuItem.Header>
+                        <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Run}"/>
+                    </MenuItem.Header>
+                    <MenuItem.ToolTip>
+                        <TextBlock Text="Run procedure..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </MenuItem.ToolTip>
+                </MenuItem>
             </Menu>
         </StackPanel>
 

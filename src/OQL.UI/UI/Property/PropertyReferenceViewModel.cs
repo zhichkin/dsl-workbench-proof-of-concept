@@ -20,8 +20,8 @@ namespace OneCSharp.OQL.UI
                 string name = string.Empty;
 
                 if (model.TableSource is AliasSyntaxNode alias) name = alias.Alias;
-                else if (model.TableSource is TableObject table) name = table.Name;
-                else if (model.TableSource is HintSyntaxNode hint) name = ((TableObject)hint.Expression).Name;
+                else if (model.TableSource is TableObject table) name = table.FullName;
+                else if (model.TableSource is HintSyntaxNode hint) name = ((TableObject)hint.Expression).FullName;
 
                 if (model.PropertySource is AliasSyntaxNode a) name += "." + a.Alias;
                 else if (model.PropertySource is PropertyObject p) name += "." + p.Name;

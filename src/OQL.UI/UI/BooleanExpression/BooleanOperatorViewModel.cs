@@ -140,6 +140,11 @@ namespace OneCSharp.OQL.UI
                 substituteVM.Parent = parentVM; // TODO: refactoring of logic is needed !
                 ((OnSyntaxNodeViewModel)parentVM).Expression = substituteVM;
             }
+            else if (parentVM is WhereClauseViewModel)
+            {
+                substituteVM.Parent = parentVM; // TODO: refactoring of logic is needed !
+                ((WhereClauseViewModel)parentVM).Expression = substituteVM;
+            }
         }
         public void RemoveChildOperator(ISyntaxNodeViewModel child)
         {
@@ -155,6 +160,10 @@ namespace OneCSharp.OQL.UI
                 if (this.Parent is OnSyntaxNodeViewModel)
                 {
                     ((OnSyntaxNodeViewModel)this.Parent).Expression = null;
+                }
+                else if (this.Parent is WhereClauseViewModel)
+                {
+                    ((WhereClauseViewModel)this.Parent).Expression = null;
                 }
             }
             else
@@ -178,6 +187,11 @@ namespace OneCSharp.OQL.UI
                     {
                         ((BooleanOperatorViewModel)orphan).Keyword = parent.Keyword;
                         ((OnSyntaxNodeViewModel)parent.Parent).Expression = orphan;
+                    }
+                    else if (parent.Parent is WhereClauseViewModel)
+                    {
+                        ((BooleanOperatorViewModel)orphan).Keyword = parent.Keyword;
+                        ((WhereClauseViewModel)parent.Parent).Expression = orphan;
                     }
                     else if (parent.Parent is BooleanOperatorViewModel)
                     {
