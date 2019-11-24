@@ -9,8 +9,12 @@
         public const string WHERE = "WHERE";
         public const string HAVING = "HAVING";
         public const string SELECT = "SELECT";
+        public const string INSERT = "INSERT";
+        public const string UPDATE = "UPDATE";
+        public const string DELETE = "DELETE";
         public const string OR = "AND";
         public const string NOT = "NOT";
         public const string WITH = "WITH";
+        public const string SET = "SET";
     }
 }

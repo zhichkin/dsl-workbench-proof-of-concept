@@ -9,10 +9,19 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <StackPanel Orientation="Vertical" Margin="10">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
         <!-- Command panel -->
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
             <Menu>
                 <MenuItem Command="{Binding SaveProcedureCommand}">
                     <MenuItem.Header>
@@ -34,7 +43,7 @@
         </StackPanel>
 
         <!-- Procedure declaration -->
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
             <TextBlock Text="{Binding Keyword}" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="Blue" MouseEnter="Keyword_MouseEnter">
                 <TextBlock.ContextMenu>
                     <ContextMenu Placement="Bottom">
@@ -42,6 +51,9 @@
                             <MenuItem Header="Parameter" Click="ContextMenu_AddParameter_Click"/>
                             <Separator/>
                             <MenuItem Header="SELECT" Click="ContextMenu_AddSelectStatement_Click"/>
+                            <MenuItem Header="INSERT" Click="ContextMenu_AddInsertStatement_Click"/>
+                            <MenuItem Header="UPDATE" Click="ContextMenu_AddUpdateStatement_Click"/>
+                            <MenuItem Header="DELETE" Click="ContextMenu_AddDeleteStatement_Click"/>
                         </MenuItem>
                     </ContextMenu>
                 </TextBlock.ContextMenu>
@@ -51,17 +63,19 @@
         </StackPanel>
 
         <!-- Procedure's parameters list -->
-        <ui:ParametersListView DataContext="{Binding Parameters}" Margin="30,5,0,0"/>
+        <ui:ParametersListView Grid.Row="2" DataContext="{Binding Parameters}" Margin="30,5,0,0"/>
 
-        <ItemsControl ItemsSource="{Binding Statements}"
-                      Margin="30,15,0,0"
+        <ItemsControl Grid.Row="3" ItemsSource="{Binding Statements}" Margin="10,15,0,0"
                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type ui:SelectStatementViewModel}">
-                    <ui:SelectStatementView Margin="0,0,0,10"/>
+                    <ui:SelectStatementView Margin="0,0,0,15"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type ui:InsertStatementViewModel}">
+                    <ui:InsertStatementView Margin="0,0,0,15"/>
                 </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>
 
-    </StackPanel>
+    </Grid>
 </UserControl>

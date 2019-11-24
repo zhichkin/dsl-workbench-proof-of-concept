@@ -6,6 +6,7 @@ namespace OneCSharp.OQL.UI
 {
     public partial class ProcedureView : UserControl
     {
+        private const string ONE_C_SHARP = "ONE-C-SHARP";
         public ProcedureView()
         {
             InitializeComponent();
@@ -35,6 +36,20 @@ namespace OneCSharp.OQL.UI
             var vm = this.DataContext as ProcedureViewModel;
             if (vm == null) return;
             vm.AddSelectStatement();
+        }
+        private void ContextMenu_AddInsertStatement_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = this.DataContext as ProcedureViewModel;
+            if (vm == null) return;
+            vm.AddInsertStatement();
+        }
+        private void ContextMenu_AddUpdateStatement_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Sorry, under construction...", ONE_C_SHARP);
+        }
+        private void ContextMenu_AddDeleteStatement_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Sorry, under construction...", ONE_C_SHARP);
         }
     }
 }

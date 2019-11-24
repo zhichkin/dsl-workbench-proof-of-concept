@@ -132,6 +132,21 @@ namespace OneCSharp.OQL.UI.Services
         }
 
 
+        public static OneCSharpDialog GetTableObjectSelectionDialog(ISyntaxNodeViewModel caller)
+        {
+            MetadataProvider metadataProvider = UIServices.GetMetadataProvider(caller);
+            TreeNodeViewModel model = GetTableSourceSelectionTree(metadataProvider);
+            if (model == null) return null;
+
+            OneCSharpDialog dialog = new OneCSharpDialog();
+            dialog.Width = 300;
+            dialog.Height = 450;
+            dialog.Content = new TypeSelectionDialog(model);
+
+            return dialog;
+        }
+
+
         private static Popup _TypeSelectionPopup;
         private static TypeSelectionDialog _TypeSelectionDialog;
         private static TreeNodeViewModel GetTypesTreeForSelection()
@@ -476,7 +491,15 @@ namespace OneCSharp.OQL.UI.Services
         #region " SyntaxNode ViewModel Factory"
         public static ISyntaxNodeViewModel CreateViewModel(ISyntaxNodeViewModel parent, ISyntaxNode model)
         {
-            if (model is Parameter)
+            if (model is SelectStatement)
+            {
+                return new SelectStatementViewModel(parent, (SelectStatement)model);
+            }
+            else if (model is InsertStatement)
+            {
+                return new InsertStatementViewModel(parent, (InsertStatement)model);
+            }
+            else if (model is Parameter)
             {
                 return new ParameterReferenceViewModel(parent, (Parameter)model);
             }

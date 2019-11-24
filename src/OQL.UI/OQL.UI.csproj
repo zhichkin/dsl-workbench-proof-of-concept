@@ -55,6 +55,7 @@
     <Compile Include="Model\JoinOperator.cs" />
     <Compile Include="Model\Keywords.cs" />
     <Compile Include="Model\PropertyObject.cs" />
+    <Compile Include="Model\InsertStatement.cs" />
     <Compile Include="Model\TableObject.cs" />
     <Compile Include="MVVM\EventCommandsCollection.cs" />
     <Compile Include="MVVM\EventToCommand.cs" />
@@ -76,6 +77,11 @@
       <DependentUpon>ComparisonOperatorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\BooleanExpression\ComparisonOperatorViewModel.cs" />
+    <Compile Include="UI\Dialogs\ISelectionDialog.cs" />
+    <Compile Include="UI\INSERT\InsertStatementView.xaml.cs">
+      <DependentUpon>InsertStatementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\INSERT\InsertStatementViewModel.cs" />
     <Compile Include="UI\Parameter\ParameterReferenceView.xaml.cs">
       <DependentUpon>ParameterReferenceView.xaml</DependentUpon>
     </Compile>
@@ -179,6 +185,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialogs\TypeSelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\INSERT\InsertStatementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

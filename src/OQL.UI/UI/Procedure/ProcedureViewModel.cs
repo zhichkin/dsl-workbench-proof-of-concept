@@ -135,5 +135,13 @@ namespace OneCSharp.OQL.UI
             Procedure model = (Procedure)Model;
             string sql = new SQLServerQueryBuilder().Build(model);
         }
+
+        public void AddInsertStatement()
+        {
+            Procedure model = (Procedure)Model;
+            InsertStatement insert = new InsertStatement(model);
+            model.Statements.Add(insert);
+            this.Statements.Add(UIServices.CreateViewModel(this, insert));
+        }
     }
 }
