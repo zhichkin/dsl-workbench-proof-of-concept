@@ -1,0 +1,80 @@
+﻿<Window x:Class="OneCSharp.Shell.Shell"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="clr-namespace:OneCSharp.Shell"
+        mc:Ignorable="d" Height="600" Width="800"
+        WindowStartupLocation="CenterScreen" Title="1C# © 2016">
+
+    <Window.Resources>
+        <shell:ContentTemplateSelector x:Key="Selector"
+            MenuItemTemplate="{StaticResource MenuItemTemplate}"
+            LeftRegionTemplate="{StaticResource MetadataTemplate}"
+            RightRegionTemplate="{StaticResource RightRegionTemplate}"
+            StatusBarTemplate="{StaticResource StatusBarTemplate}"/>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition />
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" MinWidth="200" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="3*" MinWidth="200" />
+        </Grid.ColumnDefinitions>
+        
+        <ItemsControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                      BorderBrush="Black" BorderThickness="0,1,0,1"
+                      ItemsSource="{Binding MainMenuRegion}"
+                      ItemTemplateSelector="{StaticResource Selector}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <ContentControl Grid.Row="1" Grid.Column="0" Margin="5"
+                        VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                        Content="{Binding LeftRegion}" ContentTemplateSelector="{StaticResource Selector}"/>
+
+        <GridSplitter Grid.Row="1" Grid.Column="1" Width="3" ResizeBehavior="PreviousAndNext" VerticalAlignment="Stretch"/>
+
+        <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                      BorderBrush="Black" BorderThickness="0,1,0,1"
+                      ItemsSource="{Binding StatusBarRegion}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <TabControl Grid.Row="1" Grid.Column="2" Margin="5"
+                    ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}">
+            <TabControl.ItemTemplate>
+                <!-- this is the header template-->
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Header}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <Button Command="{Binding CloseTabCommand}">
+                            <Image Source="{StaticResource Icon_Close}" Height="16" Width="16" VerticalAlignment="Center"/>
+                        </Button>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <!-- this is the body of the TabItem template-->
+                <DataTemplate>
+                    <ContentControl Content="{Binding Content}" Margin="5"/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+
+    </Grid>
+
+</Window>

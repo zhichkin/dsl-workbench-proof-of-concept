@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:shell="clr-namespace:OneCSharp.Shell"
+                    xmlns:metadata="clr-namespace:OneCSharp.Metadata.UI;assembly=OneCSharp.Metadata.UI">
+
+    <DataTemplate x:Key="MenuItemTemplate">
+        <shell:MenuItemView/>
+    </DataTemplate>
+
+    <DataTemplate x:Key="MetadataTemplate">
+        <metadata:MetadataView/>
+    </DataTemplate>
+
+    <DataTemplate x:Key="RightRegionTemplate">
+        <shell:RightRegionView/>
+    </DataTemplate>
+
+    <DataTemplate x:Key="StatusBarTemplate">
+        <shell:StatusBarView/>
+    </DataTemplate>
+
+    <BitmapImage x:Key="Icon_Close" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\one-c-sharp-wpf\images\Close.png"/>
+
+</ResourceDictionary>

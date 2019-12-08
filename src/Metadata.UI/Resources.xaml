@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:OneCSharp.Metadata.UI">
+
+    <BitmapImage x:Key="Icon_AddLocalServer" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\AddLocalServer.png"/>
+    <BitmapImage x:Key="Icon_AddMethod" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\AddMethod.png"/>
+    <BitmapImage x:Key="Icon_AddNamespace" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\AddNamespace.png"/>
+    <BitmapImage x:Key="Icon_AddWebService" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\AddWebService.png"/>
+    <BitmapImage x:Key="Icon_ConnectToDatabase" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\ConnectToDatabase.png"/>
+    <BitmapImage x:Key="Icon_Database" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\Database.png"/>
+    <BitmapImage x:Key="Icon_FieldPublic" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\FieldPublic.png"/>
+    <BitmapImage x:Key="Icon_LocalServer" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\LocalServer.png"/>
+    <BitmapImage x:Key="Icon_MethodPublic" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\MethodPublic.png"/>
+    <BitmapImage x:Key="Icon_ModifyMethod" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\ModifyMethod.png"/>
+    <BitmapImage x:Key="Icon_NamespacePublic" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\NamespacePublic.png"/>
+    <BitmapImage x:Key="Icon_NestedTable" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\NestedTable.png"/>
+    <BitmapImage x:Key="Icon_RenameMethod" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\RenameMethod.png"/>
+    <BitmapImage x:Key="Icon_Table" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\Table.png"/>
+    <BitmapImage x:Key="Icon_WebServer" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\WebServer.png"/>
+    
+</ResourceDictionary>

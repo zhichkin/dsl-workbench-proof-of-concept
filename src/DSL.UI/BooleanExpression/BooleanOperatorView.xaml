@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="OneCSharp.DSL.UI.BooleanOperatorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="clr-namespace:OneCSharp.DSL.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" BorderThickness="1" Margin="0,0,3,3">
+            <Border.BorderBrush>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Rectangle StrokeDashArray="2 2" Stroke="LightGray" StrokeThickness="1"
+                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.BorderBrush>
+
+            <TextBlock Text="{Binding Keyword}" Margin="2" MinWidth="30"
+                       FontWeight="SemiBold" Foreground="Blue"
+                       ContextMenuService.Placement="Bottom">
+                <TextBlock.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="OR"  Command="{Binding ChangeOperatorTypeCommand}" CommandParameter="OR" />
+                        <MenuItem Header="AND" Command="{Binding ChangeOperatorTypeCommand}" CommandParameter="AND"/>
+                        <MenuItem Header="NOT" Command="{Binding ChangeOperatorTypeCommand}" CommandParameter="NOT">
+                            <!--<MenuItem.Icon>
+                            <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.RenameMethod}"/>
+                        </MenuItem.Icon>-->
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Add">
+                            <MenuItem Header="Condition" Command="{Binding AddComparisonOperatorCommand}"/>
+                            <MenuItem Header="Operator" Command="{Binding AddBooleanOperatorCommand}"/>
+                        </MenuItem>
+                        <MenuItem Header="Remove">
+                            <MenuItem Header="Operator" Command="{Binding RemoveOperatorCommand}"/>
+                        </MenuItem>
+                    </ContextMenu>
+                </TextBlock.ContextMenu>
+            </TextBlock>
+            
+        </Border>
+
+        <Border Grid.Column="1" BorderThickness="{Binding OperandsBorderThickness}" Margin="0,0,3,3">
+            <Border.BorderBrush>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Rectangle StrokeDashArray="2 2" Stroke="LightGray" StrokeThickness="1"
+                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.BorderBrush>
+            
+            <ItemsControl ItemsSource="{Binding Operands}">
+                <ItemsControl.Resources>
+                    <DataTemplate DataType="{x:Type ui:BooleanOperatorViewModel}">
+                        <ui:BooleanOperatorView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type ui:ComparisonOperatorViewModel}">
+                        <ui:ComparisonOperatorView Margin="2"/>
+                    </DataTemplate>
+                </ItemsControl.Resources>
+            </ItemsControl>
+            
+        </Border>
+
+    </Grid>
+
+</UserControl>
