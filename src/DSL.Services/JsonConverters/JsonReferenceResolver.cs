@@ -6,7 +6,7 @@ namespace OneCSharp.DSL.Services
     public interface IReferenceResolver
     {
         void Clear();
-        string GetReference(object value);
+        string GetReference(object value, ref bool isNew);
         object ResolveReference(string reference);
     }
     public class JsonReferenceResolver : IReferenceResolver
@@ -19,17 +19,19 @@ namespace OneCSharp.DSL.Services
             _map_id_to_object.Clear();
             _map_object_to_id.Clear();
         }
-        public string GetReference(object value)
+        public string GetReference(object value, ref bool isNew)
         {
             Guid id;
             if (_map_object_to_id.TryGetValue(value, out id))
             {
+                isNew = false;
                 return id.ToString();
             }
 
             id = Guid.NewGuid();
             _map_object_to_id.Add(value, id);
 
+            isNew = true;
             return id.ToString();
         }
 

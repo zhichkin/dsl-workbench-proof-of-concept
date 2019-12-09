@@ -11,11 +11,14 @@ namespace OneCSharp.DSL.Services
     public sealed class OneCSharpJsonSerializer : IOneCSharpJsonSerializer
     {
         private readonly IReferenceResolver _resolver = new JsonReferenceResolver();
+        private readonly ISerializationBinder _binder = new JsonSerializationBinder();
         private readonly JsonSerializerOptions _options = new JsonSerializerOptions();
         public OneCSharpJsonSerializer()
         {
             _options.WriteIndented = true;
-            _options.Converters.Add(new ProcedureJsonConverter(_resolver));
+            _options.Converters.Add(new ProcedureJsonConverter(_binder, _resolver));
+            _options.Converters.Add(new ParameterJsonConverter(_binder, _resolver));
+            _options.Converters.Add(new SelectStatementJsonConverter(_binder, _resolver));
         }
         public string ToJson(Procedure procedure)
         {

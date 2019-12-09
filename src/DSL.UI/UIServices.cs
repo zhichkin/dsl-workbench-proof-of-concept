@@ -1,4 +1,5 @@
 ﻿using OneCSharp.DSL.Model;
+using OneCSharp.DSL.Services;
 using OneCSharp.DSL.UI.Dialogs;
 using OneCSharp.Metadata.Model;
 using OneCSharp.Metadata.Services;
@@ -185,32 +186,6 @@ namespace OneCSharp.DSL.UI.Services
             _TypeSelectionDialog.OnSelectionChanged = null;
         }
 
-        private static readonly Dictionary<Type, string> _TypeNames = new Dictionary<Type, string>()
-        {
-            { typeof(Guid), "UUID" },
-            { typeof(byte[]), "Binary" },
-            { typeof(string), "String" },
-            { typeof(int), "Numeric" },
-            { typeof(bool), "Boolean" },
-            { typeof(DateTime), "DateTime" },
-            { typeof(long), "Numeric" },
-            { typeof(decimal), "Numeric" },
-            { typeof(float), "Numeric" },
-            { typeof(byte), "Numeric" },
-            { typeof(uint), "Numeric" },
-            { typeof(sbyte), "Numeric" },
-            { typeof(short), "Numeric" },
-            { typeof(ushort), "Numeric" }
-        };
-        public static string GetTypeName(Type type)
-        {
-            string name = string.Empty;
-            if (_TypeNames.TryGetValue(type, out name))
-            {
-                return name;
-            }
-            return "Unknown";
-        }
 
 
         private static Popup _TableSourceSelectionPopup;
@@ -427,7 +402,7 @@ namespace OneCSharp.DSL.UI.Services
             var root = new TreeNodeViewModel(null, "Parameters");
             foreach (Parameter parameter in procedure.Parameters)
             {
-                var child = new TreeNodeViewModel(root, $"@{parameter.Name} ({GetTypeName(parameter.Type)})", parameter);
+                var child = new TreeNodeViewModel(root, $"@{parameter.Name} ({TypeSystem.GetTypeName(parameter.Type)})", parameter);
                 root.Children.Add(child);
             }
             return root;

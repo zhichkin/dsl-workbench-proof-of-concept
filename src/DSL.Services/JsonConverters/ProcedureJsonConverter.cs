@@ -8,16 +8,28 @@ namespace OneCSharp.DSL.Services
     public sealed class ProcedureJsonConverter : JsonConverter<Procedure>
     {
         private readonly IReferenceResolver _resolver;
-        public ProcedureJsonConverter(IReferenceResolver resolver)
+        private readonly ISerializationBinder _binder;
+        public ProcedureJsonConverter(ISerializationBinder binder, IReferenceResolver resolver)
         {
+            _binder = binder;
             _resolver = resolver;
         }
         public override void Write(Utf8JsonWriter writer, Procedure value, JsonSerializerOptions options)
         {
-            writer.WriteStartObject();
+            bool isNew = false;
+            string id = _resolver.GetReference(value, ref isNew);
 
-            writer.WriteString("$id", new Guid(_resolver.GetReference(value)));
-            writer.WriteString("$type", nameof(Procedure));
+            if (!isNew)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("$ref", id);
+                writer.WriteEndObject();
+                return;
+            }
+
+            writer.WriteStartObject();
+            writer.WriteString("$id", id);
+            writer.WriteNumber("$type", _binder.GetTypeCode(typeof(Procedure)));
             writer.WriteString("Name", value.Name);
             writer.WriteNull("Parent");
 
@@ -35,7 +47,7 @@ namespace OneCSharp.DSL.Services
                 writer.WriteStartArray("Parameters");
                 foreach (Parameter parameter in value.Parameters)
                 {
-                    writer.WriteStringValue(JsonSerializer.Serialize(parameter, typeof(Parameter), options));
+                    JsonSerializer.Serialize(writer, parameter, typeof(Parameter), options);
                 }
                 writer.WriteEndArray();
             }
@@ -54,7 +66,7 @@ namespace OneCSharp.DSL.Services
                 writer.WriteStartArray("Statements");
                 foreach (ISyntaxNode node in value.Statements)
                 {
-                    writer.WriteStringValue(JsonSerializer.Serialize(node, node.GetType(), options));
+                    JsonSerializer.Serialize(writer, node, node.GetType(), options);
                 }
                 writer.WriteEndArray();
             }
