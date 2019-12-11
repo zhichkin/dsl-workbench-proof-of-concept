@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSL.Model", "DSL.Model\DSL.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSL.UI", "DSL.UI\DSL.UI.csproj", "{3EB24949-9553-4570-89E6-A720D4F6C703}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Server", "Web.Server\Web.Server.csproj", "{00E7C781-76A5-429B-AE83-1D1C26334EF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Server", "Web.Server\Web.Server.csproj", "{00E7C781-76A5-429B-AE83-1D1C26334EF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeSystem", "TypeSystem\TypeSystem.csproj", "{DBAD5EBC-5301-421D-A2CD-E7867FEE30D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{00E7C781-76A5-429B-AE83-1D1C26334EF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00E7C781-76A5-429B-AE83-1D1C26334EF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00E7C781-76A5-429B-AE83-1D1C26334EF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBAD5EBC-5301-421D-A2CD-E7867FEE30D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBAD5EBC-5301-421D-A2CD-E7867FEE30D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBAD5EBC-5301-421D-A2CD-E7867FEE30D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBAD5EBC-5301-421D-A2CD-E7867FEE30D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
