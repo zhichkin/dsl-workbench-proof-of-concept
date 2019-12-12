@@ -1,21 +1,21 @@
 ﻿using System.Windows;
 
-namespace OneCSharp.Metadata.UI
+namespace OneCSharp.MVVM
 {
-    public sealed class AddServerDialog : Window
+    public sealed class InputStringDialog : Window
     {
-        private readonly AddServerDialogViewModel viewModel;
-        public AddServerDialog()
+        private readonly InputStringDialogViewModel viewModel;
+        public InputStringDialog()
         {
             //this.HasMaximizeButton = true;
             //this.HasMinimizeButton = true;
-            this.Title = "Add server...";
+            this.Title = "Input string";
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.SizeToContent = SizeToContent.WidthAndHeight;
-            viewModel = new AddServerDialogViewModel();
+            viewModel = new InputStringDialogViewModel();
             viewModel.OnCancel = OnCancel;
             viewModel.OnConfirm = OnConfirm;
-            this.Content = new AddServerDialogView(viewModel);
+            this.Content = new InputStringDialogView(viewModel);
         }
         public object Result { get; private set; }
         private void OnConfirm(object result)

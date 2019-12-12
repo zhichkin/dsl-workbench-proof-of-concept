@@ -1,4 +1,4 @@
-﻿namespace OneCSharp.TypeSystem
+﻿namespace OneCSharp
 {
     public sealed class BinaryType : ValueType
     {

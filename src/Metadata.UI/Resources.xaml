@@ -3,6 +3,7 @@
                     xmlns:local="clr-namespace:OneCSharp.Metadata.UI">
 
     <BitmapImage x:Key="Icon_AddLocalServer" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\AddLocalServer.png"/>
+    <BitmapImage x:Key="Icon_AddLanguage" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\AddLanguage.png"/>
     <BitmapImage x:Key="Icon_AddMethod" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\AddMethod.png"/>
     <BitmapImage x:Key="Icon_AddNamespace" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\AddNamespace.png"/>
     <BitmapImage x:Key="Icon_AddWebService" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\Metadata.UI\images\AddWebService.png"/>

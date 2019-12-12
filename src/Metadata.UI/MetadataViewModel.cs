@@ -1,4 +1,6 @@
-﻿using OneCSharp.DSL.Model;
+﻿using OneCSharp.AST.Model;
+using OneCSharp.AST.UI;
+using OneCSharp.DSL.Model;
 using OneCSharp.DSL.Services;
 using OneCSharp.DSL.UI;
 using OneCSharp.Metadata.Model;
@@ -24,14 +26,16 @@ namespace OneCSharp.Metadata.UI
             InitializeViewModel();
         }
         public ICommand AddServerCommand { get; private set; }
+        public ICommand AddLanguageCommand { get; private set; }
         private void InitializeViewModel()
         {
             this.AddServerCommand = new RelayCommand(AddServer);
+            this.AddLanguageCommand = new RelayCommand(AddLanguage);
         }
-        public ObservableCollection<ServerViewModel> Servers { get; } = new ObservableCollection<ServerViewModel>();
+        public ObservableCollection<ViewModelBase> Servers { get; } = new ObservableCollection<ViewModelBase>();
         public void AddServer(object parameter)
         {
-            AddServerDialog dialog = new AddServerDialog();
+            InputStringDialog dialog = new InputStringDialog();
             _ = dialog.ShowDialog();
             if (dialog.Result != null)
             {
@@ -98,7 +102,7 @@ namespace OneCSharp.Metadata.UI
             }
 
             string dbCatalogAddress;
-            AddServerDialog dialog = new AddServerDialog();
+            InputStringDialog dialog = new InputStringDialog();
             _ = dialog.ShowDialog();
             if (dialog.Result == null)
             {
@@ -125,7 +129,7 @@ namespace OneCSharp.Metadata.UI
             }
 
             string namespaceName;
-            AddServerDialog dialog = new AddServerDialog();
+            InputStringDialog dialog = new InputStringDialog();
             _ = dialog.ShowDialog();
             if (dialog.Result == null)
             {
@@ -158,7 +162,7 @@ namespace OneCSharp.Metadata.UI
             }
 
             string name;
-            AddServerDialog dialog = new AddServerDialog();
+            InputStringDialog dialog = new InputStringDialog();
             _ = dialog.ShowDialog();
             if (dialog.Result == null)
             {
@@ -185,7 +189,7 @@ namespace OneCSharp.Metadata.UI
             }
 
             string name;
-            AddServerDialog dialog = new AddServerDialog();
+            InputStringDialog dialog = new InputStringDialog();
             _ = dialog.ShowDialog();
             if (dialog.Result == null)
             {
@@ -241,6 +245,22 @@ namespace OneCSharp.Metadata.UI
             _codeEditor.Metadata = consumer.Metadata;
             _codeEditor.Save += consumer.SaveSyntaxNode;
             _shell.AddTabItem(caption, new ProcedureView(_codeEditor));
+        }
+
+
+        public void AddLanguage(object parameter)
+        {
+            InputStringDialog dialog = new InputStringDialog();
+            _ = dialog.ShowDialog();
+            if (dialog.Result != null)
+            {
+                DomainLanguage language = new DomainLanguage()
+                {
+                    Name = (string)dialog.Result
+                };
+                DomainLanguageViewModel vm = new DomainLanguageViewModel(language, _shell, _metadataProvider);
+                Servers.Add(vm);
+            }
         }
     }
 }

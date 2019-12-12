@@ -2,11 +2,11 @@
 using System;
 using System.Windows.Input;
 
-namespace OneCSharp.Metadata.UI
+namespace OneCSharp.MVVM
 {
-    public sealed class AddServerDialogViewModel : ViewModelBase
+    public sealed class InputStringDialogViewModel : ViewModelBase
     {
-        public AddServerDialogViewModel()
+        public InputStringDialogViewModel()
         {
             ConfirmCommand = new RelayCommand(Confirm);
             CancelCommand = new RelayCommand(Cancel);

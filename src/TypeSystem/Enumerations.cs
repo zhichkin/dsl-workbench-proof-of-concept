@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OneCSharp.TypeSystem
+namespace OneCSharp
 {
     public abstract class Enumeration<T> : ValueType
     {

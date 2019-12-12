@@ -1,6 +1,4 @@
 ﻿using OneCSharp.DSL.Model;
-using OneCSharp.DSL.Services;
-using OneCSharp.DSL.UI.Services;
 using System;
 
 namespace OneCSharp.DSL.UI

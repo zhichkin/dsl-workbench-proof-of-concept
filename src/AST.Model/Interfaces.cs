@@ -1,24 +1,10 @@
-﻿using OneCSharp.TypeSystem;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace OneCSharp.AST
+namespace OneCSharp.AST.Model
 {
-    public interface IDomainLanguage
-    {
-        string Name { get; set; }
-        List<INamespace> Grammar { get; }
-    }
-    public interface INamespace
-    {
-        public IDomainLanguage Domain { get; set; }
-        public INamespace Parent { get; set; }
-        public string Name { get; set; }
-        public List<INamespace> Namespaces { get; }
-        public List<ISyntaxElement> Elements { get; }
-    }
     public interface ISyntaxElement : IType
     {
-        public INamespace Namespace { get; set; }
+        public ILanguageNamespace Namespace { get; set; }
         public List<ISemanticConnection> Semantics { get; }
     }
     public interface ISemanticConnection
