@@ -1,27 +1,27 @@
 ﻿namespace OneCSharp
 {
-    public sealed class BinaryType : ValueType
+    public sealed class BinaryType : IValueType
     {
-        public override string Name { get { return nameof(TypeSystem.Binary); } }
+        public string Name { get { return nameof(TypeSystem.Binary); } }
     }
-    public sealed class BooleanType : ValueType
+    public sealed class BooleanType : IValueType
     {
-        public override string Name { get { return nameof(TypeSystem.Boolean); } }
+        public string Name { get { return nameof(TypeSystem.Boolean); } }
     }
-    public sealed class NumericType : ValueType
+    public sealed class NumericType : IValueType
     {
-        public override string Name { get { return nameof(TypeSystem.Numeric); } }
+        public string Name { get { return nameof(TypeSystem.Numeric); } }
     }
-    public sealed class StringType : ValueType
+    public sealed class StringType : IValueType
     {
-        public override string Name { get { return nameof(TypeSystem.String); } }
+        public string Name { get { return nameof(TypeSystem.String); } }
     }
-    public sealed class DateTimeType : ValueType
+    public sealed class DateTimeType : IValueType
     {
-        public override string Name { get { return nameof(TypeSystem.DateTime); } }
+        public string Name { get { return nameof(TypeSystem.DateTime); } }
     }
-    public sealed class UUIDType : ValueType
+    public sealed class UUIDType : IValueType
     {
-        public override string Name { get { return nameof(TypeSystem.UUID); } }
+        public string Name { get { return nameof(TypeSystem.UUID); } }
     }
 }

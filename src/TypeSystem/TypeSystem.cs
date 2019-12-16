@@ -6,15 +6,23 @@ namespace OneCSharp
     public interface IType
     {
         string Name { get; }
-        IType BaseType { get; }
-        bool IsValueType { get; }
     }
-    public abstract class ValueType : IType
+    public interface IValueType : IType
     {
-        public abstract string Name { get; }
-        public IType BaseType { get; protected set; }
-        public bool IsValueType { get { return true; } }
+        
     }
+    public interface IEnumeration : IValueType
+    {
+        IValueType BaseType { get; }
+        Dictionary<string, object> Values { get; }
+    }
+    public interface IReferenceType : IType
+    {
+        IReferenceType BaseType { get; set; }
+    }
+
+
+    
     public static class TypeSystem
     {
         static TypeSystem()
@@ -32,6 +40,19 @@ namespace OneCSharp
         public static StringType String { get; private set; }
         public static DateTimeType DateTime { get; private set; }
         public static UUIDType UUID { get; private set; }
+        public static Type GetSystemType(IValueType type)
+        {
+            if (type == null) return null;
+            
+            Type test = type.GetType();
+            if (test == typeof(BinaryType)) return typeof(byte[]);
+            else if (test == typeof(BooleanType)) return typeof(bool);
+            else if (test == typeof(NumericType)) return typeof(int);
+            else if (test == typeof(StringType)) return typeof(string);
+            else if (test == typeof(DateTimeType)) return typeof(DateTime);
+            else if (test == typeof(UUIDType)) return typeof(Guid);
+            else return null;
+        }
 
 
         private static readonly Dictionary<Type, string> _TypeNames = new Dictionary<Type, string>()
