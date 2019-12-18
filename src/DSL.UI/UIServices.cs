@@ -402,7 +402,7 @@ namespace OneCSharp.DSL.UI.Services
             var root = new TreeNodeViewModel(null, "Parameters");
             foreach (Parameter parameter in procedure.Parameters)
             {
-                var child = new TreeNodeViewModel(root, $"@{parameter.Name} ({TypeSystem.GetTypeName(parameter.Type)})", parameter);
+                var child = new TreeNodeViewModel(root, $"@{parameter.Name} ({parameter.Type.Name})", parameter);
                 root.Children.Add(child);
             }
             return root;

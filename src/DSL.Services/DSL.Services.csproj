@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core.Model\Core.Model.csproj" />
     <ProjectReference Include="..\DSL.Model\DSL.Model.csproj" />
     <ProjectReference Include="..\Metadata.Services\Metadata.Services.csproj" />
-    <ProjectReference Include="..\TypeSystem\TypeSystem.csproj" />
   </ItemGroup>
 
 </Project>

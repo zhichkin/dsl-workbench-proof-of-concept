@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>OneCSharp.TypeSystem</AssemblyName>
-    <RootNamespace>OneCSharp.TypeSystem</RootNamespace>
+    <AssemblyName>OneCSharp.Core.Model</AssemblyName>
+    <RootNamespace>OneCSharp.Core</RootNamespace>
   </PropertyGroup>
 
 </Project>

@@ -40,7 +40,7 @@ namespace OneCSharp.DSL.Services
                 writer.WritePropertyName("Parent");
                 JsonSerializer.Serialize(writer, value.Parent, value.Parent.GetType(), options);
             }
-            writer.WriteString("Type", TypeSystem.GetTypeName(value.Type));
+            writer.WriteString("Type", value.Type.Name);
             writer.WriteBoolean("IsInput", value.IsInput);
             writer.WriteBoolean("IsOutput", value.IsOutput);
             writer.WriteEndObject();

@@ -254,7 +254,7 @@ namespace OneCSharp.Metadata.UI
             _ = dialog.ShowDialog();
             if (dialog.Result != null)
             {
-                DomainLanguage language = new DomainLanguage()
+                Language language = new Language()
                 {
                     Name = (string)dialog.Result
                 };

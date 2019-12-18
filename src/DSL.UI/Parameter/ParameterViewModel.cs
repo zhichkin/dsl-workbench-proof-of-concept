@@ -15,7 +15,7 @@ namespace OneCSharp.DSL.UI
             get { return string.IsNullOrEmpty(((Parameter)Model).Name) ? "<parameter name>" : ((Parameter)Model).Name; }
             set { ((Parameter)Model).Name = value; OnPropertyChanged(nameof(Name)); }
         }
-        public string TypeName { get { return TypeSystem.GetTypeName(((Parameter)Model).Type); } }
+        public string TypeName { get { return ((Parameter)Model).Type.Name; } }
         public Type Type
         {
             get { return ((Parameter)Model).Type; }

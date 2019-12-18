@@ -1,4 +1,4 @@
-﻿using OneCSharp.AST.Model;
+﻿using OneCSharp.Core;
 using OneCSharp.Metadata.Services;
 using OneCSharp.MVVM;
 using System;
@@ -11,8 +11,8 @@ namespace OneCSharp.AST.UI
     {
         private readonly IShell _shell;
         private readonly IMetadataProvider _metadataProvider;
-        private readonly ILanguageNamespace _model;
-        public LanguageNamespaceViewModel(ILanguageNamespace model, IShell shell, IMetadataProvider metadataProvider)
+        private readonly Namespace _model;
+        public LanguageNamespaceViewModel(Namespace model, IShell shell, IMetadataProvider metadataProvider)
         {
             _shell = shell ?? throw new ArgumentNullException(nameof(shell));
             _model = model ?? throw new ArgumentNullException(nameof(model));
@@ -23,9 +23,9 @@ namespace OneCSharp.AST.UI
         {
             AddNamespaceCommand = new RelayCommand(AddNamespace);
 
-            if (_model.Namespaces != null)
+            if (_model.Children != null)
             {
-                foreach (var ns in _model.Namespaces)
+                foreach (var ns in _model.Children)
                 {
                     LanguageNamespaceViewModel vm = new LanguageNamespaceViewModel(ns, _shell, _metadataProvider);
                     Namespaces.Add(vm);
@@ -45,7 +45,7 @@ namespace OneCSharp.AST.UI
             _ = dialog.ShowDialog();
             if (dialog.Result == null) { return; }
 
-            LanguageNamespace model = new LanguageNamespace()
+            Namespace model = new Namespace()
             {
                 Name = (string)dialog.Result
             };
