@@ -6,7 +6,7 @@ namespace OneCSharp.Core
     public class Method : Entity
     {
         public ComplexEntity Owner { get; set; }
-        public Entity ReturnEntity { get; set; }
+        public Entity ReturnType { get; set; }
         public List<Property> Parameters { get; } = new List<Property>();
         public void Add(Property parameter)
         {
