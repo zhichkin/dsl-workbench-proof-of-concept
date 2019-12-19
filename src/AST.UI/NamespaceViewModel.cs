@@ -3,40 +3,57 @@ using OneCSharp.Metadata.Services;
 using OneCSharp.MVVM;
 using System;
 using System.Collections.ObjectModel;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace OneCSharp.AST.UI
 {
-    public sealed class LanguageNamespaceViewModel : ViewModelBase
+    public sealed class NamespaceViewModel : ViewModelBase
     {
         private readonly IShell _shell;
         private readonly IMetadataProvider _metadataProvider;
         private readonly Namespace _model;
-        public LanguageNamespaceViewModel(Namespace model, IShell shell, IMetadataProvider metadataProvider)
+        private BitmapImage _iconImage = new BitmapImage(new Uri("pack://application:,,,/OneCSharp.AST.UI;component/images/NamespacePublic.png"));
+        public NamespaceViewModel(Namespace model, IShell shell, IMetadataProvider metadataProvider)
         {
             _shell = shell ?? throw new ArgumentNullException(nameof(shell));
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _metadataProvider = metadataProvider ?? throw new ArgumentNullException(nameof(metadataProvider));
+            SetupContextMenu();
             InitializeViewModel();
+        }
+        private void SetupContextMenu()
+        {
+            ContextMenuItems.Add(new MenuItemViewModel()
+            {
+                HeaderText = "Add namespace...",
+                MenuCommand = new RelayCommand(AddNamespace),
+                IconImage = new BitmapImage(new Uri("pack://application:,,,/OneCSharp.AST.UI;component/images/AddNamespace.png"))
+            });
         }
         private void InitializeViewModel()
         {
-            AddNamespaceCommand = new RelayCommand(AddNamespace);
-
             if (_model.Children != null)
             {
                 foreach (var ns in _model.Children)
                 {
-                    LanguageNamespaceViewModel vm = new LanguageNamespaceViewModel(ns, _shell, _metadataProvider);
+                    NamespaceViewModel vm = new NamespaceViewModel(ns, _shell, _metadataProvider);
                     Namespaces.Add(vm);
                 }
             }
         }
+        public ObservableCollection<MenuItemViewModel> ContextMenuItems { get; } = new ObservableCollection<MenuItemViewModel>();
         public ICommand AddNamespaceCommand { get; private set; }
         public string Name
         {
             get { return _model.Name; }
             set { _model.Name = value; OnPropertyChanged(nameof(Name)); }
+        }
+        public BitmapImage IconImage
+        {
+            get { return _iconImage; }
+            set { _iconImage = value; OnPropertyChanged(nameof(IconImage)); }
         }
         public ObservableCollection<ViewModelBase> Namespaces { get; } = new ObservableCollection<ViewModelBase>();
         public void AddNamespace(object parameter)
@@ -49,7 +66,7 @@ namespace OneCSharp.AST.UI
             {
                 Name = (string)dialog.Result
             };
-            LanguageNamespaceViewModel vm = new LanguageNamespaceViewModel(model, _shell, _metadataProvider);
+            NamespaceViewModel vm = new NamespaceViewModel(model, _shell, _metadataProvider);
             Namespaces.Add(vm);
         }
     }

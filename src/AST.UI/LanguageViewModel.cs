@@ -8,12 +8,12 @@ using System.Windows.Input;
 
 namespace OneCSharp.AST.UI
 {
-    public sealed class DomainLanguageViewModel : ViewModelBase
+    public sealed class LanguageViewModel : ViewModelBase
     {
         private readonly IShell _shell;
         private readonly IMetadataProvider _metadataProvider;
         private readonly Language _model;
-        public DomainLanguageViewModel(Language model, IShell shell, IMetadataProvider metadataProvider)
+        public LanguageViewModel(Language model, IShell shell, IMetadataProvider metadataProvider)
         {
             _shell = shell ?? throw new ArgumentNullException(nameof(shell));
             _model = model ?? throw new ArgumentNullException(nameof(model));
@@ -28,7 +28,7 @@ namespace OneCSharp.AST.UI
             {
                 foreach (var ns in _model.Namespaces)
                 {
-                    LanguageNamespaceViewModel vm = new LanguageNamespaceViewModel(ns, _shell, _metadataProvider);
+                    NamespaceViewModel vm = new NamespaceViewModel(ns, _shell, _metadataProvider);
                     Namespaces.Add(vm);
                 }
             }
@@ -50,7 +50,7 @@ namespace OneCSharp.AST.UI
             {
                 Name = (string)dialog.Result
             };
-            LanguageNamespaceViewModel vm = new LanguageNamespaceViewModel(model, _shell, _metadataProvider);
+            NamespaceViewModel vm = new NamespaceViewModel(model, _shell, _metadataProvider);
             Namespaces.Add(vm);
         }
     }

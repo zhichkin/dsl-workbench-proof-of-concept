@@ -2,9 +2,9 @@ using System.Windows.Controls;
 
 namespace OneCSharp.AST.UI
 {
-    public partial class DomainLanguageView : UserControl
+    public partial class LanguageView : UserControl
     {
-        public DomainLanguageView()
+        public LanguageView()
         {
             InitializeComponent();
         }

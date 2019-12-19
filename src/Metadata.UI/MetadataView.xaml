@@ -157,12 +157,12 @@
                     </StackPanel>
                 </DataTemplate>
 
-                <HierarchicalDataTemplate DataType="{x:Type ast:DomainLanguageViewModel}" ItemsSource="{Binding Namespaces}">
-                    <ast:DomainLanguageView/>
+                <HierarchicalDataTemplate DataType="{x:Type ast:LanguageViewModel}" ItemsSource="{Binding Namespaces}">
+                    <ast:LanguageView/>
                 </HierarchicalDataTemplate>
 
-                <HierarchicalDataTemplate DataType="{x:Type ast:LanguageNamespaceViewModel}" ItemsSource="{Binding Namespaces}">
-                    <ast:LanguageNamespaceView/>
+                <HierarchicalDataTemplate DataType="{x:Type ast:NamespaceViewModel}" ItemsSource="{Binding Namespaces}">
+                    <ast:NamespaceView/>
                 </HierarchicalDataTemplate>
 
             </TreeView.Resources>

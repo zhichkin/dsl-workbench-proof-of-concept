@@ -258,7 +258,7 @@ namespace OneCSharp.Metadata.UI
                 {
                     Name = (string)dialog.Result
                 };
-                DomainLanguageViewModel vm = new DomainLanguageViewModel(language, _shell, _metadataProvider);
+                LanguageViewModel vm = new LanguageViewModel(language, _shell, _metadataProvider);
                 Servers.Add(vm);
             }
         }

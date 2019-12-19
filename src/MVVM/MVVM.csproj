@@ -7,4 +7,8 @@
     <RootNamespace>OneCSharp.MVVM</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Model\Core.Model.csproj" />
+  </ItemGroup>
+
 </Project>

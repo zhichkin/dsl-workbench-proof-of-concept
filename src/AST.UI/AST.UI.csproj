@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\AddNamespace.png" />
+    <None Remove="images\NamespacePublic.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AST.Model\AST.Model.csproj" />
     <ProjectReference Include="..\Core.Model\Core.Model.csproj" />
     <ProjectReference Include="..\Metadata.Services\Metadata.Services.csproj" />
@@ -15,7 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="images\" />
+    <Resource Include="images\AddNamespace.png" />
+    <Resource Include="images\NamespacePublic.png" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OneCSharp.Core
@@ -7,11 +8,13 @@ namespace OneCSharp.Core
     {
         public ComplexEntity Owner { get; set; }
         public Entity ReturnType { get; set; }
-        public List<Property> Parameters { get; } = new List<Property>();
-        public void Add(Property parameter)
+        public List<Parameter> Parameters { get; } = new List<Parameter>();
+        public void Add(Parameter parameter)
         {
+            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
             if (Parameters.Contains(parameter)) return;
             if (Parameters.Where(i => i.Name == parameter.Name).FirstOrDefault() != null) return;
+            parameter.Owner = this;
             Parameters.Add(parameter);
         }
     }

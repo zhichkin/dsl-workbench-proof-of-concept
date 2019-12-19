@@ -2,9 +2,9 @@
 
 namespace OneCSharp.AST.UI
 {
-    public partial class LanguageNamespaceView : UserControl
+    public partial class NamespaceView : UserControl
     {
-        public LanguageNamespaceView()
+        public NamespaceView()
         {
             InitializeComponent();
         }
