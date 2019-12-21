@@ -1,6 +1,4 @@
-﻿using OneCSharp.AST.Model;
-using OneCSharp.AST.UI;
-using OneCSharp.DSL.Model;
+﻿using OneCSharp.DSL.Model;
 using OneCSharp.DSL.Services;
 using OneCSharp.DSL.UI;
 using OneCSharp.Metadata.Model;
@@ -26,11 +24,9 @@ namespace OneCSharp.Metadata.UI
             InitializeViewModel();
         }
         public ICommand AddServerCommand { get; private set; }
-        public ICommand AddLanguageCommand { get; private set; }
         private void InitializeViewModel()
         {
             this.AddServerCommand = new RelayCommand(AddServer);
-            this.AddLanguageCommand = new RelayCommand(AddLanguage);
         }
         public ObservableCollection<ViewModelBase> Servers { get; } = new ObservableCollection<ViewModelBase>();
         public void AddServer(object parameter)
@@ -245,22 +241,6 @@ namespace OneCSharp.Metadata.UI
             _codeEditor.Metadata = consumer.Metadata;
             _codeEditor.Save += consumer.SaveSyntaxNode;
             _shell.AddTabItem(caption, new ProcedureView(_codeEditor));
-        }
-
-
-        public void AddLanguage(object parameter)
-        {
-            InputStringDialog dialog = new InputStringDialog();
-            _ = dialog.ShowDialog();
-            if (dialog.Result != null)
-            {
-                Language language = new Language()
-                {
-                    Name = (string)dialog.Result
-                };
-                LanguageViewModel vm = new LanguageViewModel(language, _shell, _metadataProvider);
-                Servers.Add(vm);
-            }
         }
     }
 }

@@ -6,27 +6,33 @@ namespace OneCSharp.MVVM
 {
     public sealed class MenuItemViewModel : ViewModelBase
     {
-        private string _headerText;
-        private ICommand _menuCommand;
-        private BitmapImage _iconImage;
+        private string _header;
+        private ICommand _command;
+        private BitmapImage _image;
+        private object _payload;
         public MenuItemViewModel()
         {
 
         }
-        public string HeaderText
+        public string MenuItemHeader
         {
-            get { return _headerText; }
-            set { _headerText = value; OnPropertyChanged(nameof(HeaderText)); }
+            get { return _header; }
+            set { _header = value; OnPropertyChanged(nameof(MenuItemHeader)); }
         }
-        public ICommand MenuCommand
+        public ICommand MenuItemCommand
         {
-            get { return _menuCommand; }
-            set { _menuCommand = value; OnPropertyChanged(nameof(MenuCommand)); }
+            get { return _command; }
+            set { _command = value; OnPropertyChanged(nameof(MenuItemCommand)); }
         }
-        public BitmapImage IconImage
+        public BitmapImage MenuItemIcon
         {
-            get { return _iconImage; }
-            set { _iconImage = value; OnPropertyChanged(nameof(IconImage)); }
+            get { return _image; }
+            set { _image = value; OnPropertyChanged(nameof(MenuItemIcon)); }
+        }
+        public object MenuItemPayload
+        {
+            get { return _payload; }
+            set { _payload = value; OnPropertyChanged(nameof(MenuItemPayload)); }
         }
         public ObservableCollection<MenuItemViewModel> MenuItems { get; } = new ObservableCollection<MenuItemViewModel>();
     }

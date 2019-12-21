@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ui="clr-namespace:OneCSharp.Metadata.UI"
-             xmlns:ast="clr-namespace:OneCSharp.AST.UI;assembly=OneCSharp.AST.UI"
              xmlns:mvvm="clr-namespace:OneCSharp.MVVM;assembly=OneCSharp.MVVM"
              mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
 
@@ -30,14 +29,6 @@
                 </MenuItem.Header>
                 <MenuItem.ToolTip>
                     <TextBlock Text="Add server..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                </MenuItem.ToolTip>
-            </MenuItem>
-            <MenuItem Command="{Binding AddLanguageCommand}">
-                <MenuItem.Header>
-                    <Image Source="{StaticResource Icon_AddLanguage}"/>
-                </MenuItem.Header>
-                <MenuItem.ToolTip>
-                    <TextBlock Text="Add language..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </MenuItem.ToolTip>
             </MenuItem>
         </Menu>
@@ -156,14 +147,6 @@
                         <TextBlock Text="{Binding Name}" Margin="3,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </DataTemplate>
-
-                <HierarchicalDataTemplate DataType="{x:Type ast:LanguageViewModel}" ItemsSource="{Binding Namespaces}">
-                    <ast:LanguageView/>
-                </HierarchicalDataTemplate>
-
-                <HierarchicalDataTemplate DataType="{x:Type ast:NamespaceViewModel}" ItemsSource="{Binding Namespaces}">
-                    <ast:NamespaceView/>
-                </HierarchicalDataTemplate>
 
             </TreeView.Resources>
         </TreeView>

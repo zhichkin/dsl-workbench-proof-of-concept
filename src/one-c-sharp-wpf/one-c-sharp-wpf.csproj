@@ -9,11 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="csharp.ico" />
+    <None Remove="images\NamespacePublic.png" />
+    <None Remove="one-c-sharp.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AST.UI\AST.UI.csproj" />
     <ProjectReference Include="..\Metadata.Model\Metadata.Model.csproj" />
     <ProjectReference Include="..\Metadata.Services\Metadata.Services.csproj" />
     <ProjectReference Include="..\Metadata.UI\Metadata.UI.csproj" />
@@ -27,7 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="images\" />
+    <Resource Include="images\NamespacePublic.png" />
+    <Resource Include="one-c-sharp.ico" />
   </ItemGroup>
 
 </Project>

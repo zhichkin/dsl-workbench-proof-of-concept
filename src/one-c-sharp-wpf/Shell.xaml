@@ -5,12 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:shell="clr-namespace:OneCSharp.Shell"
         mc:Ignorable="d" Height="600" Width="800"
-        WindowStartupLocation="CenterScreen" Title="1C# © 2016">
+        WindowStartupLocation="CenterScreen" Title="1C# © 2016" Icon="one-c-sharp.ico">
 
     <Window.Resources>
         <shell:ContentTemplateSelector x:Key="Selector"
-            MenuItemTemplate="{StaticResource MenuItemTemplate}"
-            LeftRegionTemplate="{StaticResource MetadataTemplate}"
+            LeftRegionTemplate="{StaticResource TreeViewTemplate}"
             RightRegionTemplate="{StaticResource RightRegionTemplate}"
             StatusBarTemplate="{StaticResource StatusBarTemplate}"/>
     </Window.Resources>
@@ -26,17 +25,20 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="3*" MinWidth="200" />
         </Grid.ColumnDefinitions>
-        
-        <ItemsControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
-                      BorderBrush="Black" BorderThickness="0,1,0,1"
-                      ItemsSource="{Binding MainMenuRegion}"
-                      ItemTemplateSelector="{StaticResource Selector}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+
+        <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+              BorderBrush="Black" BorderThickness="0,1,0,1"
+              ItemsSource="{Binding MainMenuRegion}">
+            <Menu.ItemTemplate>
+                <DataTemplate>
+                    <Button ToolTip="{Binding MenuItemHeader}"
+                            Command="{Binding MenuItemCommand}"
+                            CommandParameter="{Binding MenuItemPayload}">
+                        <Image Source="{Binding MenuItemIcon}"/>
+                    </Button>
+                </DataTemplate>
+            </Menu.ItemTemplate>
+        </Menu>
 
         <ContentControl Grid.Row="1" Grid.Column="0" Margin="5"
                         VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"

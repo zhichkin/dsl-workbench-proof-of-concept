@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AST.UI", "AST.UI\AST.UI.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AST.Model", "AST.Model\AST.Model.csproj", "{76673CB2-9CD4-4ECE-8C90-0ABAB5B98882}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{BE0E71E1-0203-4254-85CD-C3FBF7698E0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{BE0E71E1-0203-4254-85CD-C3FBF7698E0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.UI", "Core.UI\Core.UI.csproj", "{064CFB78-6300-452F-81C9-476D67286225}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{BE0E71E1-0203-4254-85CD-C3FBF7698E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE0E71E1-0203-4254-85CD-C3FBF7698E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE0E71E1-0203-4254-85CD-C3FBF7698E0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{064CFB78-6300-452F-81C9-476D67286225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{064CFB78-6300-452F-81C9-476D67286225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{064CFB78-6300-452F-81C9-476D67286225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{064CFB78-6300-452F-81C9-476D67286225}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

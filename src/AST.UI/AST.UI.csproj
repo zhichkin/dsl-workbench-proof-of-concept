@@ -8,8 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\AddLanguage.png" />
     <None Remove="images\AddNamespace.png" />
     <None Remove="images\NamespacePublic.png" />
+    <None Remove="images\Solution.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,8 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="images\AddLanguage.png" />
     <Resource Include="images\AddNamespace.png" />
     <Resource Include="images\NamespacePublic.png" />
+    <Resource Include="images\Solution.png" />
   </ItemGroup>
 
 </Project>

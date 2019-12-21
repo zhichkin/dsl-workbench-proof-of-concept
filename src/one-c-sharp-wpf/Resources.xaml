@@ -1,11 +1,12 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:shell="clr-namespace:OneCSharp.Shell"
+                    xmlns:mvvm="clr-namespace:OneCSharp.MVVM;assembly=OneCSharp.MVVM"
                     xmlns:metadata="clr-namespace:OneCSharp.Metadata.UI;assembly=OneCSharp.Metadata.UI">
 
-    <DataTemplate x:Key="MenuItemTemplate">
+    <!--<DataTemplate x:Key="MenuItemTemplate">
         <shell:MenuItemView/>
-    </DataTemplate>
+    </DataTemplate>-->
 
     <DataTemplate x:Key="MetadataTemplate">
         <metadata:MetadataView/>
@@ -21,4 +22,8 @@
 
     <BitmapImage x:Key="Icon_Close" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\one-c-sharp-wpf\images\Close.png"/>
 
+    <DataTemplate x:Key="TreeViewTemplate">
+        <mvvm:TreeNodeView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

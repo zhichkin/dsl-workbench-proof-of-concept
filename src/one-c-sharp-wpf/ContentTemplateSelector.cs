@@ -1,4 +1,5 @@
 ﻿using OneCSharp.Metadata.UI;
+using OneCSharp.MVVM;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,8 +14,9 @@ namespace OneCSharp.Shell
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             if (item == null) return null;
-            if (item is MenuItemViewModel) return MenuItemTemplate;
-            else if (item is MetadataViewModel) return LeftRegionTemplate;
+            //if (item is MenuViewModel) return MenuItemTemplate;
+            if (item is TreeNodeViewModel) return LeftRegionTemplate;
+            //else if (item is MetadataViewModel) return LeftRegionTemplate;
             else if (item is StatusBarViewModel) return StatusBarTemplate;
             //else if (item is TabViewModel) return RightRegionTemplate;
             return null;

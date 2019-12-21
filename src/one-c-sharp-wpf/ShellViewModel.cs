@@ -1,22 +1,23 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OneCSharp.Metadata.Services;
-using OneCSharp.Metadata.UI;
 using OneCSharp.MVVM;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Input;
 
 namespace OneCSharp.Shell
 {
     public sealed class ShellViewModel : IShell, INotifyPropertyChanged
     {
-        private object _LeftRegion;
+        private TreeNodeViewModel _LeftRegion = new TreeNodeViewModel();
         private object _RightRegion;
-        private object _StatusBarRegion;
+        private StatusBarViewModel _StatusBarRegion = new StatusBarViewModel();
         private AppSettings _settings;
         private readonly IServiceProvider _serviceProvider;
+        public IService GetService<IService>()
+        {
+            return _serviceProvider.GetService<IService>();
+        }
         public ShellViewModel(IServiceProvider serviceProvider, IOptions<AppSettings> options)
         {
             _settings = options.Value;
@@ -28,9 +29,9 @@ namespace OneCSharp.Shell
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public ObservableCollection<MenuItemViewModel> MainMenuRegion { get; private set; }
-        public ObservableCollection<TabViewModel> Tabs { get; private set; }
-        public object LeftRegion
+        public ObservableCollection<MenuItemViewModel> MainMenuRegion { get; } = new ObservableCollection<MenuItemViewModel>();
+        public ObservableCollection<TabViewModel> Tabs { get; } = new ObservableCollection<TabViewModel>();
+        public TreeNodeViewModel LeftRegion
         {
             get { return _LeftRegion; }
             set { _LeftRegion = value; OnPropertyChanged(nameof(LeftRegion)); }
@@ -40,30 +41,24 @@ namespace OneCSharp.Shell
             get { return _RightRegion; }
             set { _RightRegion = value; OnPropertyChanged(nameof(RightRegion)); }
         }
-        public object StatusBarRegion
+        public StatusBarViewModel StatusBarRegion
         {
             get { return _StatusBarRegion; }
             set { _StatusBarRegion = value; OnPropertyChanged(nameof(_StatusBarRegion)); }
         }
         private void InitializeViewModel()
         {
-            IMetadataProvider metadataProvider = _serviceProvider.GetService<IMetadataProvider>();
-            var metadata = new MetadataViewModel(this, metadataProvider);
-            LeftRegion = metadata;
-            StatusBarRegion = new StatusBarViewModel();
+            //IMetadataProvider metadataProvider = _serviceProvider.GetService<IMetadataProvider>();
+            //var metadata = new MetadataViewModel(this, metadataProvider);
+            //LeftRegion = metadata;
 
-            MainMenuRegion = new ObservableCollection<MenuItemViewModel>();
-            //MainMenuRegion.Add(new MenuItemViewModel()
-            //{
-            //    CommandName = "Add server ...",
-            //    CommandAction = metadata.AddServerCommand
-            //});
+            // Plug in Metadata module
+            IModule module1 = new OneCSharp.Metadata.UI.Module();
+            module1.Initialize(this);
 
-            Tabs = new ObservableCollection<TabViewModel>();
-            //Tabs.Add(new TabViewModel()
-            //{
-            //    Content = new TabViewModel()
-            //});
+            // Plug in AST module
+            IModule module2 = new OneCSharp.AST.UI.Module();
+            module2.Initialize(this);
         }
         private TabViewModel _selectedTab;
         public TabViewModel SelectedTab
@@ -91,6 +86,16 @@ namespace OneCSharp.Shell
                     SelectedTab = Tabs[0];
                 }
             }
+        }
+
+
+        public void AddMenuItem(MenuItemViewModel menuItem)
+        {
+            MainMenuRegion.Add(menuItem);
+        }
+        public void AddTreeNode(TreeNodeViewModel treeNode)
+        {
+            LeftRegion.TreeNodes.Add(treeNode);
         }
     }
 }
