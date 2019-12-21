@@ -2,6 +2,7 @@
 using OneCSharp.Metadata.Services;
 using OneCSharp.MVVM;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -12,7 +13,12 @@ namespace OneCSharp.Metadata.UI
     {
         private const string ONE_C_SHARP = "ONE-C-SHARP";
         private IShell _shell;
+        private readonly Dictionary<Type, IController> _controllers = new Dictionary<Type, IController>();
         public Module() { }
+        public IController GetController<T>()
+        {
+            return _controllers[typeof(T)];
+        }
         public void Initialize(IShell shell)
         {
             _shell = shell;
@@ -36,7 +42,7 @@ namespace OneCSharp.Metadata.UI
             string serverName = (string)dialog.Result;
             IServer server = metadataProvider.Servers.Where(s => s.Address == serverName).FirstOrDefault();
             if (server != null) return;
-            server = new Server() { Address = serverName };
+            server = new Model.Server() { Address = serverName };
             if (!metadataProvider.CheckServerConnection(server))
             {
                 var result = MessageBox.Show(
@@ -47,7 +53,7 @@ namespace OneCSharp.Metadata.UI
                 return;
             }
             metadataProvider.AddServer(server);
-            ServerViewModel viewModel = new ServerViewModel(_shell, (Server)server, metadataProvider);
+            ServerViewModel viewModel = new ServerViewModel(_shell, (Model.Server)server, metadataProvider);
             //serverViewModel.Parent = this;
 
             var treeNode = new TreeNodeViewModel()
@@ -65,6 +71,11 @@ namespace OneCSharp.Metadata.UI
             });
 
             _shell.AddTreeNode(treeNode);
+        }
+
+        public void Persist(Core.Entity model)
+        {
+            throw new NotImplementedException();
         }
     }
 }

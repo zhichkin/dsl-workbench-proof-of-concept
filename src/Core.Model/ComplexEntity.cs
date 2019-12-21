@@ -5,10 +5,14 @@ namespace OneCSharp.Core
 {
     public class ComplexEntity : Entity
     {
-        public Namespace Namespace { get; set; }
-        public ComplexEntity Parent { get; set; }
+        public ComplexEntity()
+        {
+
+        }
         public List<Method> Methods { get; } = new List<Method>();
         public List<Property> Properties { get; } = new List<Property>();
+        public Namespace Namespace { get; set; }
+        public ComplexEntity Parent { get; set; }
         public void Add(Method method)
         {
             if (Methods.Contains(method)) return;

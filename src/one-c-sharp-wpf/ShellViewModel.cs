@@ -4,6 +4,8 @@ using OneCSharp.MVVM;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
+using System.Reflection;
 
 namespace OneCSharp.Shell
 {
@@ -14,6 +16,9 @@ namespace OneCSharp.Shell
         private StatusBarViewModel _StatusBarRegion = new StatusBarViewModel();
         private AppSettings _settings;
         private readonly IServiceProvider _serviceProvider;
+
+        private string _catalogPath;
+        public string AppCatalogPath { get { return _catalogPath; } }
         public IService GetService<IService>()
         {
             return _serviceProvider.GetService<IService>();
@@ -22,7 +27,14 @@ namespace OneCSharp.Shell
         {
             _settings = options.Value;
             _serviceProvider = serviceProvider;
+
+            SetupCatalogPath();
             InitializeViewModel();
+        }
+        private void SetupCatalogPath()
+        {
+            Assembly asm = Assembly.GetExecutingAssembly();
+            _catalogPath = Path.GetDirectoryName(asm.Location);
         }
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName)
