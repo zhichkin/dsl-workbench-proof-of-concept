@@ -1,12 +1,25 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OneCSharp.Core
 {
-    public class Domain : Entity
+    public class Domain : Entity, IHaveChildren
     {
         public List<Namespace> Namespaces { get; } = new List<Namespace>();
+        public IEnumerable Children
+        {
+            get
+            {
+                return Namespaces;
+            }
+        }
+        public void AddChild(Entity child)
+        {
+            if (!(child is Namespace)) throw new ArgumentOutOfRangeException(nameof(child));
+            Add((Namespace)child);
+        }
         public void Add(Namespace child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));

@@ -3,8 +3,11 @@ using OneCSharp.Core;
 using OneCSharp.Core.Services;
 using OneCSharp.MVVM;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Media.Imaging;
 
 namespace OneCSharp.AST.UI
@@ -35,7 +38,15 @@ namespace OneCSharp.AST.UI
             {
                 _ = Directory.CreateDirectory(path);
             }
-            return Path.Combine(path, MODULE_FILE);
+            string file = Path.Combine(path, MODULE_FILE);
+            if (!File.Exists(file))
+            {
+                using (StreamWriter writer = File.CreateText(file))
+                {
+                    writer.Close();
+                }
+            }
+            return file;
         }
         public void Initialize(IShell shell)
         {
@@ -57,6 +68,10 @@ namespace OneCSharp.AST.UI
         public IController GetController<T>()
         {
             return _controllers[typeof(T)];
+        }
+        public IController GetController(Type type)
+        {
+            return _controllers[type];
         }
         private void AddLanguage(object parameter)
         {
@@ -96,7 +111,30 @@ namespace OneCSharp.AST.UI
         }
         private void BuildTreeView(Entity entity)
         {
+            BuildRecursively(entity, out TreeNodeViewModel treeNode);
+            _shell.AddTreeNode(treeNode);
+        }
+        private void BuildRecursively(Entity entity, out TreeNodeViewModel target)
+        {
+            IController controller = GetController(entity.GetType());
+            controller.BuildTreeNode(entity, out target);
 
+            if (entity.GetType()
+                .GetInterfaces()
+                .Where(i => i == typeof(IHaveChildren))
+                .FirstOrDefault() != null)
+            {
+                IHaveChildren source = (IHaveChildren)entity;
+                BuildRecursively(source.Children, target.TreeNodes);
+            }
+        }
+        private void BuildRecursively(IEnumerable entities, ObservableCollection<TreeNodeViewModel> treeNodes)
+        {
+            foreach (Entity entity in entities)
+            {
+                BuildRecursively(entity, out TreeNodeViewModel treeNode);
+                treeNodes.Add(treeNode);
+            }
         }
     }
 }

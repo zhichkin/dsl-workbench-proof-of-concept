@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -47,6 +48,11 @@ namespace OneCSharp.Core.Services
         }
         private void WriteProperty(Utf8JsonWriter writer, Entity source, PropertyInfo info, JsonSerializerOptions options)
         {
+            if (info.PropertyType == typeof(IEnumerable))
+            {
+                return; // IEnumerable IHaveChildren.Children
+            }
+
             writer.WritePropertyName(info.Name);
             object value = info.GetValue(source);
 
@@ -165,6 +171,10 @@ namespace OneCSharp.Core.Services
                 }
                 else if (reader.TokenType == JsonTokenType.StartArray)
                 {
+                    bool hasChildren = (entityType.GetInterfaces()
+                        .Where(i => i == typeof(IHaveChildren))
+                        .FirstOrDefault() != null);
+
                     IList list = (IList)propertyInfo.GetValue(entity);
                     while (reader.TokenType != JsonTokenType.EndArray)
                     {
@@ -173,7 +183,14 @@ namespace OneCSharp.Core.Services
                             break;
                         }
                         Entity item = ReadObject(ref reader, options);
-                        list.Add(item); // TODO: use parent.AddChild(...) methods !!!
+                        if (hasChildren)
+                        {
+                            ((IHaveChildren)entity).AddChild(item);
+                        }
+                        else
+                        {
+                            list.Add(item);
+                        }
                     }
                 }
             }

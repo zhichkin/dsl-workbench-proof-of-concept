@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OneCSharp.Core
 {
-    public sealed class Namespace : Entity
+    public sealed class Namespace : Entity, IHaveChildren
     {
         private Domain _domain;
         private Namespace _parent;
@@ -104,6 +105,26 @@ namespace OneCSharp.Core
             }
             Entities.Add(entity);
             return (T)entity;
+        }
+
+        IEnumerable IHaveChildren.Children
+        {
+            get
+            {
+                return Children;
+            }
+        }
+        public void AddChild(Entity child)
+        {
+            if (child == null) throw new ArgumentNullException(nameof(child));
+            if (child is Namespace)
+            {
+                Add((Namespace)child);
+            }
+            else
+            {
+                Add(child);
+            }
         }
     }
 }

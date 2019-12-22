@@ -19,6 +19,10 @@ namespace OneCSharp.Metadata.UI
         {
             return _controllers[typeof(T)];
         }
+        public IController GetController(Type type)
+        {
+            return _controllers[type];
+        }
         public void Initialize(IShell shell)
         {
             _shell = shell;
