@@ -10,37 +10,39 @@ namespace OneCSharp.Tests
         {
             Domain domain = new Domain() { Name = "domain" };
             Namespace root = new Namespace() { Name = "root" };
-            domain.Add(root);
+            domain.AddChild(root);
             Assert.IsTrue(domain.Namespaces.Count > 0);
             Assert.IsTrue(root.Domain == domain);
-            Assert.IsTrue(root.Parent == null);
+            Assert.IsTrue(root.Owner == null);
         }
         [TestMethod] public void AttachNamespaceToDomain2()
         {
             Domain domain = new Domain() { Name = "domain" };
-            Namespace root = domain.AddNamespace("root");
+            Namespace child = new Namespace() { Name = "root" };
+            domain.AddChild(child);
             Assert.IsTrue(domain.Namespaces.Count > 0);
-            Assert.IsTrue(root.Domain == domain);
-            Assert.IsTrue(root.Parent == null);
+            Assert.IsTrue(child.Domain == domain);
+            Assert.IsTrue(child.Owner == null);
         }
         [TestMethod] public void AttachNamespaceToDomain3()
         {
             Domain domain = new Domain() { Name = "domain" };
-            Namespace root = domain.AddNamespace("root");
+            Namespace root = new Namespace() { Name = "root" };
+            domain.AddChild(root);
             Namespace child = new Namespace() { Name = "child" };
-            root.Add(child);
-            Assert.IsTrue(root.Children.Count > 0);
+            root.AddChild(child);
+            Assert.IsTrue(root.Namespaces.Count > 0);
             Assert.IsTrue(root.Domain == domain);
-            Assert.IsTrue(root.Parent == null);
+            Assert.IsTrue(root.Owner == null);
             Assert.IsTrue(child.Domain == domain);
-            Assert.IsTrue(child.Parent == root);
+            Assert.IsTrue(child.Owner == root);
             
-            domain.Add(child);
+            domain.AddChild(child);
             Assert.IsTrue(domain.Namespaces.Count == 2);
-            root.Children.Remove(child);
-            Assert.IsTrue(root.Children.Count == 0);
+            root.Namespaces.Remove(child);
+            Assert.IsTrue(root.Namespaces.Count == 0);
             Assert.IsTrue(child.Domain == domain);
-            Assert.IsTrue(child.Parent == null);
+            Assert.IsTrue(child.Owner == null);
         }
     }
 }

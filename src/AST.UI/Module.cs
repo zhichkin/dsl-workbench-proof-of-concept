@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Media.Imaging;
 
 namespace OneCSharp.AST.UI
@@ -111,28 +112,30 @@ namespace OneCSharp.AST.UI
         }
         private void BuildTreeView(Entity entity)
         {
-            BuildRecursively(entity, out TreeNodeViewModel treeNode);
+            BuildTreeNodeRecursively(entity, out TreeNodeViewModel treeNode);
             _shell.AddTreeNode(treeNode);
         }
-        private void BuildRecursively(Entity entity, out TreeNodeViewModel target)
+        private void BuildTreeNodeRecursively(Entity entity, out TreeNodeViewModel target)
         {
             IController controller = GetController(entity.GetType());
             controller.BuildTreeNode(entity, out target);
 
-            if (entity.GetType()
-                .GetInterfaces()
-                .Where(i => i == typeof(IHaveChildren))
-                .FirstOrDefault() != null)
+            Type entityType = entity.GetType();
+            foreach(PropertyInfo property in entityType.GetProperties())
             {
-                IHaveChildren source = (IHaveChildren)entity;
-                BuildRecursively(source.Children, target.TreeNodes);
+                PropertyPurposeAttribute purpose = property.GetCustomAttribute<PropertyPurposeAttribute>();
+                if (purpose != null && purpose.Purpose == PropertyPurpose.Children)
+                {
+                    IEnumerable source = (IEnumerable)property.GetValue(entity);
+                    BuildTreeNodesRecursively(source, target.TreeNodes);
+                }
             }
         }
-        private void BuildRecursively(IEnumerable entities, ObservableCollection<TreeNodeViewModel> treeNodes)
+        private void BuildTreeNodesRecursively(IEnumerable entities, ObservableCollection<TreeNodeViewModel> treeNodes)
         {
             foreach (Entity entity in entities)
             {
-                BuildRecursively(entity, out TreeNodeViewModel treeNode);
+                BuildTreeNodeRecursively(entity, out TreeNodeViewModel treeNode);
                 treeNodes.Add(treeNode);
             }
         }

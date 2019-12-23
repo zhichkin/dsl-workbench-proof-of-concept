@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace OneCSharp.Core
+﻿namespace OneCSharp.Core
 {
     public interface IEntity
     {
@@ -8,11 +6,6 @@ namespace OneCSharp.Core
     }
     public abstract class Entity : IEntity
     {
-        public string Name { get; set; }
-    }
-    public interface IHaveChildren
-    {
-        void AddChild(Entity child);
-        IEnumerable Children { get; }
+        [PropertyPurpose(PropertyPurpose.Presentation)] public string Name { get; set; }
     }
 }

@@ -46,7 +46,7 @@ namespace OneCSharp.AST.UI
             {
                 Name = (string)dialog.Result
             };
-            parent.Add(child);
+            parent.AddChild(child);
 
             IController controller = _module.GetController<Namespace>();
             controller.BuildTreeNode(child, out TreeNodeViewModel childNode);

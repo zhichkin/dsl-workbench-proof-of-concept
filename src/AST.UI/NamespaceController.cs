@@ -48,11 +48,11 @@ namespace OneCSharp.AST.UI
             };
             if (treeNode.NodePayload is Language language)
             {
-                language.Add(child);
+                language.AddChild(child);
             }
             else if (treeNode.NodePayload is Namespace parent)
             {
-                parent.Add(child);
+                parent.AddChild(child);
             }
 
             IController controller = _module.GetController<Namespace>();
@@ -60,6 +60,11 @@ namespace OneCSharp.AST.UI
 
             _module.Persist(child.Domain);
             treeNode.TreeNodes.Add(childNode);
+        }
+
+        private void AddSyntaxElement(object parameter)
+        {
+            //TODO: !!!
         }
     }
 }

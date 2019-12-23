@@ -1,26 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OneCSharp.Core
 {
-    public class ComplexEntity : Entity
+    public class ComplexEntity : Entity, IHaveChildren
     {
-        public ComplexEntity()
+        public ComplexEntity() { }
+        [PropertyPurpose(PropertyPurpose.Hierarchy)] public Namespace Namespace { get; set; }
+        [PropertyPurpose(PropertyPurpose.Inheritance)] public ComplexEntity Parent { get; set; }
+        [PropertyPurpose(PropertyPurpose.Children)] public List<Method> Methods { get; } = new List<Method>();
+        [PropertyPurpose(PropertyPurpose.Children)] public List<Property> Properties { get; } = new List<Property>();
+        public void AddChild(Entity child)
         {
-
+            if (child == null) throw new ArgumentNullException(nameof(child));
+            if (child is Method)
+            {
+                Add((Method)child);
+            }
+            else if (child is Property)
+            {
+                Add((Property)child);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(child));
+            }
         }
-        public List<Method> Methods { get; } = new List<Method>();
-        public List<Property> Properties { get; } = new List<Property>();
-        public Namespace Namespace { get; set; }
-        public ComplexEntity Parent { get; set; }
-        public void Add(Method method)
+        private void Add(Method method)
         {
             if (Methods.Contains(method)) return;
             if (Methods.Where(i => i.Name == method.Name).FirstOrDefault() != null) return;
             method.Owner = this;
             Methods.Add(method);
         }
-        public void Add(Property property)
+        private void Add(Property property)
         {
             if (Properties.Contains(property)) return;
             if (Properties.Where(i => i.Name == property.Name).FirstOrDefault() != null) return;

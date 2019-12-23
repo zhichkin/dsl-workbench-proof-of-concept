@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +8,7 @@ namespace OneCSharp.Core
     {
         private Domain _domain;
         private Namespace _parent;
-        public Domain Domain
+        [PropertyPurpose(PropertyPurpose.Hierarchy)] public Domain Domain
         {
             set
             {
@@ -24,14 +23,14 @@ namespace OneCSharp.Core
                 if (_parent == null) return _domain;
 
                 Namespace test = this;
-                while (test.Parent != null)
+                while (test.Owner != null)
                 {
-                    test = test.Parent;
+                    test = test.Owner;
                 }
                 return test.Domain;
             }
         }
-        public Namespace Parent
+        [PropertyPurpose(PropertyPurpose.Hierarchy)] public Namespace Owner
         {
             get { return _parent; }
             set
@@ -43,9 +42,21 @@ namespace OneCSharp.Core
                 _parent = value;
             }
         }
-        public List<Namespace> Children { get; } = new List<Namespace>();
-        public List<Entity> Entities { get; } = new List<Entity>();
-        public void Add(Entity entity)
+        [PropertyPurpose(PropertyPurpose.Children)] public List<Namespace> Namespaces { get; } = new List<Namespace>();
+        [PropertyPurpose(PropertyPurpose.Children)] public List<Entity> Entities { get; } = new List<Entity>();
+        public void AddChild(Entity child)
+        {
+            if (child == null) throw new ArgumentNullException(nameof(child));
+            if (child is Namespace)
+            {
+                Add((Namespace)child);
+            }
+            else
+            {
+                Add(child);
+            }
+        }
+        private void Add(Entity entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             if (Entities.Contains(entity)) return;
@@ -60,71 +71,13 @@ namespace OneCSharp.Core
             }
             Entities.Add(entity);
         }
-        public void Add(Namespace child)
+        private void Add(Namespace child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));
-            if (Children.Contains(child)) return;
-            if (Children.Where(i => i.Name == child.Name).FirstOrDefault() != null) return;
-            child.Parent = this;
-            Children.Add(child);
-        }
-        public Namespace AddNamespace(string name)
-        {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentOutOfRangeException(nameof(name));
-            Namespace child = Children.Where(i => i.Name == name).FirstOrDefault();
-            if (child != null)
-            {
-                return child;
-            }
-            child = new Namespace()
-            {
-                Name = name,
-                Parent = this
-            };
-            Children.Add(child);
-            return child;
-        }
-        public T AddEntity<T>(string name) where T : Entity, new()
-        {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentOutOfRangeException(nameof(name));
-            Entity entity = Entities.Where(i => i.Name == name).FirstOrDefault();
-            if (entity != null)
-            {
-                return (T)entity;
-            }
-            entity = new T() { Name = name };
-            if (entity is SimpleEntity simple)
-            {
-                simple.Namespace = this;
-            }
-            else if (entity is ComplexEntity complex)
-            {
-                complex.Namespace = this;
-            }
-            Entities.Add(entity);
-            return (T)entity;
-        }
-
-        IEnumerable IHaveChildren.Children
-        {
-            get
-            {
-                return Children;
-            }
-        }
-        public void AddChild(Entity child)
-        {
-            if (child == null) throw new ArgumentNullException(nameof(child));
-            if (child is Namespace)
-            {
-                Add((Namespace)child);
-            }
-            else
-            {
-                Add(child);
-            }
+            if (Namespaces.Contains(child)) return;
+            if (Namespaces.Where(i => i.Name == child.Name).FirstOrDefault() != null) return;
+            child.Owner = this;
+            Namespaces.Add(child);
         }
     }
 }
