@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace OneCSharp.Core
 {
-    public class Method : Entity, IHaveChildren
+    public class Method : Entity, IHierarchy
     {
-        [PropertyPurpose(PropertyPurpose.Hierarchy)] public ComplexEntity Owner { get; set; }
+        public ComplexEntity Owner { get; set; }
         public Entity ReturnType { get; set; }
-        [PropertyPurpose(PropertyPurpose.Children)] public List<Parameter> Parameters { get; } = new List<Parameter>();
+        [Hierarchy] public List<Parameter> Parameters { get; } = new List<Parameter>();
         public void AddChild(Entity child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));

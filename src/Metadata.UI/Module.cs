@@ -15,6 +15,7 @@ namespace OneCSharp.Metadata.UI
         private IShell _shell;
         private readonly Dictionary<Type, IController> _controllers = new Dictionary<Type, IController>();
         public Module() { }
+        public IShell Shell { get { return _shell; } }
         public IController GetController<T>()
         {
             return _controllers[typeof(T)];
@@ -25,7 +26,7 @@ namespace OneCSharp.Metadata.UI
         }
         public void Initialize(IShell shell)
         {
-            _shell = shell;
+            _shell = shell ?? throw new ArgumentNullException(nameof(shell));
 
             _shell.AddMenuItem(new MenuItemViewModel()
             {
@@ -77,7 +78,7 @@ namespace OneCSharp.Metadata.UI
             _shell.AddTreeNode(treeNode);
         }
 
-        public void Persist(Core.Entity model)
+        public void Persist(Core.Entity entity)
         {
             throw new NotImplementedException();
         }

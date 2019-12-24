@@ -1,6 +1,6 @@
 ﻿namespace OneCSharp.Core
 {
-    public interface IHaveChildren
+    public interface IHierarchy
     {
         void AddChild(Entity child);
     }

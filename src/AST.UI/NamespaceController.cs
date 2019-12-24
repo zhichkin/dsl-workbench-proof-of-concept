@@ -32,6 +32,13 @@ namespace OneCSharp.AST.UI
                 MenuItemCommand = new RelayCommand(AddNamespace),
                 MenuItemIcon = new BitmapImage(new Uri(Module.ADD_NAMESPACE)),
             });
+            treeNode.ContextMenuItems.Add(new MenuItemViewModel()
+            {
+                MenuItemHeader = "Add syntax element...",
+                MenuItemPayload = treeNode,
+                MenuItemCommand = new RelayCommand(AddSyntaxElement),
+                MenuItemIcon = new BitmapImage(new Uri(Module.ADD_VARIABLE)),
+            });
         }
 
         private void AddNamespace(object parameter)
@@ -58,13 +65,32 @@ namespace OneCSharp.AST.UI
             IController controller = _module.GetController<Namespace>();
             controller.BuildTreeNode(child, out TreeNodeViewModel childNode);
 
-            _module.Persist(child.Domain);
+            _module.Persist(child.Owner);
             treeNode.TreeNodes.Add(childNode);
         }
 
         private void AddSyntaxElement(object parameter)
         {
-            //TODO: !!!
+            InputStringDialog dialog = new InputStringDialog();
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) { return; }
+
+            TreeNodeViewModel treeNode = (TreeNodeViewModel)parameter;
+
+            SyntaxElement child = new SyntaxElement()
+            {
+                Name = (string)dialog.Result
+            };
+            if (treeNode.NodePayload is Namespace parent)
+            {
+                parent.AddChild(child);
+            }
+
+            IController controller = _module.GetController<SyntaxElement>();
+            controller.BuildTreeNode(child, out TreeNodeViewModel childNode);
+            
+            _module.Persist(child);
+            treeNode.TreeNodes.Add(childNode);
         }
     }
 }

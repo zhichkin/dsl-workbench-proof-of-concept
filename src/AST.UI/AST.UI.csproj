@@ -10,8 +10,12 @@
   <ItemGroup>
     <None Remove="images\AddLanguage.png" />
     <None Remove="images\AddNamespace.png" />
+    <None Remove="images\AddVariable.png" />
+    <None Remove="images\CSFileNode.png" />
+    <None Remove="images\EditWindow.png" />
     <None Remove="images\NamespacePublic.png" />
     <None Remove="images\Solution.png" />
+    <None Remove="images\SQLFileNode.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,8 +29,12 @@
   <ItemGroup>
     <Resource Include="images\AddLanguage.png" />
     <Resource Include="images\AddNamespace.png" />
+    <Resource Include="images\AddVariable.png" />
+    <Resource Include="images\CSFileNode.png" />
+    <Resource Include="images\EditWindow.png" />
     <Resource Include="images\NamespacePublic.png" />
     <Resource Include="images\Solution.png" />
+    <Resource Include="images\SQLFileNode.png" />
   </ItemGroup>
 
 </Project>

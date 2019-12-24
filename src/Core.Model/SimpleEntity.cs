@@ -2,7 +2,7 @@
 {
     public abstract class SimpleEntity : Entity
     {
-        [PropertyPurpose(PropertyPurpose.Hierarchy)] public Namespace Namespace { get; set; }
+        [Hierarchy] public Namespace Namespace { get; set; }
     }
     public sealed class Binary : SimpleEntity
     {

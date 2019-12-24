@@ -50,7 +50,7 @@ namespace OneCSharp.Core.Services
         {
             if (info.PropertyType == typeof(IEnumerable))
             {
-                return; // IEnumerable IHaveChildren.Children
+                return; // IEnumerable IHierarchy.Children
             }
 
             writer.WritePropertyName(info.Name);
@@ -172,7 +172,7 @@ namespace OneCSharp.Core.Services
                 else if (reader.TokenType == JsonTokenType.StartArray)
                 {
                     bool hasChildren = (entityType.GetInterfaces()
-                        .Where(i => i == typeof(IHaveChildren))
+                        .Where(i => i == typeof(IHierarchy))
                         .FirstOrDefault() != null);
 
                     IList list = (IList)propertyInfo.GetValue(entity);
@@ -185,7 +185,7 @@ namespace OneCSharp.Core.Services
                         Entity item = ReadObject(ref reader, options);
                         if (hasChildren)
                         {
-                            ((IHaveChildren)entity).AddChild(item);
+                            ((IHierarchy)entity).AddChild(item);
                         }
                         else
                         {

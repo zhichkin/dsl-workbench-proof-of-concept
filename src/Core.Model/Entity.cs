@@ -6,6 +6,6 @@
     }
     public abstract class Entity : IEntity
     {
-        [PropertyPurpose(PropertyPurpose.Presentation)] public string Name { get; set; }
+        public string Name { get; set; }
     }
 }

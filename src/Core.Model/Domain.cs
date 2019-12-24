@@ -4,9 +4,10 @@ using System.Linq;
 
 namespace OneCSharp.Core
 {
-    public class Domain : Entity, IHaveChildren
+    public class Domain : Entity, IHierarchy
     {
-        [PropertyPurpose(PropertyPurpose.Children)] public List<Namespace> Namespaces { get; } = new List<Namespace>();
+        public Server Server { get; set; }
+        [Hierarchy] public List<Namespace> Namespaces { get; } = new List<Namespace>();
         public void AddChild(Entity child)
         {
             if (!(child is Namespace)) throw new ArgumentOutOfRangeException(nameof(child));
@@ -17,7 +18,7 @@ namespace OneCSharp.Core
             if (child == null) throw new ArgumentNullException(nameof(child));
             if (Namespaces.Contains(child)) return;
             if (Namespaces.Where(i => i.Name == child.Name).FirstOrDefault() != null) return;
-            child.Domain = this;
+            child.Owner = this;
             Namespaces.Add(child);
         }
     }

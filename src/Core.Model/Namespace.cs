@@ -4,46 +4,25 @@ using System.Linq;
 
 namespace OneCSharp.Core
 {
-    public sealed class Namespace : Entity, IHaveChildren
+    public sealed class Namespace : Entity, IHierarchy
     {
-        private Domain _domain;
-        private Namespace _parent;
-        [PropertyPurpose(PropertyPurpose.Hierarchy)] public Domain Domain
+        private Entity _owner;
+        public Entity Owner
         {
+            get { return _owner; }
             set
             {
-                if (_parent != null)
+                if (value != null
+                    && !(value is Domain)
+                    && !(value is Namespace))
                 {
-                    _parent = null;
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
-                _domain = value;
-            }
-            get
-            {
-                if (_parent == null) return _domain;
-
-                Namespace test = this;
-                while (test.Owner != null)
-                {
-                    test = test.Owner;
-                }
-                return test.Domain;
+                _owner = value;
             }
         }
-        [PropertyPurpose(PropertyPurpose.Hierarchy)] public Namespace Owner
-        {
-            get { return _parent; }
-            set
-            {
-                if (_domain != null)
-                {
-                    _domain = null;
-                }
-                _parent = value;
-            }
-        }
-        [PropertyPurpose(PropertyPurpose.Children)] public List<Namespace> Namespaces { get; } = new List<Namespace>();
-        [PropertyPurpose(PropertyPurpose.Children)] public List<Entity> Entities { get; } = new List<Entity>();
+        [Hierarchy] public List<Namespace> Namespaces { get; } = new List<Namespace>();
+        [Hierarchy] public List<Entity> Entities { get; } = new List<Entity>();
         public void AddChild(Entity child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));

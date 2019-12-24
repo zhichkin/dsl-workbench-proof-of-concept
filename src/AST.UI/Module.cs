@@ -7,7 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 
@@ -21,6 +20,9 @@ namespace OneCSharp.AST.UI
         public const string ADD_LANGUAGE = "pack://application:,,,/OneCSharp.AST.UI;component/images/AddLanguage.png";
         public const string ADD_NAMESPACE = "pack://application:,,,/OneCSharp.AST.UI;component/images/AddNamespace.png";
         public const string NAMESPACE_PUBLIC = "pack://application:,,,/OneCSharp.AST.UI;component/images/NamespacePublic.png";
+        public const string CS_FILE = "pack://application:,,,/OneCSharp.AST.UI;component/images/CSFileNode.png";
+        public const string EDIT_WINDOW = "pack://application:,,,/OneCSharp.AST.UI;component/images/EditWindow.png";
+        public const string ADD_VARIABLE = "pack://application:,,,/OneCSharp.AST.UI;component/images/AddVariable.png";
 
         private IShell _shell;
         private readonly Dictionary<Type, IController> _controllers = new Dictionary<Type, IController>();
@@ -31,7 +33,9 @@ namespace OneCSharp.AST.UI
             var knownTypes = _serializer.Binder.KnownTypes;
             knownTypes.Add(1, typeof(Language));
             knownTypes.Add(2, typeof(Namespace));
+            knownTypes.Add(3, typeof(SyntaxElement));
         }
+        public IShell Shell { get { return _shell; } }
         private string GetModuleFilePath()
         {
             string path = Path.Combine(_shell.AppCatalogPath, CATALOG_PATH);
@@ -51,11 +55,12 @@ namespace OneCSharp.AST.UI
         }
         public void Initialize(IShell shell)
         {
-            _shell = shell;
+            _shell = shell ?? throw new ArgumentNullException(nameof(shell));
 
             _controllers.Add(typeof(Language), new LanguageController(this));
             _controllers.Add(typeof(Namespace), new NamespaceController(this));
-            
+            _controllers.Add(typeof(SyntaxElement), new SyntaxElementController(this));
+
             _shell.AddMenuItem(new MenuItemViewModel()
             {
                 MenuItemIcon = new BitmapImage(new Uri(ADD_LANGUAGE)),
@@ -91,14 +96,35 @@ namespace OneCSharp.AST.UI
             Persist(language);
             _shell.AddTreeNode(treeNode);
         }
-        public void Persist(Entity model)
+        public void Persist(Entity entity)
         {
+            Entity model = GetRootEntity(entity);
             string json = _serializer.ToJson(model);
 
             string filePath = GetModuleFilePath();
             using (StreamWriter writer = File.CreateText(filePath))
             {
                 writer.Write(json);
+            }
+        }
+        private Entity GetRootEntity(Entity entity)
+        {
+            if (entity == null) return null;
+            else if (entity is Language)
+            {
+                return entity;
+            }
+            else if (entity is Namespace ns)
+            {
+                return GetRootEntity(ns.Owner);
+            }
+            else if (entity is SyntaxElement se)
+            {
+                return GetRootEntity(se.Namespace);
+            }
+            else
+            {
+                return null;
             }
         }
         private void ReadModuleFromFile()
@@ -123,8 +149,8 @@ namespace OneCSharp.AST.UI
             Type entityType = entity.GetType();
             foreach(PropertyInfo property in entityType.GetProperties())
             {
-                PropertyPurposeAttribute purpose = property.GetCustomAttribute<PropertyPurposeAttribute>();
-                if (purpose != null && purpose.Purpose == PropertyPurpose.Children)
+                HierarchyAttribute purpose = property.GetCustomAttribute<HierarchyAttribute>();
+                if (purpose != null)
                 {
                     IEnumerable source = (IEnumerable)property.GetValue(entity);
                     BuildTreeNodesRecursively(source, target.TreeNodes);

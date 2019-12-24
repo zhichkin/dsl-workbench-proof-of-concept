@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace OneCSharp.Core
 {
-    public class ComplexEntity : Entity, IHaveChildren
+    public class ComplexEntity : Entity, IHierarchy
     {
         public ComplexEntity() { }
-        [PropertyPurpose(PropertyPurpose.Hierarchy)] public Namespace Namespace { get; set; }
-        [PropertyPurpose(PropertyPurpose.Inheritance)] public ComplexEntity Parent { get; set; }
-        [PropertyPurpose(PropertyPurpose.Children)] public List<Method> Methods { get; } = new List<Method>();
-        [PropertyPurpose(PropertyPurpose.Children)] public List<Property> Properties { get; } = new List<Property>();
+        public Namespace Namespace { get; set; }
+        public ComplexEntity Parent { get; set; }
+        [Hierarchy] public List<Method> Methods { get; } = new List<Method>();
+        [Hierarchy] public List<Property> Properties { get; } = new List<Property>();
         public void AddChild(Entity child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));
