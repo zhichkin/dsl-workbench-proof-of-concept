@@ -4,30 +4,29 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ast="clr-namespace:OneCSharp.AST.UI"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" d:DesignHeight="50" d:DesignWidth="150">
 
-    <UserControl.Resources>
-        <Style x:Key="Keyword" TargetType="TextBlock">
-            <Style.Setters>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="Blue"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style.Setters>
-        </Style>
-    </UserControl.Resources>
-    
-    <ItemsControl x:Name="ROOT_VIEW">
+    <ItemsControl x:Name="CONTROL_ROOT" ItemsSource="{Binding SyntaxElements}">
         
+        <behaviors:Interaction.Triggers>
+            <behaviors:EventTrigger EventName="MouseLeftButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+                <behaviors:InvokeCommandAction Command="{Binding ClickCommand}" CommandParameter="{Binding}" />
+            </behaviors:EventTrigger>
+        </behaviors:Interaction.Triggers>
+
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal"/>
+                <StackPanel Orientation="{Binding Orientation}"/>
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
-        
-        <TextBlock Text="SELECT" Style="{StaticResource Keyword}"/>
-        <TextBlock Width="5"/>
-        <TextBlock Text="FROM" Style="{StaticResource Keyword}"/>
-        
+
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type ast:KeywordViewModel}">
+                <ast:KeywordView/>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+
     </ItemsControl>
     
 </UserControl>

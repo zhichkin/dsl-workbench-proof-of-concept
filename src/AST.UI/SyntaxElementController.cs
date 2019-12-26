@@ -38,7 +38,18 @@ namespace OneCSharp.AST.UI
             TreeNodeViewModel treeNode = (TreeNodeViewModel)parameter;
             SyntaxElement element = (SyntaxElement)treeNode.NodePayload;
 
-            _module.Shell.AddTabItem(element.Name, element);
+            SyntaxElementViewModel rootElement = new SyntaxElementViewModel();
+            KeywordViewModel keyword1 = new KeywordViewModel() { Keyword = "SELECT" };
+            KeywordViewModel keyword2 = new KeywordViewModel() { Keyword = "FROM" };
+            KeywordViewModel keyword3 = new KeywordViewModel() { Keyword = "WHERE" };
+            rootElement.SyntaxElements.Add(keyword1);
+            rootElement.SyntaxElements.Add(keyword2);
+            rootElement.SyntaxElements.Add(keyword3);
+
+            SyntaxElementView editor = new SyntaxElementView();
+            editor.DataContext = rootElement;
+
+            _module.Shell.AddTabItem(element.Name, editor);
         }
     }
 }
