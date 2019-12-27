@@ -23,9 +23,26 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </TextBlock.Resources>
 
-    <Border BorderThickness="1" Cursor="Hand">
-                            
-        <Border.BorderBrush>
+    <Border BorderThickness="1" BorderBrush="{Binding BorderBrush}" Cursor="Hand">
+
+        <!--<Border.BorderBrush>
+      <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile">
+         <DrawingBrush.Drawing>
+            <DrawingGroup>
+               <GeometryDrawing Brush="Black">
+                  <GeometryDrawing.Geometry>
+                     <GeometryGroup>
+                        <RectangleGeometry Rect="0,0,50,50" />
+                        <RectangleGeometry Rect="50,50,50,50" />
+                     </GeometryGroup>
+                  </GeometryDrawing.Geometry>
+               </GeometryDrawing>
+            </DrawingGroup>
+         </DrawingBrush.Drawing>
+      </DrawingBrush>
+   </Border.BorderBrush>-->
+        
+        <!--<Border.BorderBrush>
             <VisualBrush>
                 <VisualBrush.Visual>
                     <Rectangle StrokeDashArray="2 2" Stroke="Gray" StrokeThickness="1"
@@ -34,15 +51,15 @@
                                Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
                 </VisualBrush.Visual>
             </VisualBrush>
-        </Border.BorderBrush>
+        </Border.BorderBrush>-->
         
-        <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Focusable="True" Style="{StaticResource Keyword}">
+        <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Focusable="True" Style="{StaticResource Keyword}" Margin="1">
             <TextBlock.InputBindings>
                 <KeyBinding Key="C" Modifiers="Ctrl" Command="{Binding CtrlCCommand}"/>
                 <KeyBinding Key="V" Modifiers="Ctrl" Command="{Binding CtrlVCommand}"/>
             </TextBlock.InputBindings>
             <behaviors:Interaction.Triggers>
-                <behaviors:EventTrigger EventName="KeyUp" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+                <behaviors:EventTrigger EventName="KeyDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
                     <behaviors:InvokeCommandAction Command="{Binding KeyUpCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
                 <behaviors:EventTrigger EventName="MouseLeftButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
@@ -58,5 +75,5 @@
         </TextBlock>
     
     </Border>
-
+    
 </TextBlock>

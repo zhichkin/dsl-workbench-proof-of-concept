@@ -28,20 +28,9 @@ namespace OneCSharp.AST.UI
         public ICommand ClickCommand { get; private set; }
         protected virtual void OnClick(object parameter)
         {
-            if (Orientation == Orientation.Horizontal)
-            {
-                Orientation = Orientation.Vertical;
-            }
-            else
-            {
-                Orientation = Orientation.Horizontal;
-            }
-
-            //SyntaxElements.Add(new )
+            
         }
-
         public ObservableCollection<SyntaxElementViewModel> SyntaxElements { get; } = new ObservableCollection<SyntaxElementViewModel>();
-
         public ICommand MouseEnterCommand { get; private set; }
         protected virtual void OnMouseEnter(object parameter)
         {
@@ -49,6 +38,12 @@ namespace OneCSharp.AST.UI
         }
         public ICommand MouseLeaveCommand { get; private set; }
         protected virtual void OnMouseLeave(object parameter)
+        {
+
+        }
+
+
+        public void AddNewLine(SyntaxElementViewModel breaker)
         {
 
         }
