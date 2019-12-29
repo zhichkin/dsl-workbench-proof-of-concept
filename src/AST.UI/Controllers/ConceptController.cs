@@ -6,10 +6,10 @@ using System.Windows.Media.Imaging;
 
 namespace OneCSharp.AST.UI
 {
-    public sealed class SyntaxElementController : IController
+    public sealed class ConceptController : IController
     {
         private readonly IModule _module;
-        public SyntaxElementController(IModule module)
+        public ConceptController(IModule module)
         {
             _module = module;
         }
@@ -36,21 +36,22 @@ namespace OneCSharp.AST.UI
         private void OpenInEditor(object parameter)
         {
             TreeNodeViewModel treeNode = (TreeNodeViewModel)parameter;
-            SyntaxElement element = (SyntaxElement)treeNode.NodePayload;
+            Concept element = (Concept)treeNode.NodePayload;
 
-            ConceptViewModel rootElement = new ConceptViewModel(null);
-            LineViewModel line = new LineViewModel(rootElement);
-            KeywordViewModel keyword1 = new KeywordViewModel(rootElement) { Keyword = "SELECT" };
-            KeywordViewModel keyword2 = new KeywordViewModel(rootElement) { Keyword = "FROM" };
-            KeywordViewModel keyword3 = new KeywordViewModel(rootElement) { Keyword = "WHERE" };
-            line.Items.Add(keyword1);
-            line.Items.Add(keyword2);
-            line.Items.Add(keyword3);
+            SyntaxNode rootElement = new SyntaxNode(null, element);
+            SyntaxNodeLine line = new SyntaxNodeLine(rootElement);
+            KeywordNode keyword1 = new KeywordNode(rootElement) { Keyword = "SELECT" };
+            KeywordNode keyword2 = new KeywordNode(rootElement) { Keyword = "FROM" };
+            KeywordNode keyword3 = new KeywordNode(rootElement) { Keyword = "WHERE" };
+            line.Nodes.Add(keyword1);
+            line.Nodes.Add(keyword2);
+            line.Nodes.Add(keyword3);
             rootElement.Lines.Add(line);
 
-            ConceptView editor = new ConceptView();
-            editor.DataContext = rootElement;
-
+            CodeEditor editor = new CodeEditor()
+            {
+                DataContext = rootElement
+            };
             _module.Shell.AddTabItem(element.Name, editor);
         }
     }

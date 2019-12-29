@@ -36,7 +36,7 @@ namespace OneCSharp.AST.UI
             {
                 MenuItemHeader = "Add syntax element...",
                 MenuItemPayload = treeNode,
-                MenuItemCommand = new RelayCommand(AddSyntaxElement),
+                MenuItemCommand = new RelayCommand(AddConcept),
                 MenuItemIcon = new BitmapImage(new Uri(Module.ADD_VARIABLE)),
             });
         }
@@ -69,7 +69,7 @@ namespace OneCSharp.AST.UI
             treeNode.TreeNodes.Add(childNode);
         }
 
-        private void AddSyntaxElement(object parameter)
+        private void AddConcept(object parameter)
         {
             InputStringDialog dialog = new InputStringDialog();
             _ = dialog.ShowDialog();
@@ -77,7 +77,7 @@ namespace OneCSharp.AST.UI
 
             TreeNodeViewModel treeNode = (TreeNodeViewModel)parameter;
 
-            SyntaxElement child = new SyntaxElement()
+            Concept child = new Concept()
             {
                 Name = (string)dialog.Result
             };
@@ -86,7 +86,7 @@ namespace OneCSharp.AST.UI
                 parent.AddChild(child);
             }
 
-            IController controller = _module.GetController<SyntaxElement>();
+            IController controller = _module.GetController<Concept>();
             controller.BuildTreeNode(child, out TreeNodeViewModel childNode);
             
             _module.Persist(child);

@@ -2,7 +2,7 @@
 
 namespace OneCSharp.AST.Model
 {
-    public sealed class SyntaxElement : ComplexEntity
+    public sealed class Concept : ComplexEntity
     {
         public bool IsAncestor { get; set; }
     }

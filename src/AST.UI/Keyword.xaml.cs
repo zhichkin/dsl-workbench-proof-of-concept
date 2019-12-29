@@ -2,9 +2,9 @@
 
 namespace OneCSharp.AST.UI
 {
-    public partial class SyntaxElementView : UserControl
+    public partial class Keyword : TextBlock
     {
-        public SyntaxElementView()
+        public Keyword()
         {
             InitializeComponent();
         }

@@ -33,7 +33,7 @@ namespace OneCSharp.AST.UI
             var knownTypes = _serializer.Binder.KnownTypes;
             knownTypes.Add(1, typeof(Language));
             knownTypes.Add(2, typeof(Namespace));
-            knownTypes.Add(3, typeof(SyntaxElement));
+            knownTypes.Add(3, typeof(Concept));
         }
         public IShell Shell { get { return _shell; } }
         private string GetModuleFilePath()
@@ -59,7 +59,7 @@ namespace OneCSharp.AST.UI
 
             _controllers.Add(typeof(Language), new LanguageController(this));
             _controllers.Add(typeof(Namespace), new NamespaceController(this));
-            _controllers.Add(typeof(SyntaxElement), new SyntaxElementController(this));
+            _controllers.Add(typeof(Concept), new ConceptController(this));
 
             _shell.AddMenuItem(new MenuItemViewModel()
             {
@@ -118,7 +118,7 @@ namespace OneCSharp.AST.UI
             {
                 return GetRootEntity(ns.Owner);
             }
-            else if (entity is SyntaxElement se)
+            else if (entity is Concept se)
             {
                 return GetRootEntity(se.Namespace);
             }
