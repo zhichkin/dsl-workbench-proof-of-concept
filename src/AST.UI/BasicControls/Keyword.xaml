@@ -37,7 +37,8 @@
 
     <Border BorderThickness="1" Cursor="Hand" Style="{StaticResource SyntaxNodeBorderStyle}">
         
-        <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Focusable="True" Style="{StaticResource KeywordStyle}" Margin="1">
+        <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Focusable="True" Margin="1"
+                   Style="{StaticResource KeywordStyle}" ContextMenuService.Placement="Bottom">
 
             <TextBlock.ContextMenu>
                 <mvvm:ContextMenuView ItemsSource="{Binding ContextMenu}"/>

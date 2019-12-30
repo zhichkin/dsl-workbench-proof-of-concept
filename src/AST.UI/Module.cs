@@ -37,6 +37,7 @@ namespace OneCSharp.AST.UI
             knownTypes.Add(1, typeof(Language));
             knownTypes.Add(2, typeof(Namespace));
             knownTypes.Add(3, typeof(Concept));
+            knownTypes.Add(4, typeof(Property));
         }
         public IShell Shell { get { return _shell; } }
         private string GetModuleFilePath()
@@ -80,7 +81,8 @@ namespace OneCSharp.AST.UI
         }
         public IController GetController(Type type)
         {
-            return _controllers[type];
+            _ = _controllers.TryGetValue(type, out IController controller);
+            return controller;
         }
         private void AddLanguage(object parameter)
         {
@@ -142,11 +144,19 @@ namespace OneCSharp.AST.UI
         private void BuildTreeView(Entity entity)
         {
             BuildTreeNodeRecursively(entity, out TreeNodeViewModel treeNode);
-            _shell.AddTreeNode(treeNode);
+            if (treeNode != null)
+            {
+                _shell.AddTreeNode(treeNode);
+            }
         }
         private void BuildTreeNodeRecursively(Entity entity, out TreeNodeViewModel target)
         {
             IController controller = GetController(entity.GetType());
+            if (controller == null)
+            {
+                target = null;
+                return;
+            }
             controller.BuildTreeNode(entity, out target);
 
             Type entityType = entity.GetType();
@@ -165,7 +175,10 @@ namespace OneCSharp.AST.UI
             foreach (Entity entity in entities)
             {
                 BuildTreeNodeRecursively(entity, out TreeNodeViewModel treeNode);
-                treeNodes.Add(treeNode);
+                if (treeNode != null)
+                {
+                    treeNodes.Add(treeNode);
+                }
             }
         }
     }

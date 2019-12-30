@@ -47,17 +47,17 @@ namespace OneCSharp.AST.UI
         
         
         
-        private SyntaxNode BuildConceptSyntaxNode(Concept element)
+        private SyntaxNode BuildConceptSyntaxNode(Concept concept)
         {
-            SyntaxNode rootElement = new SyntaxNode(null, element);
+            SyntaxNode rootElement = new SyntaxNode(null, concept);
             
             SyntaxNodeLine line1 = new SyntaxNodeLine(rootElement);
-            if (element.IsAncestor)
+            if (concept.IsAncestor)
             {
                 line1.Nodes.Add(new KeywordNode(rootElement) { Keyword = "ROOT" });
             }
-            var node1 = new KeywordNode(rootElement) { Keyword = "CONCEPT" };
-            var node2 = new NameNode(rootElement, element);
+            var node1 = new KeywordNode(rootElement, concept) { Keyword = "CONCEPT" };
+            var node2 = new NameNode(rootElement, concept);
             line1.Nodes.Add(node1);
             line1.Nodes.Add(node2);
             rootElement.Lines.Add(line1);
@@ -67,29 +67,53 @@ namespace OneCSharp.AST.UI
             line2.Nodes.Add(node3);
             rootElement.Lines.Add(line2);
 
-            SyntaxNodeLine line3 = new SyntaxNodeLine(rootElement);
-            var node4 = new IndentNode(rootElement);
-            var node5 = new NameNode(rootElement, element);
-            var node6 = new KeywordNode(rootElement) { Keyword = " : " };
-            line3.Nodes.Add(node4);
-            line3.Nodes.Add(node5);
-            line3.Nodes.Add(node6);
-            rootElement.Lines.Add(line3);
+            foreach (Property property in concept.Properties)
+            {
+                BuildConceptProperty(rootElement, property);
+            }
 
-            SyntaxNodeLine line4 = new SyntaxNodeLine(rootElement);
-            var node7 = new LiteralNode(rootElement) { Literal = "}" };
-            line4.Nodes.Add(node7);
-            rootElement.Lines.Add(line4);
+            SyntaxNodeLine line3 = new SyntaxNodeLine(rootElement);
+            var node4 = new LiteralNode(rootElement) { Literal = "}" };
+            line3.Nodes.Add(node4);
+            rootElement.Lines.Add(line3);
 
             BuildConceptContextMenu(node1);
 
             return rootElement;
         }
+        private void BuildConceptProperty(ISyntaxNode rootElement, Property property)
+        {
+            int lineIndex = 0;
+            ISyntaxNode closingBracket = null;
+            for (lineIndex = 0; lineIndex < rootElement.Lines.Count; lineIndex++)
+            {
+                ISyntaxNodeLine line = rootElement.Lines[lineIndex];
+                closingBracket = line.Nodes.Where(node => node.GetType() == typeof(LiteralNode) && ((LiteralNode)node).Literal == "}").FirstOrDefault();
+                if (closingBracket != null)
+                {
+                    break;
+                }
+            }
+            if (lineIndex == 0) return;
+            
+            SyntaxNodeLine newLine = new SyntaxNodeLine(rootElement);
+            var node1 = new IndentNode(rootElement);
+            var node2 = new NameNode(rootElement, property);
+            var node3 = new KeywordNode(rootElement, property) { Keyword = " : " };
+            newLine.Nodes.Add(node1);
+            newLine.Nodes.Add(node2);
+            newLine.Nodes.Add(node3);
+            rootElement.Lines.Insert(lineIndex, newLine);
+
+            //TODO: build context menu for the property
+        }
         private void BuildConceptContextMenu(KeywordNode node)
         {
+            Concept concept = (Concept)node.Owner.Model;
+
             node.ContextMenu.Clear();
 
-            if (node.Owner.Model.IsAncestor)
+            if (concept.IsAncestor)
             {
                 node.ContextMenu.Add(new MenuItemViewModel()
                 {
@@ -109,11 +133,19 @@ namespace OneCSharp.AST.UI
                     MenuItemIcon = new BitmapImage(new Uri(Module.ADD_PROPERTY)),
                 });
             }
+            node.ContextMenu.Add(new MenuItemViewModel()
+            {
+                MenuItemHeader = "ADD PROPERTY",
+                MenuItemPayload = node,
+                MenuItemCommand = new RelayCommand(AddConceptPropertyCommand),
+                MenuItemIcon = new BitmapImage(new Uri(Module.ADD_PROPERTY)),
+            });
         }
         private void RootConceptCommand(object parameter)
         {
             KeywordNode node = (KeywordNode)parameter;
-            node.Owner.Model.IsAncestor = true;
+            Concept concept = (Concept)node.Owner.Model;
+            concept.IsAncestor = true;
 
             foreach (SyntaxNodeLine line in node.Owner.Lines)
             {
@@ -126,7 +158,7 @@ namespace OneCSharp.AST.UI
                     {
                         var newNode = new KeywordNode(node.Owner) { Keyword = "ROOT" };
                         line.Nodes.Insert(0, newNode);
-                        _module.Persist(node.Owner.Model.Namespace.Owner);
+                        _module.Persist(concept);
                         BuildConceptContextMenu(node);
                     }
                     break;
@@ -136,8 +168,9 @@ namespace OneCSharp.AST.UI
         private void UnRootConceptCommand(object parameter)
         {
             KeywordNode node = (KeywordNode)parameter;
+            Concept concept = (Concept)node.Owner.Model;
+            concept.IsAncestor = false;
 
-            node.Owner.Model.IsAncestor = false;
             foreach (SyntaxNodeLine line in node.Owner.Lines)
             {
                 if (line.Nodes.Contains(node))
@@ -148,12 +181,27 @@ namespace OneCSharp.AST.UI
                     if (existingNode != null)
                     {
                         line.Nodes.Remove(existingNode);
-                        _module.Persist(node.Owner.Model.Namespace.Owner);
+                        _module.Persist(concept);
                         BuildConceptContextMenu(node);
                     }
                     break;
                 }
             }
+        }
+        private void AddConceptPropertyCommand(object parameter)
+        {
+            KeywordNode node = (KeywordNode)parameter;
+            Concept concept = (Concept)node.Owner.Model;
+            Property property = new Property()
+            {
+                Name = $"Property_{concept.Properties.Count}",
+                IsOptional = false,
+                IsOneToMany = false
+            };
+            concept.AddChild(property);
+            _module.Persist(concept);
+
+            BuildConceptProperty(node.Owner, property);
         }
     }
 }

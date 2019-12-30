@@ -1,11 +1,11 @@
-﻿using OneCSharp.AST.Model;
+﻿using OneCSharp.Core;
 
 namespace OneCSharp.AST.UI
 {
     public sealed class NameNode : SyntaxNode
     {
         private bool _isReadOnly = false;
-        public NameNode(ISyntaxNode owner, Concept model) : base(owner, model) { }
+        public NameNode(ISyntaxNode owner, Entity model) : base(owner, model) { }
         public string Name
         {
             get { return Model.Name; }

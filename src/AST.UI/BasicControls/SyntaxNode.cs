@@ -1,4 +1,5 @@
 ﻿using OneCSharp.AST.Model;
+using OneCSharp.Core;
 using OneCSharp.MVVM;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -21,14 +22,13 @@ namespace OneCSharp.AST.UI
             CtrlVCommand = new RelayCommand(OnCtrlV);
         }
         public SyntaxNode(ISyntaxNode owner) : this() { Owner = owner; }
-        public SyntaxNode(ISyntaxNode owner, Concept model) : this(owner) { Model = model; }
+        public SyntaxNode(ISyntaxNode owner, Entity model) : this(owner) { Model = model; }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public Concept Model { get; set; }
+        public Entity Model { get; set; }
         public ISyntaxNode Owner { get; set; }
-
         public ObservableCollection<ISyntaxNodeLine> Lines { get; } = new ObservableCollection<ISyntaxNodeLine>();
         
         

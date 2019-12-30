@@ -1,4 +1,4 @@
-﻿using OneCSharp.AST.Model;
+﻿using OneCSharp.Core;
 
 namespace OneCSharp.AST.UI
 {
@@ -6,7 +6,7 @@ namespace OneCSharp.AST.UI
     {
         private string _literal = string.Empty;
         public LiteralNode(ISyntaxNode owner) : base(owner) { }
-        public LiteralNode(ISyntaxNode owner, Concept model) : base(owner, model) { }
+        public LiteralNode(ISyntaxNode owner, Entity model) : base(owner, model) { }
         public string Literal
         {
             get { return _literal; }

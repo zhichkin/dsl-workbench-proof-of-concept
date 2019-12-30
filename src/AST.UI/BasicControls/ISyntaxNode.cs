@@ -1,4 +1,5 @@
 ﻿using OneCSharp.AST.Model;
+using OneCSharp.Core;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -6,7 +7,7 @@ namespace OneCSharp.AST.UI
 {
     public interface ISyntaxNode
     {
-        Concept Model { get; set; }
+        Entity Model { get; set; }
         ISyntaxNode Owner { get; set; }
         ObservableCollection<ISyntaxNodeLine> Lines { get; }
         bool IsFocused { get; set; }
