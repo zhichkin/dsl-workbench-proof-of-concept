@@ -1,4 +1,6 @@
 ﻿using OneCSharp.AST.Model;
+using OneCSharp.MVVM;
+using System.Collections.ObjectModel;
 
 namespace OneCSharp.AST.UI
 {
@@ -12,5 +14,6 @@ namespace OneCSharp.AST.UI
             get { return _keyword; }
             set { _keyword = value; OnPropertyChanged(nameof(Keyword)); }
         }
+        public ObservableCollection<MenuItemViewModel> ContextMenu { get; } = new ObservableCollection<MenuItemViewModel>();
     }
 }

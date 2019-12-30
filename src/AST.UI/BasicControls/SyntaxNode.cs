@@ -11,9 +11,8 @@ namespace OneCSharp.AST.UI
         private bool _isFocused = false;
         private bool _isMouseOver = false;
         public event PropertyChangedEventHandler PropertyChanged;
-        public SyntaxNode(ISyntaxNode owner)
+        public SyntaxNode()
         {
-            Owner = owner;
             KeyDownCommand = new RelayCommand(OnKeyDown);
             MouseDownCommand = new RelayCommand(OnMouseDown);
             MouseEnterCommand = new RelayCommand(OnMouseEnter);
@@ -21,6 +20,7 @@ namespace OneCSharp.AST.UI
             CtrlCCommand = new RelayCommand(OnCtrlC);
             CtrlVCommand = new RelayCommand(OnCtrlV);
         }
+        public SyntaxNode(ISyntaxNode owner) : this() { Owner = owner; }
         public SyntaxNode(ISyntaxNode owner, Concept model) : this(owner) { Model = model; }
         protected void OnPropertyChanged(string propertyName)
         {
@@ -28,7 +28,10 @@ namespace OneCSharp.AST.UI
         }
         public Concept Model { get; set; }
         public ISyntaxNode Owner { get; set; }
+
         public ObservableCollection<ISyntaxNodeLine> Lines { get; } = new ObservableCollection<ISyntaxNodeLine>();
+        
+        
         public bool IsFocused
         {
             get { return _isFocused; }
@@ -73,27 +76,31 @@ namespace OneCSharp.AST.UI
         protected virtual void OnKeyDown(object parameter)
         {
             if (!(parameter is KeyEventArgs args)) return;
-            args.Handled = true;
-
+            
             if (args.Key == Key.Enter)
             {
                 BreakLine(this);
+                args.Handled = true;
             }
             else if (args.Key == Key.Back)
             {
                 RestoreLine(this);
+                args.Handled = true;
             }
             else if (args.Key == Key.Left)
             {
                 FocusLeft(this);
+                args.Handled = true;
             }
             else if (args.Key == Key.Right)
             {
                 FocusRight(this);
+                args.Handled = true;
             }
             else if (args.Key == Key.Tab)
             {
                 IndentLine(this);
+                args.Handled = true;
             }
             //MessageBox.Show($"{Keyword}: {args.Key}");
         }

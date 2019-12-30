@@ -34,7 +34,7 @@ namespace OneCSharp.AST.UI
             });
             treeNode.ContextMenuItems.Add(new MenuItemViewModel()
             {
-                MenuItemHeader = "Add syntax element...",
+                MenuItemHeader = "Add concept...",
                 MenuItemPayload = treeNode,
                 MenuItemCommand = new RelayCommand(AddConcept),
                 MenuItemIcon = new BitmapImage(new Uri(Module.ADD_VARIABLE)),

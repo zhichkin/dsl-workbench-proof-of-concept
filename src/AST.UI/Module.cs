@@ -23,6 +23,9 @@ namespace OneCSharp.AST.UI
         public const string CS_FILE = "pack://application:,,,/OneCSharp.AST.UI;component/images/CSFileNode.png";
         public const string EDIT_WINDOW = "pack://application:,,,/OneCSharp.AST.UI;component/images/EditWindow.png";
         public const string ADD_VARIABLE = "pack://application:,,,/OneCSharp.AST.UI;component/images/AddVariable.png";
+        public const string ADD_PROPERTY = "pack://application:,,,/OneCSharp.AST.UI;component/images/AddProperty.png";
+        public const string DELETE_PROPERTY = "pack://application:,,,/OneCSharp.AST.UI;component/images/DeleteProperty.png";
+        public const string MODIFY_PROPERTY = "pack://application:,,,/OneCSharp.AST.UI;component/images/ModifyProperty.png";
 
         private IShell _shell;
         private readonly Dictionary<Type, IController> _controllers = new Dictionary<Type, IController>();

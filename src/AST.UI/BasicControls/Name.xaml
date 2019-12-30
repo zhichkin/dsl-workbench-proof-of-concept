@@ -1,0 +1,37 @@
+﻿<TextBox x:Class="OneCSharp.AST.UI.Name"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+         mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
+         x:Name="CONTROL_ROOT" Text="{Binding Name}" IsReadOnly="{Binding IsReadOnly}" MinWidth="75">
+
+    <TextBox.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </TextBox.Resources>
+
+    <TextBox.InputBindings>
+        <KeyBinding Key="C" Modifiers="Ctrl" Command="{Binding CtrlCCommand}"/>
+        <KeyBinding Key="V" Modifiers="Ctrl" Command="{Binding CtrlVCommand}"/>
+    </TextBox.InputBindings>
+
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="KeyDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+            <behaviors:InvokeCommandAction Command="{Binding KeyDownCommand}" PassEventArgsToCommand="True"/>
+        </behaviors:EventTrigger>
+        <behaviors:EventTrigger EventName="MouseLeftButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+            <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}"/>
+        </behaviors:EventTrigger>
+        <behaviors:EventTrigger EventName="MouseRightButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+            <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}"/>
+        </behaviors:EventTrigger>
+        <behaviors:EventTrigger EventName="MouseEnter" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+            <behaviors:InvokeCommandAction Command="{Binding MouseEnterCommand}"/>
+        </behaviors:EventTrigger>
+        <behaviors:EventTrigger EventName="MouseLeave" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+            <behaviors:InvokeCommandAction Command="{Binding MouseLeaveCommand}"/>
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
+
+</TextBox>
