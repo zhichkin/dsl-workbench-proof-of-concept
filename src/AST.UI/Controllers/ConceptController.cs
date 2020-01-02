@@ -14,6 +14,7 @@ namespace OneCSharp.AST.UI
         {
             _module = module;
         }
+        #region " Metadata tree "
         public void BuildTreeNode(Entity model, out TreeNodeViewModel treeNode)
         {
             treeNode = new TreeNodeViewModel()
@@ -44,9 +45,8 @@ namespace OneCSharp.AST.UI
             };
             _module.Shell.AddTabItem(element.Name, editor);
         }
-        
-        
-        
+        #endregion
+        #region " Syntax editor "
         private SyntaxNode BuildConceptSyntaxNode(Concept concept)
         {
             SyntaxNode rootElement = new SyntaxNode(null, concept);
@@ -54,7 +54,12 @@ namespace OneCSharp.AST.UI
             SyntaxNodeLine line1 = new SyntaxNodeLine(rootElement);
             if (concept.IsAncestor)
             {
-                line1.Nodes.Add(new KeywordNode(rootElement) { Keyword = "ROOT" });
+                KeywordNode keyword = new KeywordNode(rootElement)
+                {
+                    Keyword = "ROOT",
+                    IsContextMenuEnabled = false
+                };
+                line1.Nodes.Add(keyword);
             }
             var node1 = new KeywordNode(rootElement, concept) { Keyword = "CONCEPT" };
             var node2 = new NameNode(rootElement, concept);
@@ -203,5 +208,6 @@ namespace OneCSharp.AST.UI
 
             BuildConceptProperty(node.Owner, property);
         }
+        #endregion
     }
 }

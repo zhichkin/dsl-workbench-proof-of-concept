@@ -41,7 +41,8 @@
                    Style="{StaticResource KeywordStyle}" ContextMenuService.Placement="Bottom">
 
             <TextBlock.ContextMenu>
-                <mvvm:ContextMenuView ItemsSource="{Binding ContextMenu}"/>
+                <mvvm:ContextMenuView ItemsSource="{Binding ContextMenu}"
+                                      Visibility="{Binding IsContextMenuEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             </TextBlock.ContextMenu>
             
             <TextBlock.InputBindings>
@@ -54,10 +55,10 @@
                     <behaviors:InvokeCommandAction Command="{Binding KeyDownCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
                 <behaviors:EventTrigger EventName="MouseLeftButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
-                    <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}"/>
+                    <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
                 <behaviors:EventTrigger EventName="MouseRightButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
-                    <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}"/>
+                    <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
                 <behaviors:EventTrigger EventName="MouseEnter" SourceObject="{Binding ElementName=CONTROL_ROOT}">
                     <behaviors:InvokeCommandAction Command="{Binding MouseEnterCommand}"/>
