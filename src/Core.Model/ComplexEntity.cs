@@ -11,7 +11,7 @@ namespace OneCSharp.Core
         public ComplexEntity Parent { get; set; }
         [Hierarchy] public List<Method> Methods { get; } = new List<Method>();
         [Hierarchy] public List<Property> Properties { get; } = new List<Property>();
-        public void AddChild(Entity child)
+        public virtual void AddChild(Entity child)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));
             if (child is Method)

@@ -1,5 +1,4 @@
-﻿using OneCSharp.Metadata.UI;
-using OneCSharp.MVVM;
+﻿using OneCSharp.MVVM;
 using System.Windows;
 using System.Windows.Controls;
 

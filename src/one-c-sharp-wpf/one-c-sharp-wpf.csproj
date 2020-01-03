@@ -21,10 +21,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AST.UI\AST.UI.csproj" />
-    <ProjectReference Include="..\Metadata.Model\Metadata.Model.csproj" />
-    <ProjectReference Include="..\Metadata.Services\Metadata.Services.csproj" />
-    <ProjectReference Include="..\Metadata.UI\Metadata.UI.csproj" />
     <ProjectReference Include="..\MVVM\MVVM.csproj" />
+    <ProjectReference Include="..\SQL.Model\SQL.Model.csproj" />
+    <ProjectReference Include="..\SQL.Services\SQL.Services.csproj" />
+    <ProjectReference Include="..\SQL.UI\SQL.UI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

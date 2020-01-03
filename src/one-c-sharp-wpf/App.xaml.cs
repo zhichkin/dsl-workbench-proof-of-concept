@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OneCSharp.Metadata.Services;
+using OneCSharp.SQL.Services;
 using System;
 using System.IO;
 using System.Windows;
@@ -33,7 +33,7 @@ namespace OneCSharp.Shell
             services.AddOptions();
             services.Configure<AppSettings>(configuration.GetSection(nameof(AppSettings)));
             services.AddSingleton<ShellViewModel>();
-            services.AddSingleton<IMetadataProvider, MetadataProvider>();
+            services.AddSingleton<IMetadataReader, MetadataReader>();
         }
         protected override async void OnStartup(StartupEventArgs e)
         {

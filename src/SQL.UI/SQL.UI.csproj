@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>OneCSharp.SQL.UI</AssemblyName>
+    <RootNamespace>OneCSharp.SQL.UI</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="images\AddLanguage.png" />
+    <None Remove="images\AddLocalServer.png" />
+    <None Remove="images\AddMethod.png" />
+    <None Remove="images\AddNamespace.png" />
+    <None Remove="images\AddWebService.png" />
+    <None Remove="images\ConnectToDatabase.png" />
+    <None Remove="images\Database.png" />
+    <None Remove="images\FieldPublic.png" />
+    <None Remove="images\LocalServer.png" />
+    <None Remove="images\MethodPublic.png" />
+    <None Remove="images\ModifyMethod.png" />
+    <None Remove="images\NamespacePublic.png" />
+    <None Remove="images\NestedTable.png" />
+    <None Remove="images\RenameMethod.png" />
+    <None Remove="images\Table.png" />
+    <None Remove="images\WebServer.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MVVM\MVVM.csproj" />
+    <ProjectReference Include="..\SQL.Services\SQL.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\AddLanguage.png" />
+    <Resource Include="images\AddLocalServer.png" />
+    <Resource Include="images\AddMethod.png" />
+    <Resource Include="images\AddNamespace.png" />
+    <Resource Include="images\AddWebService.png" />
+    <Resource Include="images\ConnectToDatabase.png" />
+    <Resource Include="images\Database.png" />
+    <Resource Include="images\FieldPublic.png" />
+    <Resource Include="images\LocalServer.png" />
+    <Resource Include="images\MethodPublic.png" />
+    <Resource Include="images\ModifyMethod.png" />
+    <Resource Include="images\NamespacePublic.png" />
+    <Resource Include="images\NestedTable.png" />
+    <Resource Include="images\RenameMethod.png" />
+    <Resource Include="images\Table.png" />
+    <Resource Include="images\WebServer.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="dialogs\SelectInfoBaseDialogView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+</Project>

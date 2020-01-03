@@ -1,16 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:shell="clr-namespace:OneCSharp.Shell"
-                    xmlns:mvvm="clr-namespace:OneCSharp.MVVM;assembly=OneCSharp.MVVM"
-                    xmlns:metadata="clr-namespace:OneCSharp.Metadata.UI;assembly=OneCSharp.Metadata.UI">
+                    xmlns:mvvm="clr-namespace:OneCSharp.MVVM;assembly=OneCSharp.MVVM">
 
     <!--<DataTemplate x:Key="MenuItemTemplate">
         <shell:MenuItemView/>
     </DataTemplate>-->
 
-    <DataTemplate x:Key="MetadataTemplate">
+    <!--<DataTemplate x:Key="MetadataTemplate">
         <metadata:MetadataView/>
-    </DataTemplate>
+    </DataTemplate>-->
 
     <DataTemplate x:Key="RightRegionTemplate">
         <shell:RightRegionView/>

@@ -14,6 +14,7 @@ namespace OneCSharp.AST.UI
         {
             _module = module;
         }
+
         #region " Metadata tree "
         public void BuildTreeNode(Entity model, out TreeNodeViewModel treeNode)
         {
@@ -46,6 +47,7 @@ namespace OneCSharp.AST.UI
             _module.Shell.AddTabItem(element.Name, editor);
         }
         #endregion
+
         #region " Syntax editor "
         private SyntaxNode BuildConceptSyntaxNode(Concept concept)
         {

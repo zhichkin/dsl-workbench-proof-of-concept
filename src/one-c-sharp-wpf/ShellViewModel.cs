@@ -60,12 +60,8 @@ namespace OneCSharp.Shell
         }
         private void InitializeViewModel()
         {
-            //IMetadataProvider metadataProvider = _serviceProvider.GetService<IMetadataProvider>();
-            //var metadata = new MetadataViewModel(this, metadataProvider);
-            //LeftRegion = metadata;
-
-            // Plug in Metadata module
-            IModule module1 = new OneCSharp.Metadata.UI.Module();
+            // Plug in SQL module
+            IModule module1 = new OneCSharp.SQL.UI.Module();
             module1.Initialize(this);
 
             // Plug in AST module
