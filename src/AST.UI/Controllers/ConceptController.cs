@@ -201,9 +201,7 @@ namespace OneCSharp.AST.UI
             Concept concept = (Concept)node.Owner.Model;
             Property property = new Property()
             {
-                Name = $"Property_{concept.Properties.Count}",
-                IsOptional = false,
-                IsOneToMany = false
+                Name = $"Property_{concept.Properties.Count}"
             };
             concept.AddChild(property);
             _module.Persist(concept);

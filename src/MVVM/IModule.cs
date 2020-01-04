@@ -1,4 +1,4 @@
-﻿using OneCSharp.Core;
+﻿using OneCSharp.Core.Model;
 using System;
 
 namespace OneCSharp.MVVM

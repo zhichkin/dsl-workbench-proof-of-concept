@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
-using OneCSharp.Core;
+using OneCSharp.Core.Model;
 using OneCSharp.SQL.Model;
 using System.Collections.Generic;
 using System.Linq;
@@ -183,7 +183,7 @@ namespace OneCSharp.SQL.Services
         {
             foreach (Namespace ns in infoBase.Namespaces)
             {
-                foreach (var item in ns.Entities)
+                foreach (var item in ns.DataTypes)
                 {
                     GetSQLMetadata((Table)item);
                 }
@@ -192,10 +192,10 @@ namespace OneCSharp.SQL.Services
         private void GetSQLMetadata(Table metaObject)
         {
             ReadSQLMetadata(metaObject);
-            foreach (var nestedObject in metaObject.Tables)
-            {
-                ReadSQLMetadata(nestedObject);
-            }
+            //foreach (var nestedObject in metaObject.Tables)
+            //{
+            //    ReadSQLMetadata(nestedObject);
+            //}
         }
         private void ReadSQLMetadata(Table metaObject)
         {
@@ -207,11 +207,10 @@ namespace OneCSharp.SQL.Services
 
             foreach (var property in metaObject.Properties)
             {
-                TableProperty tableProperty = (TableProperty)property;
-                var fields = sql_fields.Where(f => f.COLUMN_NAME.Contains(tableProperty.DbName));
+                var fields = sql_fields.Where(f => f.COLUMN_NAME.Contains(property.Name));
                 foreach (var field in fields)
                 {
-                    AddTableField(tableProperty, field, indexInfo);
+                    AddTableField(property, field, indexInfo);
                     field.IsFound = true;
                 }
             }
@@ -220,12 +219,12 @@ namespace OneCSharp.SQL.Services
             var nonFounds = sql_fields.Where(f => f.IsFound == false);
             foreach (var field in nonFounds)
             {
-                AddTableProperty(metaObject, field, indexInfo, position);
+                AddProperty(metaObject, field, indexInfo, position);
                 position++;
                 //field.IsFound = true; СтандартныеРеквизиты
             }
         }
-        private void AddTableField(TableProperty property, SqlFieldInfo info, ClusteredIndexInfo indexInfo)
+        private void AddTableField(Property property, SqlFieldInfo info, ClusteredIndexInfo indexInfo)
         {
             Field field = new Field()
             {
@@ -252,44 +251,44 @@ namespace OneCSharp.SQL.Services
                 }
             }
         }
-        private void AddTableProperty(Table metaObject, SqlFieldInfo info, ClusteredIndexInfo indexInfo, int position)
+        private void AddProperty(Table metaObject, SqlFieldInfo info, ClusteredIndexInfo indexInfo, int position)
         {
-            TableProperty property = new TableProperty
+            Property property = new Property
             {
                 Owner = metaObject,
-                Name = info.COLUMN_NAME.Replace("_", string.Empty),
-                DbName = info.COLUMN_NAME
+                Name = info.COLUMN_NAME.Replace("_", string.Empty)
+                //DbName = info.COLUMN_NAME
             };
             metaObject.Properties.Insert(position, property);
             AddTableField(property, info, indexInfo);
             DefineSystemPropertyType(property);
         }
-        private void DefineSystemPropertyType(TableProperty property)
+        private void DefineSystemPropertyType(Property property)
         {
             string name = property.Name;
 
             if (name == DBToken.IDRRef)
             {
                 property.Name = "Ссылка";
-                property.Types.Add(new TypeInfo() { Name = "UUID", TypeCode = -6 });
+                property.ValueType = SimpleType.UniqueIdentifier; //Types.Add(new TypeInfo() { Name = "UUID", TypeCode = -6 });
                 return;
             }
             else if (name == DBToken.RecorderRRef) // TODO: определять при чтении метаданных из Config
             {
                 property.Name = "Регистратор (ссылка)";
-                property.Types.Add(new TypeInfo() { Name = "UUID", TypeCode = -6 });
+                property.ValueType = SimpleType.UniqueIdentifier; //.Types.Add(new TypeInfo() { Name = "UUID", TypeCode = -6 });
                 return;
             }
             else if (name == DBToken.RecorderTRef) // TODO: определять при чтении метаданных из Config
             {
                 property.Name = "Регистратор (тип)";
-                property.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
+                property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                 return;
             }
             if (name == DBToken.EnumOrder)
             {
                 property.Name = "Порядок";
-                property.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
+                property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                 return;
             }
             else if (name == DBToken.Version)
@@ -299,25 +298,25 @@ namespace OneCSharp.SQL.Services
                     property.Fields[0].Purpose = FieldPurpose.Version;
                 }
                 property.Name = "Версия";
-                property.Types.Add(new TypeInfo() { Name = "Version", TypeCode = -7 });
+                property.ValueType = SimpleType.Binary; //.Types.Add(new TypeInfo() { Name = "Version", TypeCode = -7 });
                 return;
             }
             else if (name == DBToken.Marked)
             {
                 property.Name = "ПометкаУдаления";
-                property.Types.Add(new TypeInfo() { Name = "Boolean", TypeCode = -1 });
+                property.ValueType = SimpleType.Boolean; //.Types.Add(new TypeInfo() { Name = "Boolean", TypeCode = -1 });
                 return;
             }
             else if (name == DBToken.DateTime)
             {
                 property.Name = "Дата";
-                property.Types.Add(new TypeInfo() { Name = "DateTime", TypeCode = -3 });
+                property.ValueType = SimpleType.DateTime; //.Types.Add(new TypeInfo() { Name = "DateTime", TypeCode = -3 });
                 return;
             }
             else if (name == DBToken.NumberPrefix)
             {
                 property.Name = "МоментВремени";
-                property.Types.Add(new TypeInfo() { Name = "DateTime", TypeCode = -3 });
+                property.ValueType = SimpleType.DateTime; //.Types.Add(new TypeInfo() { Name = "DateTime", TypeCode = -3 });
                 return;
             }
             else if (name == DBToken.Number)
@@ -327,35 +326,35 @@ namespace OneCSharp.SQL.Services
                 {
                     if (property.Fields[0].TypeName.Contains("char"))
                     {
-                        property.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
+                        property.ValueType = SimpleType.String; //.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
                     }
                     else
                     {
-                        property.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
+                        property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                     }
                 }
                 else
                 {
-                    property.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
+                    property.ValueType = SimpleType.String; //.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
                 }
                 return;
             }
             else if (name == DBToken.Posted)
             {
                 property.Name = "Проведён";
-                property.Types.Add(new TypeInfo() { Name = "Boolean", TypeCode = -1 });
+                property.ValueType = SimpleType.Boolean; //.Types.Add(new TypeInfo() { Name = "Boolean", TypeCode = -1 });
                 return;
             }
             else if (name == DBToken.PredefinedID)
             {
                 property.Name = "ИдентификаторПредопределённого";
-                property.Types.Add(new TypeInfo() { Name = "UUID", TypeCode = -6 });
+                property.ValueType = SimpleType.UniqueIdentifier; //.Types.Add(new TypeInfo() { Name = "UUID", TypeCode = -6 });
                 return;
             }
             else if (name == DBToken.Description)
             {
                 property.Name = "Наименование";
-                property.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
+                property.ValueType = SimpleType.String; //.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
                 return;
             }
             else if (name == DBToken.Code)
@@ -365,46 +364,46 @@ namespace OneCSharp.SQL.Services
                 {
                     if (property.Fields[0].TypeName.Contains("char"))
                     {
-                        property.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
+                        property.ValueType = SimpleType.String; //.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
                     }
                     else
                     {
-                        property.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
+                        property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                     }
                 }
                 else
                 {
-                    property.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
+                    property.ValueType = SimpleType.String; //.Types.Add(new TypeInfo() { Name = "String", TypeCode = -2 });
                 }
                 return;
             }
             else if (name == DBToken.Folder)
             {
                 property.Name = "ЭтоГруппа";
-                property.Types.Add(new TypeInfo() { Name = "Boolean", TypeCode = -1 });
+                property.ValueType = SimpleType.Boolean; //.Types.Add(new TypeInfo() { Name = "Boolean", TypeCode = -1 });
                 return;
             }
             else if (name == DBToken.KeyField)
             {
                 property.Name = "КлючСтроки";
-                property.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
+                property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                 return;
             }
             else if (name.Contains(DBToken.LineNo))
             {
                 property.Name = "НомерСтроки";
-                property.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
+                property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                 return;
             }
             else if (name == DBToken.ParentIDRRef)
             {
                 property.Name = "Родитель";
-                property.Types.Add(new TypeInfo()
-                {
-                    Name = property.Owner.Name,
-                    TypeCode = ((Table)property.Owner).TypeCode,
-                    Entity = property.Owner
-                });
+                property.ValueType = SimpleType.Object; //.Types.Add(new TypeInfo()
+                //{
+                //    Name = property.Owner.Name,
+                //    TypeCode = ((Table)property.Owner).TypeCode,
+                //    Entity = property.Owner
+                //});
                 return;
             }
             else if (name.Contains(DBToken.OwnerID))
@@ -416,25 +415,25 @@ namespace OneCSharp.SQL.Services
             else if (name.Contains(DBToken.IDRRef)) // табличная часть
             {
                 property.Name = "Ссылка";
-                property.Types.Add(new TypeInfo() { Name = "UUID", TypeCode = -6 });
+                property.ValueType = SimpleType.UniqueIdentifier; //.Types.Add(new TypeInfo() { Name = "UUID", TypeCode = -6 });
                 return;
             }
             else if (name == DBToken.Period)
             {
                 property.Name = "Период";
-                property.Types.Add(new TypeInfo() { Name = "DateTime", TypeCode = -3 });
+                property.ValueType = SimpleType.DateTime; //.Types.Add(new TypeInfo() { Name = "DateTime", TypeCode = -3 });
                 return;
             }
             else if (name == DBToken.Active)
             {
                 property.Name = "Активность";
-                property.Types.Add(new TypeInfo() { Name = "Boolean", TypeCode = -1 });
+                property.ValueType = SimpleType.Boolean; //.Types.Add(new TypeInfo() { Name = "Boolean", TypeCode = -1 });
                 return;
             }
             else if (name == DBToken.RecordKind) // Перечисление: Приход | Расход
             {
                 property.Name = "ВидДвижения";
-                property.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
+                property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                 return;
             }
         }

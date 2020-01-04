@@ -1,4 +1,4 @@
-﻿using OneCSharp.SQL.Model;
+﻿using OneCSharp.Core.Model;
 using System;
 using System.Linq;
 using System.Text;

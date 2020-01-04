@@ -65,8 +65,8 @@ namespace OneCSharp.Shell
             module1.Initialize(this);
 
             // Plug in AST module
-            IModule module2 = new OneCSharp.AST.UI.Module();
-            module2.Initialize(this);
+            //IModule module2 = new OneCSharp.AST.UI.Module();
+            //module2.Initialize(this);
         }
         private TabViewModel _selectedTab;
         public TabViewModel SelectedTab

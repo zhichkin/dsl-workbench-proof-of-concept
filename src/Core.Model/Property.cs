@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace OneCSharp.Core
+namespace OneCSharp.Core.Model
 {
     public class Property : Entity
     {
-        public ComplexEntity Owner { get; set; }
+        public ComplexType Owner { get; set; }
+        public DataType ValueType { get; set; }
         public bool IsOptional { get; set; }
-        public bool IsOneToMany { get; set; }
-        public List<Entity> ValueTypes { get; } = new List<Entity>();
-        public void AddValueType(Entity type)
-        {
-            if (ValueTypes.Contains(type)) return;
-            ValueTypes.Add(type);
-        }
+        public bool IsNestedSet { get; set; }
+        public string ForeignKey { get; set; }
+        public List<Field> Fields { get; set; } = new List<Field>();
     }
 }

@@ -1,10 +1,9 @@
-﻿using OneCSharp.Core;
+﻿using OneCSharp.Core.Model;
 
 namespace OneCSharp.SQL.Model
 {
     public sealed class Database : Domain
     {
-        public Database() { }
         public string Alias { get; set; }
     }
 }

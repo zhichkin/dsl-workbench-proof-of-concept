@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AST.UI\AST.UI.csproj" />
     <ProjectReference Include="..\MVVM\MVVM.csproj" />
     <ProjectReference Include="..\SQL.Model\SQL.Model.csproj" />
     <ProjectReference Include="..\SQL.Services\SQL.Services.csproj" />

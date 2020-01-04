@@ -1,4 +1,4 @@
-﻿using OneCSharp.Core;
+﻿using OneCSharp.Core.Model;
 using OneCSharp.MVVM;
 using OneCSharp.SQL.Model;
 using System;
@@ -38,8 +38,7 @@ namespace OneCSharp.SQL.UI
             
             foreach (PropertyInfo property in entityType.GetProperties())
             {
-                HierarchyAttribute purpose = property.GetCustomAttribute<HierarchyAttribute>();
-                if (purpose != null)
+                if (property.PropertyType.IsGenericType)
                 {
                     IEnumerable source = (IEnumerable)property.GetValue(entity);
                     BuildTreeNodesRecursively(source, target.TreeNodes);
@@ -76,10 +75,11 @@ namespace OneCSharp.SQL.UI
                 }
                 else
                 {
-                    return new Uri(Module.NESTED_TABLE);
+                    //return new Uri(Module.NESTED_TABLE);
+                    return new Uri(Module.TABLE);
                 }
             }
-            else if (entityType == typeof(TableProperty))
+            else if (entityType == typeof(Property))
             {
                 return new Uri(Module.FIELD_PUBLIC);
             }

@@ -1,10 +1,6 @@
-﻿namespace OneCSharp.Core
+﻿namespace OneCSharp.Core.Model
 {
-    public interface IEntity
-    {
-        string Name { get; set; }
-    }
-    public abstract class Entity : IEntity
+    public abstract class Entity
     {
         public string Name { get; set; }
     }

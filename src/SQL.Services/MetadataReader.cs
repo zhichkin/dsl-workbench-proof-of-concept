@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using OneCSharp.Core;
+using OneCSharp.Core.Model;
 using OneCSharp.SQL.Model;
 using System;
 using System.Collections.Generic;
@@ -142,12 +143,12 @@ namespace OneCSharp.SQL.Services
 
             return list;
         }
-        public void ReadMetadata(Database infoBase)
+        public void ReadMetadata(Database database)
         {
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder()
             {
-                DataSource = infoBase.Server.Address,
-                InitialCatalog = infoBase.Name,
+                DataSource = database.Owner.Address,
+                InitialCatalog = database.Name,
                 IntegratedSecurity = true,
                 PersistSecurityInfo = false
             };
@@ -158,10 +159,10 @@ namespace OneCSharp.SQL.Services
             {
                 foreach (var item in _DBNames)
                 {
-                    ReadConfig(item.Key, infoBase);
+                    ReadConfig(item.Key, database);
                 }
-                MakeSecondPass(infoBase);
-                ReadSQLMetadata(infoBase);
+                MakeSecondPass(database);
+                ReadSQLMetadata(database);
             }
         }
         
@@ -466,7 +467,7 @@ namespace OneCSharp.SQL.Services
         }
         private void SetTableNamespace(Table table, Database infoBase, string token)
         {
-            if (table.Namespace != null) return;
+            if (table.Owner != null) return;
 
             Namespace ns = infoBase.Namespaces.Where(n => n.Name == token).FirstOrDefault();
             if (ns == null)
@@ -476,17 +477,18 @@ namespace OneCSharp.SQL.Services
                     ns = infoBase.Namespaces.Where(n => n.Name == "Unknown").FirstOrDefault();
                     if (ns == null)
                     {
-                        ns = new Namespace() { Name = "Unknown" };
-                        infoBase.AddChild(ns);
+                        ns = new Namespace() { Name = "Unknown", Owner = infoBase };
+                        infoBase.Namespaces.Add(ns);
                     }
                 }
                 else
                 {
-                    ns = new Namespace() { Name = token };
-                    infoBase.AddChild(ns);
+                    ns = new Namespace() { Name = token, Owner = infoBase };
+                    infoBase.Namespaces.Add(ns);
                 }
             }
-            ns.AddChild(table);
+            table.Owner = ns;
+            ns.DataTypes.Add(table);
         }
         private void ParseReferenceOwner(StreamReader reader, Table table)
         {
@@ -504,7 +506,7 @@ namespace OneCSharp.SQL.Services
             if (count == 0) return;
 
             Match match;
-            List<TypeInfo> types = new List<TypeInfo>();
+            //List<TypeInfo> types = new List<TypeInfo>();
             for (int i = 0; i < count; i++)
             {
                 _ = reader.ReadLine();
@@ -516,28 +518,29 @@ namespace OneCSharp.SQL.Services
                 {
                     if (_DBNames.TryGetValue(match.Value, out DBNameEntry entry))
                     {
-                        types.Add(new TypeInfo()
-                        {
-                            TypeCode = entry.Table.TypeCode,
-                            Name = entry.Table.Name,
-                            Entity = entry.Table
-                        });
+                        //types.Add(new TypeInfo()
+                        //{
+                        //    TypeCode = entry.Table.TypeCode,
+                        //    Name = entry.Table.Name,
+                        //    Entity = entry.Table
+                        //});
                     }
                 }
                 _ = reader.ReadLine();
             }
 
-            if (types.Count > 0)
-            {
-                TableProperty property = new TableProperty
+            //if (types.Count > 0)
+            //{
+                Property property = new Property
                 {
-                    Name = "Владелец",
-                    DbName = "OwnerID" // [_OwnerIDRRef] | [_OwnerID_TYPE] + [_OwnerID_RTRef] + [_OwnerID_RRRef]
+                    Name = "Владелец"
+                    //DbName = "OwnerID" // [_OwnerIDRRef] | [_OwnerID_TYPE] + [_OwnerID_RTRef] + [_OwnerID_RRRef]
                     // TODO: add Field at once ?
                 };
-                property.Types.AddRange(types);
-                table.AddChild(property);
-            }
+                property.ValueType = SimpleType.Object; //.AddRange(types);
+                property.Owner = table;
+                table.Properties.Add(property);
+            //}
         }
         private void ParseTableProperties(StreamReader reader, string line, Table table)
         {
@@ -552,42 +555,42 @@ namespace OneCSharp.SQL.Services
                     match = rxOCSName.Match(nextLine);
                     if (match.Success)
                     {
-                        ParseTableProperty(reader, nextLine, table);
+                        ParseProperty(reader, nextLine, table);
                         break;
                     }
                 }
             }
         }
-        private void ParseTableProperty(StreamReader reader, string line, Table table)
+        private void ParseProperty(StreamReader reader, string line, Table table)
         {
             string[] lines = line.Split(',');
             string fileName = lines[2].Replace("}", string.Empty);
             string objectName = lines[3].Replace("\"", string.Empty);
 
-            TableProperty property = new TableProperty { Name = objectName };
-            table.AddChild(property);
+            Property property = new Property { Name = objectName, Owner = table };
+            table.Properties.Add(property);
 
             if (_DBNames.TryGetValue(fileName, out DBNameEntry entry))
             {
                 if (entry.DBNames.Count == 1)
                 {
-                    property.DbName = CreateTableFieldName(entry.DBNames[0]);
+                    //property.DbName = CreateTableFieldName(entry.DBNames[0]);
                 }
                 else if (entry.DBNames.Count > 1)
                 {
                     foreach (var dbn in entry.DBNames.Where(dbn => dbn.Token == DBToken.Fld))
                     {
-                        property.DbName = CreateTableFieldName(dbn);
+                        //property.DbName = CreateTableFieldName(dbn);
                     }
                 }
             }
-            ParseTablePropertyTypes(reader, property);
+            ParsePropertyTypes(reader, property);
         }
         private string CreateTableFieldName(DBName dbname)
         {
             return $"{dbname.Token}{dbname.TypeCode}";
         }
-        private void ParseTablePropertyTypes(StreamReader reader, TableProperty property)
+        private void ParsePropertyTypes(StreamReader reader, Property property)
         {
             string line = reader.ReadLine();
             if (line == null) return;
@@ -616,11 +619,12 @@ namespace OneCSharp.SQL.Services
                 }
                 if (typeCode != 0)
                 {
-                    property.Types.Add(new TypeInfo()
-                    {
-                        Name = typeName,
-                        TypeCode = typeCode
-                    });
+                    property.ValueType = SimpleType.Object;
+                    //    .Add(new TypeInfo()
+                    //{
+                    //    Name = typeName,
+                    //    TypeCode = typeCode
+                    //});
                 }
                 else
                 {
@@ -630,37 +634,37 @@ namespace OneCSharp.SQL.Services
                     if (UUID == "e199ca70-93cf-46ce-a54b-6edc88c3a296")
                     {
                         // ХранилищеЗначения - varbinary(max)
-                        property.Types.Add(new TypeInfo()
-                        {
-                            Name = "BLOB",
-                            TypeCode = -5
-                        });
+                        //property.Types.Add(new TypeInfo()
+                        //{
+                        //    Name = "BLOB",
+                        //    TypeCode = -5
+                        //});
                     }
                     else if (UUID == "fc01b5df-97fe-449b-83d4-218a090e681e")
                     {
                         // УникальныйИдентификатор - binary(16)
-                        property.Types.Add(new Model.TypeInfo()
-                        {
-                            Name = "UUID",
-                            TypeCode = -6
-                        });
+                        //property.Types.Add(new Model.TypeInfo()
+                        //{
+                        //    Name = "UUID",
+                        //    TypeCode = -6
+                        //});
                     }
                     else if (_UUIDs.TryGetValue(UUID, out Table table))
                     {
-                        property.Types.Add(new TypeInfo()
-                        {
-                            Name = table.Name,
-                            TypeCode = table.TypeCode,
-                            UUID = UUID,
-                            Entity = table
-                        });
+                        property.ValueType = table; //.Types.Add(new TypeInfo()
+                        //{
+                        //    Name = table.Name,
+                        //    TypeCode = table.TypeCode,
+                        //    UUID = UUID,
+                        //    Entity = table
+                        //});
                     }
                     else // UUID is not loaded yet - leave it for second pass
                     {
-                        property.Types.Add(new TypeInfo()
-                        {
-                            UUID = UUID
-                        });
+                        //property.Types.Add(new TypeInfo()
+                        //{
+                        //    UUID = UUID
+                        //});
                     }
                 }
             }
@@ -693,9 +697,9 @@ namespace OneCSharp.SQL.Services
             Table nested = new Table()
             {
                 Alias = objectName,
-                Namespace = table.Namespace
+                Owner = table.Owner
             };
-            table.AddChild(nested);
+            //table.AddChild(nested);
 
             if (_DBNames.TryGetValue(fileName, out DBNameEntry entry))
             {
@@ -725,70 +729,69 @@ namespace OneCSharp.SQL.Services
         #endregion
         public void MakeSecondPass(Database infoBase)
         {
-            foreach (var ns in infoBase.Namespaces)
-            {
-                foreach (var entity in ns.Entities)
-                {
-                    Table table = (Table)entity;
-                    foreach (var property in table.Properties)
-                    {
-                        TableProperty tp = (TableProperty)property;
-                        foreach (var type in tp.Types)
-                        {
-                            if (type.TypeCode == 0)
-                            {
-                                if (type.Entity == null)
-                                {
-                                    if (!string.IsNullOrEmpty(type.UUID))
-                                    {
-                                        if (_UUIDs.TryGetValue(type.UUID, out Table dbObject))
-                                        {
-                                            type.Name = dbObject.Name;
-                                            type.Entity = dbObject;
-                                            type.TypeCode = dbObject.TypeCode;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    type.Name = type.Entity.Name;
-                                    type.TypeCode = ((Table)type.Entity).TypeCode;
-                                }
-                            }
-                        }
-                    }
-                    foreach (var nested in table.Tables)
-                    {
-                        foreach (var property in nested.Properties)
-                        {
-                            TableProperty tp = (TableProperty)property;
-                            foreach (var type in tp.Types)
-                            {
-                                if (type.TypeCode == 0)
-                                {
-                                    if (type.Entity == null)
-                                    {
-                                        if (!string.IsNullOrEmpty(type.UUID))
-                                        {
-                                            if (_UUIDs.TryGetValue(type.UUID, out Table dbObject))
-                                            {
-                                                type.Name = dbObject.Name;
-                                                type.Entity = dbObject;
-                                                type.TypeCode = dbObject.TypeCode;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        type.Name = type.Entity.Name;
-                                        type.TypeCode = ((Table)type.Entity).TypeCode;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            //foreach (var ns in infoBase.Namespaces)
+            //{
+            //    foreach (var entity in ns.DataTypes)
+            //    {
+            //        Table table = (Table)entity;
+            //        foreach (var property in table.Properties)
+            //        {
+            //            foreach (var type in property.ValueType)
+            //            {
+            //                if (type.TypeCode == 0)
+            //                {
+            //                    if (type.Entity == null)
+            //                    {
+            //                        if (!string.IsNullOrEmpty(type.UUID))
+            //                        {
+            //                            if (_UUIDs.TryGetValue(type.UUID, out Table dbObject))
+            //                            {
+            //                                type.Name = dbObject.Name;
+            //                                type.Entity = dbObject;
+            //                                type.TypeCode = dbObject.TypeCode;
+            //                            }
+            //                        }
+            //                    }
+            //                    else
+            //                    {
+            //                        type.Name = type.Entity.Name;
+            //                        type.TypeCode = ((Table)type.Entity).TypeCode;
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        foreach (var nested in table.Tables)
+            //        {
+            //            foreach (var property in nested.Properties)
+            //            {
+            //                Property tp = (Property)property;
+            //                foreach (var type in tp.Types)
+            //                {
+            //                    if (type.TypeCode == 0)
+            //                    {
+            //                        if (type.Entity == null)
+            //                        {
+            //                            if (!string.IsNullOrEmpty(type.UUID))
+            //                            {
+            //                                if (_UUIDs.TryGetValue(type.UUID, out Table dbObject))
+            //                                {
+            //                                    type.Name = dbObject.Name;
+            //                                    type.Entity = dbObject;
+            //                                    type.TypeCode = dbObject.TypeCode;
+            //                                }
+            //                            }
+            //                        }
+            //                        else
+            //                        {
+            //                            type.Name = type.Entity.Name;
+            //                            type.TypeCode = ((Table)type.Entity).TypeCode;
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
         }
         public void ReadSQLMetadata(Database infoBase)
         {

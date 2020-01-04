@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>OneCSharp.Core.Model</AssemblyName>
-    <RootNamespace>OneCSharp.Core</RootNamespace>
+    <RootNamespace>OneCSharp.Core.Model</RootNamespace>
   </PropertyGroup>
 
 </Project>

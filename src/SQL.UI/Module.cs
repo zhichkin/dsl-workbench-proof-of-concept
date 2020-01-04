@@ -1,4 +1,4 @@
-﻿using OneCSharp.Core;
+﻿using OneCSharp.Core.Model;
 using OneCSharp.MVVM;
 using OneCSharp.SQL.Model;
 using OneCSharp.SQL.Services;
@@ -103,8 +103,8 @@ namespace OneCSharp.SQL.UI
             Database database = (Database)server.Domains.Where(i => i.Name == databaseName).FirstOrDefault();
             if (database != null) return;
 
-            database = new Database() { Name = databaseName };
-            server.AddChild(database);
+            database = new Database() { Name = databaseName, Owner = server };
+            server.Domains.Add(database);
 
             metadataReader.ReadMetadata(database);
 

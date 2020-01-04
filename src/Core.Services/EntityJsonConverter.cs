@@ -1,7 +1,6 @@
-﻿using System;
+﻿using OneCSharp.Core.Model;
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -50,7 +49,7 @@ namespace OneCSharp.Core.Services
         {
             if (info.PropertyType == typeof(IEnumerable))
             {
-                return; // IEnumerable IHierarchy.Children
+                return;
             }
 
             writer.WritePropertyName(info.Name);
@@ -171,10 +170,6 @@ namespace OneCSharp.Core.Services
                 }
                 else if (reader.TokenType == JsonTokenType.StartArray)
                 {
-                    bool hasChildren = (entityType.GetInterfaces()
-                        .Where(i => i == typeof(IHierarchy))
-                        .FirstOrDefault() != null);
-
                     IList list = (IList)propertyInfo.GetValue(entity);
                     while (reader.TokenType != JsonTokenType.EndArray)
                     {
@@ -183,14 +178,7 @@ namespace OneCSharp.Core.Services
                             break;
                         }
                         Entity item = ReadObject(ref reader, options);
-                        if (hasChildren)
-                        {
-                            ((IHierarchy)entity).AddChild(item);
-                        }
-                        else
-                        {
-                            list.Add(item);
-                        }
+                        list.Add(item);
                     }
                 }
             }

@@ -1,6 +1,4 @@
-﻿using OneCSharp.Core;
-
-namespace OneCSharp.SQL.Model
+﻿namespace OneCSharp.Core.Model
 {
     public enum FieldPurpose
     {
@@ -23,11 +21,13 @@ namespace OneCSharp.SQL.Model
         /// <summary>Type code of the reference type (class discriminator).</summary>
         TypeCode,
         /// <summary>Record's version (timestamp|rowversion).</summary>
-        Version
+        Version,
+        /// <summary>Ordinal key value for ordered sets of records.</summary>
+        Ordinal
     }
-    public sealed class Field : ComplexEntity
+    public sealed class Field : Entity
     {
-        public TableProperty Owner { get; set; }
+        public Property Owner { get; set; }
         public string TypeName { get; set; }
         public int Length { get; set; }
         public byte Precision { get; set; }
