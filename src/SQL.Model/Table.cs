@@ -1,5 +1,4 @@
 ﻿using OneCSharp.Core.Model;
-using System.Collections.Generic;
 
 namespace OneCSharp.SQL.Model
 {
