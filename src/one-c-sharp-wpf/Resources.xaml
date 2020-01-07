@@ -15,10 +15,6 @@
         <shell:RightRegionView/>
     </DataTemplate>
 
-    <DataTemplate x:Key="StatusBarTemplate">
-        <shell:StatusBarView/>
-    </DataTemplate>
-
     <BitmapImage x:Key="Icon_Close" UriSource="C:\Users\User\Desktop\GitHub\one-c-sharp-server\src\one-c-sharp-wpf\images\Close.png"/>
 
     <DataTemplate x:Key="TreeViewTemplate">

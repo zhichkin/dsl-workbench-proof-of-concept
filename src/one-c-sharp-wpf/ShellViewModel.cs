@@ -13,7 +13,7 @@ namespace OneCSharp.Shell
     {
         private TreeNodeViewModel _LeftRegion = new TreeNodeViewModel();
         private object _RightRegion;
-        private StatusBarViewModel _StatusBarRegion = new StatusBarViewModel();
+        private string _StatusBarRegion = string.Empty;
         private AppSettings _settings;
         private readonly IServiceProvider _serviceProvider;
 
@@ -53,13 +53,15 @@ namespace OneCSharp.Shell
             get { return _RightRegion; }
             set { _RightRegion = value; OnPropertyChanged(nameof(RightRegion)); }
         }
-        public StatusBarViewModel StatusBarRegion
+        public string StatusBarRegion
         {
             get { return _StatusBarRegion; }
-            set { _StatusBarRegion = value; OnPropertyChanged(nameof(_StatusBarRegion)); }
+            set { _StatusBarRegion = value; OnPropertyChanged(nameof(StatusBarRegion)); }
         }
         private void InitializeViewModel()
         {
+            StatusBarRegion = "Welcome to 1C# ! =)";
+
             // Plug in SQL module
             IModule module1 = new OneCSharp.SQL.UI.Module();
             module1.Initialize(this);
@@ -104,6 +106,13 @@ namespace OneCSharp.Shell
         public void AddTreeNode(TreeNodeViewModel treeNode)
         {
             LeftRegion.TreeNodes.Add(treeNode);
+        }
+
+
+        public void ShowStatusBarMessage(string message)
+        {
+            StatusBarRegion = message;
+            //App.Current.MainWindow.Dispatcher.Invoke(() => { StatusBarRegion = message; });
         }
     }
 }

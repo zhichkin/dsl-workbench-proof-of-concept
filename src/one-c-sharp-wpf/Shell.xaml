@@ -10,8 +10,7 @@
     <Window.Resources>
         <shell:ContentTemplateSelector x:Key="Selector"
             LeftRegionTemplate="{StaticResource TreeViewTemplate}"
-            RightRegionTemplate="{StaticResource RightRegionTemplate}"
-            StatusBarTemplate="{StaticResource StatusBarTemplate}"/>
+            RightRegionTemplate="{StaticResource RightRegionTemplate}"/>
     </Window.Resources>
     
     <Grid>
@@ -46,16 +45,6 @@
 
         <GridSplitter Grid.Row="1" Grid.Column="1" Width="3" ResizeBehavior="PreviousAndNext" VerticalAlignment="Stretch"/>
 
-        <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-                      BorderBrush="Black" BorderThickness="0,1,0,1"
-                      ItemsSource="{Binding StatusBarRegion}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-
         <TabControl Grid.Row="1" Grid.Column="2" Margin="5"
                     ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}">
             <TabControl.ItemTemplate>
@@ -77,6 +66,8 @@
             </TabControl.ContentTemplate>
         </TabControl>
 
+        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="5,0,0,0" Text="{Binding StatusBarRegion}"/>
+        
     </Grid>
 
 </Window>

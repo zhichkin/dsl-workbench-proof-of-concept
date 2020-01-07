@@ -4,7 +4,9 @@ using OneCSharp.SQL.Model;
 using OneCSharp.SQL.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -78,14 +80,26 @@ namespace OneCSharp.SQL.UI
             {
                 MenuItemHeader = "Connect to database...",
                 MenuItemIcon = new BitmapImage(new Uri(CONNECT_TO_DATABASE)),
-                MenuItemCommand = new RelayCommand(ConnectToInfoBase),
+                MenuItemCommand = new AsyncCommand(ConnectToInfoBase, CanExecuteConnectToInfoBase),
                 MenuItemPayload = treeNode
             });
 
             _shell.AddTreeNode(treeNode);
         }
-        private void ConnectToInfoBase(object parameter)
+        public bool IsBusy { get; set; } = false;
+        private bool CanExecuteConnectToInfoBase() { return !IsBusy; }
+        private async Task ConnectToInfoBase(object parameter)
         {
+            //if (IsBusy)
+            //{
+            //    _ = MessageBox.Show($"I'm busy...", "ONE-C-SHARP", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    return;
+            //}
+
+            //_shell.ShowStatusBarMessage("Delay ...");
+            //await Task.Delay(10000);
+            //_shell.ShowStatusBarMessage("Running...");
+
             TreeNodeViewModel treeNode = parameter as TreeNodeViewModel;
             if (treeNode == null) return;
             Server server = treeNode.NodePayload as Server;
@@ -106,12 +120,35 @@ namespace OneCSharp.SQL.UI
             database = new Database() { Name = databaseName, Owner = server };
             server.Domains.Add(database);
 
-            metadataReader.ReadMetadata(database);
+            await DoWorkAsync(database);
 
             IController controller = GetController<Database>();
             controller.BuildTreeNode(database, out TreeNodeViewModel childNode);
             treeNode.TreeNodes.Add(childNode);
             //Persist(database);
+        }
+        private async Task DoWorkAsync(Database database)
+        {
+            IMetadataReader metadataReader = _shell.GetService<IMetadataReader>();
+
+            _shell.ShowStatusBarMessage(string.Empty);
+            try
+            {
+                Progress<string> progress = new Progress<string>(ReportProgress);
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                await metadataReader.ReadMetadataAsync(database, progress);
+                stopwatch.Stop();
+                _shell.ShowStatusBarMessage(stopwatch.ElapsedMilliseconds.ToString());
+            }
+            catch (Exception error)
+            {
+                _ = MessageBox.Show($"{error.Message}", "ONE-C-SHARP", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+        private void ReportProgress(string message)
+        {
+            _shell.ShowStatusBarMessage(message);
         }
 
         public void Persist(Entity entity)

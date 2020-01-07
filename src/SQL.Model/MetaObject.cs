@@ -2,7 +2,7 @@
 
 namespace OneCSharp.SQL.Model
 {
-    public sealed class Table : ComplexType
+    public sealed class MetaObject : ComplexType
     {
         public string Alias { get; set; }
     }

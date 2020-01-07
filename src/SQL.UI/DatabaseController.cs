@@ -66,9 +66,9 @@ namespace OneCSharp.SQL.UI
             {
                 return new Uri(Module.NAMESPACE_PUBLIC);
             }
-            else if (entityType == typeof(Table))
+            else if (entityType == typeof(MetaObject))
             {
-                Table table = (Table)entity;
+                MetaObject table = (MetaObject)entity;
                 if (table.Owner == null)
                 {
                     return new Uri(Module.TABLE);

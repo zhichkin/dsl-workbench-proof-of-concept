@@ -4,6 +4,7 @@ using OneCSharp.SQL.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace OneCSharp.SQL.Services
 {
@@ -179,25 +180,30 @@ namespace OneCSharp.SQL.Services
         }
 
         public string ConnectionString { get; set; }
-        public void Load(Database infoBase)
+        public async Task LoadAsync(Database infoBase)
         {
             foreach (Namespace ns in infoBase.Namespaces)
             {
+                List<Task> tasks = new List<Task>();
                 foreach (var item in ns.DataTypes)
                 {
-                    GetSQLMetadata((Table)item);
+                    tasks.Add(Task.Run(() =>
+                    {
+                        GetSQLMetadata((MetaObject)item);
+                    }));
                 }
+                await Task.WhenAll(tasks);
             }
         }
-        private void GetSQLMetadata(Table metaObject)
+        private void GetSQLMetadata(MetaObject metaObject)
         {
             ReadSQLMetadata(metaObject);
-            //foreach (var nestedObject in metaObject.Tables)
+            //foreach (var nestedObject in metaObject.MetaObjects)
             //{
             //    ReadSQLMetadata(nestedObject);
             //}
         }
-        private void ReadSQLMetadata(Table metaObject)
+        private void ReadSQLMetadata(MetaObject metaObject)
         {
             List<SqlFieldInfo> sql_fields = GetSqlFields(metaObject.Name);
             if (sql_fields.Count == 0) return;
@@ -210,7 +216,7 @@ namespace OneCSharp.SQL.Services
                 var fields = sql_fields.Where(f => f.COLUMN_NAME.Contains(property.Name));
                 foreach (var field in fields)
                 {
-                    AddTableField(property, field, indexInfo);
+                    AddMetaObjectField(property, field, indexInfo);
                     field.IsFound = true;
                 }
             }
@@ -224,7 +230,7 @@ namespace OneCSharp.SQL.Services
                 //field.IsFound = true; СтандартныеРеквизиты
             }
         }
-        private void AddTableField(Property property, SqlFieldInfo info, ClusteredIndexInfo indexInfo)
+        private void AddMetaObjectField(Property property, SqlFieldInfo info, ClusteredIndexInfo indexInfo)
         {
             Field field = new Field()
             {
@@ -239,7 +245,7 @@ namespace OneCSharp.SQL.Services
             field.Scale = info.NUMERIC_SCALE;
             field.IsNullable = info.IS_NULLABLE;
 
-            DefineTableFieldPurpose(field);
+            DefineMetaObjectFieldPurpose(field);
 
             if (indexInfo != null)
             {
@@ -251,7 +257,7 @@ namespace OneCSharp.SQL.Services
                 }
             }
         }
-        private void AddProperty(Table metaObject, SqlFieldInfo info, ClusteredIndexInfo indexInfo, int position)
+        private void AddProperty(MetaObject metaObject, SqlFieldInfo info, ClusteredIndexInfo indexInfo, int position)
         {
             Property property = new Property
             {
@@ -260,7 +266,7 @@ namespace OneCSharp.SQL.Services
                 //DbName = info.COLUMN_NAME
             };
             metaObject.Properties.Insert(position, property);
-            AddTableField(property, info, indexInfo);
+            AddMetaObjectField(property, info, indexInfo);
             DefineSystemPropertyType(property);
         }
         private void DefineSystemPropertyType(Property property)
@@ -398,12 +404,9 @@ namespace OneCSharp.SQL.Services
             else if (name == DBToken.ParentIDRRef)
             {
                 property.Name = "Родитель";
-                property.ValueType = SimpleType.Object; //.Types.Add(new TypeInfo()
-                //{
-                //    Name = property.Owner.Name,
-                //    TypeCode = ((Table)property.Owner).TypeCode,
-                //    Entity = property.Owner
-                //});
+                MultipleType types = new MultipleType();
+                types.Types.Add(property.Owner);
+                property.ValueType = types;
                 return;
             }
             else if (name.Contains(DBToken.OwnerID))
@@ -437,7 +440,7 @@ namespace OneCSharp.SQL.Services
                 return;
             }
         }
-        private void DefineTableFieldPurpose(Field field)
+        private void DefineMetaObjectFieldPurpose(Field field)
         {
             if (string.IsNullOrEmpty(field.Name))
             {
