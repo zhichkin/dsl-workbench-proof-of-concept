@@ -6,6 +6,7 @@ namespace OneCSharp.MVVM
     public sealed class TreeNodeViewModel : ViewModelBase
     {
         private string _nodeText;
+        private string _nodeToolTip;
         private BitmapImage _nodeIcon;
         private object _nodePayload;
         public TreeNodeViewModel()
@@ -16,6 +17,11 @@ namespace OneCSharp.MVVM
         {
             get { return _nodeText; }
             set { _nodeText = value; OnPropertyChanged(nameof(NodeText)); }
+        }
+        public string NodeToolTip
+        {
+            get { return _nodeToolTip; }
+            set { _nodeToolTip = value; OnPropertyChanged(nameof(NodeToolTip)); }
         }
         public BitmapImage NodeIcon
         {

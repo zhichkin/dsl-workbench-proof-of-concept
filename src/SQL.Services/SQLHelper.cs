@@ -4,12 +4,15 @@ using OneCSharp.SQL.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OneCSharp.SQL.Services
 {
     public sealed class SQLHelper
     {
+        private readonly Regex rxFld = new Regex("_Fld\\d+$"); // Example: "СуммаНДС (_Fld123)"
+
         private sealed class SqlFieldInfo
         {
             public SqlFieldInfo() { }
@@ -198,10 +201,6 @@ namespace OneCSharp.SQL.Services
         private void GetSQLMetadata(MetaObject metaObject)
         {
             ReadSQLMetadata(metaObject);
-            //foreach (var nestedObject in metaObject.MetaObjects)
-            //{
-            //    ReadSQLMetadata(nestedObject);
-            //}
         }
         private void ReadSQLMetadata(MetaObject metaObject)
         {
@@ -213,21 +212,42 @@ namespace OneCSharp.SQL.Services
 
             foreach (var property in metaObject.Properties)
             {
-                var fields = sql_fields.Where(f => f.COLUMN_NAME.Contains(property.Name));
+                if (property.ValueType is ListType listType)
+                {
+                    ReadSQLMetadata((MetaObject)listType.Type);
+                    continue;
+                }
+
+                string search;
+                Match match = rxFld.Match(property.Name);
+                if (match.Success)
+                {
+                    property.Name = property.Name.Replace(match.Value, string.Empty);
+                    search = match.Value;
+                }
+                else if (property.Name == DBToken.OwnerID)
+                {
+                    property.Name = "Владелец";
+                    search = $"_{DBToken.OwnerID}";
+                }
+                else
+                {
+                    continue;
+                }
+                var fields = sql_fields.Where(f => f.COLUMN_NAME.StartsWith(search));
                 foreach (var field in fields)
                 {
-                    AddMetaObjectField(property, field, indexInfo);
                     field.IsFound = true;
+                    AddMetaObjectField(property, field, indexInfo);
                 }
             }
 
             int position = 0;
             var nonFounds = sql_fields.Where(f => f.IsFound == false);
-            foreach (var field in nonFounds)
+            foreach (var field in nonFounds) // СтандартныеРеквизиты - их нет в файле DBNames !
             {
                 AddProperty(metaObject, field, indexInfo, position);
                 position++;
-                //field.IsFound = true; СтандартныеРеквизиты
             }
         }
         private void AddMetaObjectField(Property property, SqlFieldInfo info, ClusteredIndexInfo indexInfo)
@@ -262,8 +282,7 @@ namespace OneCSharp.SQL.Services
             Property property = new Property
             {
                 Owner = metaObject,
-                Name = info.COLUMN_NAME.Replace("_", string.Empty)
-                //DbName = info.COLUMN_NAME
+                Name = info.COLUMN_NAME
             };
             metaObject.Properties.Insert(position, property);
             AddMetaObjectField(property, info, indexInfo);
@@ -271,7 +290,7 @@ namespace OneCSharp.SQL.Services
         }
         private void DefineSystemPropertyType(Property property)
         {
-            string name = property.Name;
+            string name = property.Name.TrimStart('_');
 
             if (name == DBToken.IDRRef)
             {
@@ -401,18 +420,15 @@ namespace OneCSharp.SQL.Services
                 property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                 return;
             }
-            else if (name == DBToken.ParentIDRRef)
+            else if (name == DBToken.ParentIDRRef) // adjacency list - иерархический справочник
             {
                 property.Name = "Родитель";
-                MultipleType types = new MultipleType();
-                types.Types.Add(property.Owner);
-                property.ValueType = types;
+                property.ValueType = property.Owner;
                 return;
             }
             else if (name.Contains(DBToken.OwnerID))
             {
-                // На самом деле определеяется при чтении метаданных из файла Config
-                // [_OwnerIDRRef] | [_OwnerID_TYPE] + [_OwnerID_RTRef] + [_OwnerID_RRRef]
+                property.Name = "Владелец";
                 return;
             }
             else if (name.Contains(DBToken.IDRRef)) // табличная часть

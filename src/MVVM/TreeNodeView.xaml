@@ -22,7 +22,7 @@
 
                     <Image Source="{Binding NodeIcon}" Height="16" Width="16" VerticalAlignment="Center"/>
                     
-                    <TextBlock Text="{Binding NodeText}" Margin="3,0,3,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding NodeText}" ToolTip="{Binding NodeToolTip}" Margin="3,0,3,0" VerticalAlignment="Center"/>
 
                 </StackPanel>
 

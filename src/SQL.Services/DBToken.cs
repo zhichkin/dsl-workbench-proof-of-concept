@@ -2,12 +2,12 @@
 {
     internal static class DBToken
     {
-        internal const string L = "L";
-        internal const string N = "N";
-        internal const string S = "S";
-        internal const string D = "D"; // Config metadata (SDBL)
-        internal const string T = "T"; // SQL tables fields (RDBMS)
-        internal const string B = "B";
+        internal const string L = "L"; // boolean
+        internal const string N = "N"; // numeric
+        internal const string S = "S"; // string
+        internal const string D = "D"; // Config metadata (SDBL) - date
+        internal const string T = "T"; // SQL tables fields (RDBMS) - date
+        internal const string B = "B"; // binary
         internal const string RRef = "RRef";
         internal const string TRef = "TRef";
         internal const string RRRef = "RRRef";

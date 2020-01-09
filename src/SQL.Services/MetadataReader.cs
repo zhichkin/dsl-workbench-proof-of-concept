@@ -158,27 +158,49 @@ namespace OneCSharp.SQL.Services
                 PersistSecurityInfo = false
             };
             ConnectionString = csb.ConnectionString;
-            
-            ReadDBNames();
+
+            await Task.Run(() => { ReadDBNames(); }).ConfigureAwait(false);
+
             if (_DBNames.Count > 0)
             {
-                await ParseInternalIdentifiers(database);
-
                 List<Task> tasks = new List<Task>();
                 foreach (var item in _DBNames)
                 {
+                    if (new Guid(item.Key) == Guid.Empty) continue; // system tables and settings
+                    if (string.IsNullOrWhiteSpace(item.Value.Token)) continue; // unsupported meta-object type
+                    if (item.Value.Token == DBToken.Const) continue; // not supported yet
                     tasks.Add(Task.Run(() =>
                     {
-                        ReadConfigAsync(item.Key, database, progress);
+                        ProcessDBName(database, item.Key, item.Value, progress);
                     }));
                 }
-                await Task.WhenAll(tasks);
+                await Task.WhenAll(tasks).ConfigureAwait(false);
 
-                //MakeSecondPass(database);
+                //MakeSecondPass(database); // resolve internal identifiers into types
                 await ReadSQLMetadataAsync(database);
             }
         }
-        
+        private void ProcessDBName(Database database, string fileName, DBNameEntry entry, IProgress<string> progress)
+        {
+            SqlBytes binaryData = ReadConfigFromDatabase(fileName);
+            if (binaryData == null) return;
+            
+            DeflateStream stream = new DeflateStream(binaryData.Stream, CompressionMode.Decompress);
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                _ = reader.ReadLine(); // skip the 1. line of the file
+
+                ReadInternalIdentifier(reader, entry);
+
+                ParseMetadataObject(reader, entry, database);
+
+                if (progress != null && entry.MetaObject != null)
+                {
+                    progress.Report(entry.MetaObject.Name);
+                }
+            }   
+        }
+            
         # region " Read DBNames "
         internal void ReadDBNames()
         {
@@ -302,6 +324,16 @@ namespace OneCSharp.SQL.Services
                 _ => false,
             };
         }
+        private bool IsReferenceType(string token)
+        {
+            return token switch
+            {
+                DBToken.Enum => true,
+                DBToken.Document => true,
+                DBToken.Reference => true,
+                _ => false,
+            };
+        }
         #endregion
 
         #region " Read internal identifiers "
@@ -344,43 +376,25 @@ namespace OneCSharp.SQL.Services
                 }
             }
         }
+        private void ReadInternalIdentifier(StreamReader reader, DBNameEntry entry)
+        {
+            string line = reader.ReadLine();
+            string[] items = line.Split(',');
+            string UUID = (entry.Token == DBToken.Enum ? items[1] : items[3]);
+            lock (syncRoot)
+            {
+                _internal_UUID.Add(UUID, entry.MetaObject);
+            }
+        }
         #endregion
 
         #region " Read Config "
         private readonly Regex rxUUID = new Regex("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"); // Example: eb3dfdc7-58b8-4b1f-b079-368c262364c9
         private readonly Regex rxSpecialUUID = new Regex("^{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12},\\d+(?:})?,$"); // Example: {3daea016-69b7-4ed4-9453-127911372fe6,0}, | {cf4abea7-37b2-11d4-940f-008048da11f9,5,
-        private readonly Regex rxOCSName = new Regex("^{\\d,\\d,[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}},\"\\w+\",$");
+        private readonly Regex rxOCSName = new Regex("^{\\d,\\d,[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}},\"\\w+\",$"); // Example: {1,0,33405315-3023-41e2-a11c-8965c269ce17},"Реквизит1", | {1,0,cab9f251-2656-4e97-950d-f2d4588ddc3a},"ТабличнаяЧасть1",
         private readonly Regex rxOCSType = new Regex("^{\"[#BSDN]\""); // Example: {"#",1aaea747-a4ba-4fb2-9473-075b1ced620c}, | {"B"}, | {"S",10,0}, | {"D","T"}, | {"N",10,0,1}
         private readonly Regex rxNestedProperties = new Regex("^{888744e1-b616-11d4-9436-004095e12fc7,\\d+[},]$"); // look rxSpecialUUID
         private readonly Dictionary<string, SpecialParser> _SpecialParsers = new Dictionary<string, SpecialParser>();
-        public void ReadConfigAsync(string fileName, Database infoBase, IProgress<string> progress)
-        {
-            if (new Guid(fileName) != Guid.Empty) // system tables and settings
-            {
-                SqlBytes binaryData = ReadConfigFromDatabase(fileName);
-                if (binaryData != null)
-                {
-                    DeflateStream stream = new DeflateStream(binaryData.Stream, CompressionMode.Decompress);
-                    if (_logger == null)
-                    {
-                        MetaObject table = ParseMetadataObject(stream, fileName, infoBase);
-                        if (progress != null && table != null)
-                        {
-                            progress.Report(table.Name);
-                        }
-                    }
-                    else
-                    {
-                        MemoryStream memory = new MemoryStream();
-                        stream.CopyTo(memory);
-                        memory.Seek(0, SeekOrigin.Begin);
-                        WriteBinaryDataToFile(memory, $"{fileName}.txt");
-                        memory.Seek(0, SeekOrigin.Begin);
-                        ParseMetadataObject(memory, fileName, infoBase);
-                    }
-                }
-            }
-        }
         private SqlBytes ReadConfigFromDatabase(string fileName)
         {
             SqlBytes binaryData = null;
@@ -420,136 +434,93 @@ namespace OneCSharp.SQL.Services
 
             return binaryData;
         }
-        private MetaObject ParseMetadataObject(Stream stream, string fileName, Database infoBase)
+        private void ParseMetadataObject(StreamReader reader, DBNameEntry entry, Database infoBase)
         {
-            MetaObject table = null;
-            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            string line = reader.ReadLine();
+            if (line == null) return;
+
+            _ = reader.ReadLine();
+            line = reader.ReadLine();
+            if (line == null) return;
+
+            try
             {
-                
-                string token = string.Empty;
-                if (_DBNames.TryGetValue(fileName, out DBNameEntry entry))
-                {
-                    table = entry.MetaObject;
-                    if (entry.Token == DBToken.Enum)
-                    {
-                        token = DBToken.Enum;
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-                string line = reader.ReadLine();
-                if (line == null) return null;
+                ParseMetaObjectNames(line, entry, entry.MetaObject);
+            }
+            catch (Exception error)
+            {
+                //TODO: log error !
+            }
+            lock (syncRoot)
+            {
+                SetMetaObjectNamespace(infoBase, entry);
+            }
+            if (entry.Token == DBToken.Reference)
+            {
+                ParseReferenceOwner(reader, entry.MetaObject);
+            }
 
-                _ = reader.ReadLine();
-                _ = reader.ReadLine();
-                _ = reader.ReadLine();
-                _ = reader.ReadLine(); // !?
-                line = reader.ReadLine();
-                if (line == null) return null;
+            int count = 0;
+            string UUID = null;
+            Match match = null;
+            while ((line = reader.ReadLine()) != null)
+            {
+                match = rxSpecialUUID.Match(line);
+                if (!match.Success) continue;
 
-                try
-                {
-                    ParseMetaObjectNames(line, fileName, table);
-                }
-                catch (Exception error)
-                {
-                    return null;
-                    //TODO: throw error; !!!
-                }
-                SetMetaObjectNamespace(table, infoBase, token);
-                if (token == DBToken.Reference)
-                {
-                    ParseReferenceOwner(reader, table);
-                }
+                string[] lines = line.Split(',');
+                UUID = lines[0].Replace("{", string.Empty);
+                count = int.Parse(lines[1].Replace("}", string.Empty));
+                if (count == 0) continue;
 
-                int count = 0;
-                string UUID = null;
-                Match match = null;
-                while ((line = reader.ReadLine()) != null)
+                if (_SpecialParsers.ContainsKey(UUID))
                 {
-                    match = rxSpecialUUID.Match(line);
-                    if (!match.Success) continue;
-
-                    string[] lines = line.Split(',');
-                    UUID = lines[0].Replace("{", string.Empty);
-                    count = int.Parse(lines[1].Replace("}", string.Empty));
-                    if (count == 0) continue;
-
-                    if (_SpecialParsers.ContainsKey(UUID))
-                    {
-                        _SpecialParsers[UUID](reader, line, table);
-                    }
+                    _SpecialParsers[UUID](reader, line, entry.MetaObject);
                 }
             }
-            return table;
         }
-        private void ParseMetaObjectNames(string line, string fileName, MetaObject table)
+        private void ParseMetaObjectNames(string line, DBNameEntry entry, MetaObject table)
         {
             string[] lines = line.Split(',');
             string FileName = lines[2].Replace("}", string.Empty);
-            if (fileName != FileName)
-            {
-                //
-            }
+            
             table.Alias = lines[3].Replace("\"", string.Empty);
-            if (_DBNames.TryGetValue(fileName, out DBNameEntry entry))
+            
+            DBName dbname = entry.DBNames.Where(i => i.IsMainTable).FirstOrDefault();
+            if (dbname != null)
             {
-                DBName dbname = entry.DBNames.Where(i => i.IsMainTable).FirstOrDefault();
-                if (dbname != null)
-                {
-                    table.TypeCode = dbname.TypeCode;
-                    table.Name = CreateMetaObjectName(table, dbname);
-                }
+                table.TypeCode = dbname.TypeCode;
+                table.Name = CreateMetaObjectName(table, dbname);
             }
         }
         private string CreateMetaObjectName(MetaObject table, DBName dbname)
         {
-            if (dbname.Token == DBToken.VT)
-            {
-                if (table.Owner == null)
-                {
-                    return string.Empty;
-                    // TODO: error ?
-                }
-                else
-                {
-                    return $"{table.Owner.Name}_{dbname.Token}{dbname.TypeCode}";
-                }
-            }
-            else
-            {
-                return $"_{dbname.Token}{dbname.TypeCode}";
-            }
+            return $"_{dbname.Token}{dbname.TypeCode}";
         }
-        private void SetMetaObjectNamespace(MetaObject table, Database infoBase, string token)
+        private void SetMetaObjectNamespace(Database infoBase, DBNameEntry entry)
         {
-            if (table.Owner != null) return;
+            if (entry.MetaObject.Owner != null) return;
 
-            Namespace ns = infoBase.Namespaces.Where(n => n.Name == token).FirstOrDefault();
+            Namespace ns = infoBase.Namespaces.Where(n => n.Name == entry.Token).FirstOrDefault();
             if (ns == null)
             {
-                lock (syncRoot)
+                if (string.IsNullOrEmpty(entry.Token))
                 {
-                    if (string.IsNullOrEmpty(token))
+                    ns = infoBase.Namespaces.Where(n => n.Name == "Unknown").FirstOrDefault();
+                    if (ns == null)
                     {
-                        ns = infoBase.Namespaces.Where(n => n.Name == "Unknown").FirstOrDefault();
-                        if (ns == null)
-                        {
-                            ns = new Namespace() { Name = "Unknown", Owner = infoBase };
-                            infoBase.Namespaces.Add(ns);
-                        }
-                    }
-                    else
-                    {
-                        ns = new Namespace() { Name = token, Owner = infoBase };
+                        ns = new Namespace() { Name = "Unknown", Owner = infoBase };
                         infoBase.Namespaces.Add(ns);
                     }
                 }
+                else
+                {
+                    ns = new Namespace() { Name = entry.Token, Owner = infoBase };
+                    infoBase.Namespaces.Add(ns);
+                }
             }
-            table.Owner = ns;
-            ns.DataTypes.Add(table);
+            entry.MetaObject.Owner = ns;
+            ns.DataTypes.Add(entry.MetaObject);
         }
         private void ParseReferenceOwner(StreamReader reader, MetaObject table)
         {
@@ -589,12 +560,10 @@ namespace OneCSharp.SQL.Services
             {
                 Property property = new Property
                 {
-                    Name = "Владелец"
-                    //DbName = "OwnerID" // [_OwnerIDRRef] | [_OwnerID_TYPE] + [_OwnerID_RTRef] + [_OwnerID_RRRef]
-                    // TODO: add Field at once ?
+                    Owner = table,
+                    Name = DBToken.OwnerID, // "Владелец" [_OwnerIDRRef] | [_OwnerID_TYPE] + [_OwnerID_RTRef] + [_OwnerID_RRRef]
+                    ValueType = (types.Types.Count == 1) ? types.Types[0] : types
                 };
-                property.ValueType = types;
-                property.Owner = table;
                 table.Properties.Add(property);
             }
         }
@@ -602,6 +571,7 @@ namespace OneCSharp.SQL.Services
         {
             string[] lines = line.Split(',');
             int count = int.Parse(lines[1].Replace("}", string.Empty));
+
             Match match;
             string nextLine;
             for (int i = 0; i < count; i++)
@@ -617,26 +587,30 @@ namespace OneCSharp.SQL.Services
                 }
             }
         }
-        private void ParseProperty(StreamReader reader, string line, MetaObject table)
+        private void ParseProperty(StreamReader reader, string line, MetaObject owner)
         {
             string[] lines = line.Split(',');
             string fileName = lines[2].Replace("}", string.Empty);
             string objectName = lines[3].Replace("\"", string.Empty);
 
-            Property property = new Property { Name = objectName, Owner = table };
-            table.Properties.Add(property);
+            Property property = new Property
+            {
+                Owner = owner,
+                Name = objectName
+            };
+            owner.Properties.Add(property);
 
             if (_DBNames.TryGetValue(fileName, out DBNameEntry entry))
             {
                 if (entry.DBNames.Count == 1)
                 {
-                    //property.DbName = CreateMetaObjectFieldName(entry.DBNames[0]);
+                    property.Name += CreateMetaObjectFieldName(entry.DBNames[0]);
                 }
                 else if (entry.DBNames.Count > 1)
                 {
                     foreach (var dbn in entry.DBNames.Where(dbn => dbn.Token == DBToken.Fld))
                     {
-                        //property.DbName = CreateMetaObjectFieldName(dbn);
+                        property.Name += CreateMetaObjectFieldName(dbn);
                     }
                 }
             }
@@ -644,7 +618,7 @@ namespace OneCSharp.SQL.Services
         }
         private string CreateMetaObjectFieldName(DBName dbname)
         {
-            return $"{dbname.Token}{dbname.TypeCode}";
+            return $"_{dbname.Token}{dbname.TypeCode}";
         }
         private void ParsePropertyTypes(StreamReader reader, Property property)
         {
@@ -716,7 +690,7 @@ namespace OneCSharp.SQL.Services
                 }
             }
         }
-        private void ParseNestedObjects(StreamReader reader, string line, MetaObject table)
+        private void ParseNestedObjects(StreamReader reader, string line, MetaObject owner)
         {
             string[] lines = line.Split(',');
             int count = int.Parse(lines[1]);
@@ -729,13 +703,13 @@ namespace OneCSharp.SQL.Services
                     match = rxOCSName.Match(nextLine);
                     if (match.Success)
                     {
-                        ParseNestedObject(reader, nextLine, table);
+                        ParseNestedObject(reader, nextLine, owner);
                         break;
                     }
                 }
             }
         }
-        private void ParseNestedObject(StreamReader reader, string line, MetaObject table)
+        private void ParseNestedObject(StreamReader reader, string line, MetaObject owner)
         {
             string[] lines = line.Split(',');
             string fileName = lines[2].Replace("}", string.Empty);
@@ -744,9 +718,16 @@ namespace OneCSharp.SQL.Services
             MetaObject nested = new MetaObject()
             {
                 Alias = objectName,
-                Owner = table.Owner
+                Owner = owner.Owner // Namespace
             };
-            //table.AddChild(nested);
+
+            Property property = new Property()
+            {
+                Owner = owner,
+                Name = objectName,
+                ValueType = new ListType() { Type = nested } // similar to List<T> where T : ComplexType
+            };
+            owner.Properties.Add(property);
 
             if (_DBNames.TryGetValue(fileName, out DBNameEntry entry))
             {
@@ -754,7 +735,7 @@ namespace OneCSharp.SQL.Services
                 if (dbname != null)
                 {
                     nested.TypeCode = dbname.TypeCode;
-                    nested.Name = CreateMetaObjectName(nested, dbname);
+                    nested.Name = $"{owner.Name}_{dbname.Token}{dbname.TypeCode}"; ;
                 }
             }
             ParseNestedObjectProperties(reader, nested);
