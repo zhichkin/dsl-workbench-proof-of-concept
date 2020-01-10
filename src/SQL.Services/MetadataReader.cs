@@ -176,8 +176,8 @@ namespace OneCSharp.SQL.Services
                 }
                 await Task.WhenAll(tasks).ConfigureAwait(false);
 
-                //MakeSecondPass(database); // resolve internal identifiers into types
-                await ReadSQLMetadataAsync(database);
+                ResolvePropertiesReferenceValueTypes(database); // resolve internal identifiers into types
+                await ReadSQLMetadataAsync(database).ConfigureAwait(false);
             }
         }
         private void ProcessDBName(Database database, string fileName, DBNameEntry entry, IProgress<string> progress)
@@ -630,64 +630,53 @@ namespace OneCSharp.SQL.Services
                 line = reader.ReadLine();
                 if (line == null) return;
             }
-
+            
             Match match;
+            MultipleType types = new MultipleType();
             while ((line = reader.ReadLine()) != null)
             {
                 match = rxOCSType.Match(line);
                 if (!match.Success) break;
 
-                int typeCode = 0;
-                string typeName = string.Empty;
                 string token = match.Value.Replace("{", string.Empty).Replace("\"", string.Empty);
                 switch (token)
                 {
-                    case DBToken.B: { typeCode = -1; typeName = "Boolean"; property.ValueType = SimpleType.Boolean; break; }
-                    case DBToken.S: { typeCode = -2; typeName = "String"; property.ValueType = SimpleType.String; break; }
-                    case DBToken.D: { typeCode = -3; typeName = "DateTime"; property.ValueType = SimpleType.DateTime; break; }
-                    case DBToken.N: { typeCode = -4; typeName = "Numeric"; property.ValueType = SimpleType.Numeric; break; }
-                }
-                if (typeCode == 0)
-                {
-                    string[] lines = line.Split(',');
-                    string UUID = lines[1].Replace("}", string.Empty);
+                    case DBToken.S: { types.Types.Add(SimpleType.String); break; }
+                    case DBToken.B: { types.Types.Add(SimpleType.Boolean); break; }
+                    case DBToken.N: { types.Types.Add(SimpleType.Numeric); break; }
+                    case DBToken.D: { types.Types.Add(SimpleType.DateTime); break; }
+                    default:
+                        {
+                            string[] lines = line.Split(',');
+                            string UUID = lines[1].Replace("}", string.Empty);
 
-                    if (UUID == "e199ca70-93cf-46ce-a54b-6edc88c3a296")
-                    {
-                        // ХранилищеЗначения - varbinary(max)
-                        //property.Types.Add(new TypeInfo()
-                        //{
-                        //    Name = "BLOB",
-                        //    TypeCode = -5
-                        //});
-                    }
-                    else if (UUID == "fc01b5df-97fe-449b-83d4-218a090e681e")
-                    {
-                        // УникальныйИдентификатор - binary(16)
-                        //property.Types.Add(new Model.TypeInfo()
-                        //{
-                        //    Name = "UUID",
-                        //    TypeCode = -6
-                        //});
-                    }
-                    else if (_internal_UUID.TryGetValue(UUID, out MetaObject table))
-                    {
-                        property.ValueType = table; //.Types.Add(new TypeInfo()
-                        //{
-                        //    Name = table.Name,
-                        //    TypeCode = table.TypeCode,
-                        //    UUID = UUID,
-                        //    Entity = table
-                        //});
-                    }
-                    else // UUID is not loaded yet - leave it for second pass
-                    {
-                        //property.Types.Add(new TypeInfo()
-                        //{
-                        //    UUID = UUID
-                        //});
-                    }
+                            if (UUID == "e199ca70-93cf-46ce-a54b-6edc88c3a296")
+                            {
+                                types.Types.Add(SimpleType.Binary); // ХранилищеЗначения - varbinary(max)
+                            }
+                            else if (UUID == "fc01b5df-97fe-449b-83d4-218a090e681e")
+                            {
+                                types.Types.Add(SimpleType.UniqueIdentifier); // УникальныйИдентификатор - binary(16)
+                            }
+                            else if (_internal_UUID.TryGetValue(UUID, out MetaObject referenceType))
+                            {
+                                types.Types.Add(referenceType);
+                            }
+                            else // UUID is not loaded yet - leave it for second pass
+                            {
+                                types.Types.Add(new MetaObject() { UUID = new Guid(UUID) });
+                            }
+                            break;
+                        }
                 }
+            }
+            if (types.Types.Count == 1)
+            {
+                property.ValueType = types.Types[0];
+            }
+            else if (types.Types.Count > 1)
+            {
+                property.ValueType = types;
             }
         }
         private void ParseNestedObjects(StreamReader reader, string line, MetaObject owner)
@@ -717,8 +706,8 @@ namespace OneCSharp.SQL.Services
 
             MetaObject nested = new MetaObject()
             {
-                Alias = objectName,
-                Owner = owner.Owner // Namespace
+                Owner = owner,
+                Alias = objectName
             };
 
             Property property = new Property()
@@ -755,72 +744,72 @@ namespace OneCSharp.SQL.Services
             }
         }
         #endregion
-        public void MakeSecondPass(Database infoBase)
+        private void ResolvePropertiesReferenceValueTypes(Database infoBase)
         {
-            //foreach (var ns in infoBase.Namespaces)
+            foreach (var ns in infoBase.Namespaces)
+            {
+                foreach (var entity in ns.DataTypes)
+                {
+                    ResolvePropertiesValueType((MetaObject)entity);
+                }
+            }
+        }
+        private void ResolvePropertiesValueType(MetaObject metaObject)
+        {
+            foreach (var property in metaObject.Properties)
+            {
+                if (property.ValueType is MetaObject valueType)
+                {
+                    if (valueType.TypeCode == 0)
+                    {
+                        //TODO: resolve reference type
+                        // replace with valid type by UUID
+                    }
+                }
+                else if (property.ValueType is ListType listType)
+                {
+                    ResolvePropertiesValueType((MetaObject)listType.Type); // process nested meta-object
+                }
+                else if (property.ValueType is MultipleType multipleType)
+                {
+                    foreach (var dataType in multipleType.Types)
+                    {
+                        if (dataType is MetaObject referenceType)
+                        {
+                            if (referenceType.TypeCode == 0)
+                            {
+                                //TODO: resolve reference type
+                                // replace with valid type by UUID
+                            }
+                        }
+                    }
+                }
+            }
+
+            
+            //if (type.TypeCode == 0)
             //{
-            //    foreach (var entity in ns.DataTypes)
+            //    if (type.Entity == null)
             //    {
-            //        MetaObject table = (MetaObject)entity;
-            //        foreach (var property in table.Properties)
+            //        if (!string.IsNullOrEmpty(type.UUID))
             //        {
-            //            foreach (var type in property.ValueType)
+            //            if (_UUIDs.TryGetValue(type.UUID, out MetaObject dbObject))
             //            {
-            //                if (type.TypeCode == 0)
-            //                {
-            //                    if (type.Entity == null)
-            //                    {
-            //                        if (!string.IsNullOrEmpty(type.UUID))
-            //                        {
-            //                            if (_UUIDs.TryGetValue(type.UUID, out MetaObject dbObject))
-            //                            {
-            //                                type.Name = dbObject.Name;
-            //                                type.Entity = dbObject;
-            //                                type.TypeCode = dbObject.TypeCode;
-            //                            }
-            //                        }
-            //                    }
-            //                    else
-            //                    {
-            //                        type.Name = type.Entity.Name;
-            //                        type.TypeCode = ((MetaObject)type.Entity).TypeCode;
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        foreach (var nested in table.MetaObjects)
-            //        {
-            //            foreach (var property in nested.Properties)
-            //            {
-            //                Property tp = (Property)property;
-            //                foreach (var type in tp.Types)
-            //                {
-            //                    if (type.TypeCode == 0)
-            //                    {
-            //                        if (type.Entity == null)
-            //                        {
-            //                            if (!string.IsNullOrEmpty(type.UUID))
-            //                            {
-            //                                if (_UUIDs.TryGetValue(type.UUID, out MetaObject dbObject))
-            //                                {
-            //                                    type.Name = dbObject.Name;
-            //                                    type.Entity = dbObject;
-            //                                    type.TypeCode = dbObject.TypeCode;
-            //                                }
-            //                            }
-            //                        }
-            //                        else
-            //                        {
-            //                            type.Name = type.Entity.Name;
-            //                            type.TypeCode = ((MetaObject)type.Entity).TypeCode;
-            //                        }
-            //                    }
-            //                }
+            //                type.Name = dbObject.Name;
+            //                type.Entity = dbObject;
+            //                type.TypeCode = dbObject.TypeCode;
             //            }
             //        }
             //    }
+            //    else
+            //    {
+            //        type.Name = type.Entity.Name;
+            //        type.TypeCode = ((MetaObject)type.Entity).TypeCode;
+            //    }
             //}
         }
+
+
         public async Task ReadSQLMetadataAsync(Database infoBase)
         {
             SQLHelper SQL = new SQLHelper();
