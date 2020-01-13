@@ -90,16 +90,6 @@ namespace OneCSharp.SQL.UI
         private bool CanExecuteConnectToInfoBase() { return !IsBusy; }
         private async Task ConnectToInfoBase(object parameter)
         {
-            //if (IsBusy)
-            //{
-            //    _ = MessageBox.Show($"I'm busy...", "ONE-C-SHARP", MessageBoxButton.OK, MessageBoxImage.Warning);
-            //    return;
-            //}
-
-            //_shell.ShowStatusBarMessage("Delay ...");
-            //await Task.Delay(10000);
-            //_shell.ShowStatusBarMessage("Running...");
-
             TreeNodeViewModel treeNode = parameter as TreeNodeViewModel;
             if (treeNode == null) return;
             Server server = treeNode.NodePayload as Server;

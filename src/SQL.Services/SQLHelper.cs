@@ -290,7 +290,7 @@ namespace OneCSharp.SQL.Services
         }
         private void DefineSystemPropertyType(Property property)
         {
-            string name = property.Name.TrimStart('_');
+            string name = property.Name.TrimStart('_'); // TODO: _Date_Time
 
             if (name == DBToken.IDRRef)
             {
@@ -332,7 +332,7 @@ namespace OneCSharp.SQL.Services
                 property.ValueType = SimpleType.Boolean; //.Types.Add(new TypeInfo() { Name = "Boolean", TypeCode = -1 });
                 return;
             }
-            else if (name == DBToken.DateTime)
+            else if (name == "Date_Time") // DBToken.DateTime
             {
                 property.Name = "Дата";
                 property.ValueType = SimpleType.DateTime; //.Types.Add(new TypeInfo() { Name = "DateTime", TypeCode = -3 });

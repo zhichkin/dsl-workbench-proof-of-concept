@@ -4,6 +4,7 @@ using OneCSharp.SQL.Model;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 
@@ -41,8 +42,21 @@ namespace OneCSharp.SQL.UI
             {
                 if (property.PropertyType.IsGenericType) // List<T>
                 {
-                    if (property.PropertyType.GenericTypeArguments[0] == typeof(Field)) continue;
+                    Type genericArgument = property.PropertyType.GenericTypeArguments[0];
+                    if (genericArgument == typeof(Field)) continue;
                     IEnumerable source = (IEnumerable)property.GetValue(entity);
+                    if (genericArgument == typeof(DataType))
+                    {
+                        source = source.OfType<MetaObject>().OrderBy(i => i.Alias);
+                    }
+                    else if (genericArgument == typeof(Property))
+                    {
+                        source = source.OfType<Property>().OrderBy(i => ((i.ValueType is ListType) ? 1 : 0).ToString() + i.Name);
+                    }
+                    else
+                    {
+                        source = source.OfType<Entity>().OrderBy(i => i.Name);
+                    }
                     BuildTreeNodesRecursively(source, target.TreeNodes); // build child nodes
                 }
             }
@@ -61,7 +75,8 @@ namespace OneCSharp.SQL.UI
                     if (property.ValueType is ListType listType) // nested meta-object = table part
                     {
                         treeNode.NodeToolTip = GetNodeToolTip(listType.Type.GetType(), listType.Type);
-                        BuildTreeNodesRecursively(listType.Type.Properties, treeNode.TreeNodes);
+                        IEnumerable source = listType.Type.Properties.OrderBy(p => p.Name);
+                        BuildTreeNodesRecursively(source, treeNode.TreeNodes);
                     }
                 }
             }

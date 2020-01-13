@@ -383,6 +383,7 @@ namespace OneCSharp.SQL.Services
             string UUID = (entry.Token == DBToken.Enum ? items[1] : items[3]);
             lock (syncRoot)
             {
+                entry.MetaObject.UUID = new Guid(UUID);
                 _internal_UUID.Add(UUID, entry.MetaObject);
             }
         }
@@ -762,8 +763,10 @@ namespace OneCSharp.SQL.Services
                 {
                     if (valueType.TypeCode == 0)
                     {
-                        //TODO: resolve reference type
-                        // replace with valid type by UUID
+                        if (_internal_UUID.TryGetValue(valueType.UUID.ToString(), out MetaObject resolvedType))
+                        {
+                            property.ValueType = resolvedType;
+                        }
                     }
                 }
                 else if (property.ValueType is ListType listType)
@@ -772,41 +775,22 @@ namespace OneCSharp.SQL.Services
                 }
                 else if (property.ValueType is MultipleType multipleType)
                 {
-                    foreach (var dataType in multipleType.Types)
+                    for (int i = 0; i < multipleType.Types.Count; i++)
                     {
+                        var dataType = multipleType.Types[i];
                         if (dataType is MetaObject referenceType)
                         {
                             if (referenceType.TypeCode == 0)
                             {
-                                //TODO: resolve reference type
-                                // replace with valid type by UUID
+                                if (_internal_UUID.TryGetValue(dataType.UUID.ToString(), out MetaObject resolvedType))
+                                {
+                                    multipleType.Types[i] = resolvedType;
+                                }
                             }
                         }
                     }
                 }
             }
-
-            
-            //if (type.TypeCode == 0)
-            //{
-            //    if (type.Entity == null)
-            //    {
-            //        if (!string.IsNullOrEmpty(type.UUID))
-            //        {
-            //            if (_UUIDs.TryGetValue(type.UUID, out MetaObject dbObject))
-            //            {
-            //                type.Name = dbObject.Name;
-            //                type.Entity = dbObject;
-            //                type.TypeCode = dbObject.TypeCode;
-            //            }
-            //        }
-            //    }
-            //    else
-            //    {
-            //        type.Name = type.Entity.Name;
-            //        type.TypeCode = ((MetaObject)type.Entity).TypeCode;
-            //    }
-            //}
         }
 
 
