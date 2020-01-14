@@ -8,8 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\AddInterface.png" />
+    <None Remove="images\AddNamespace.png" />
+    <None Remove="images\AddWebApplication.png" />
     <None Remove="images\AddWebService.png" />
+    <None Remove="images\DataServer.png" />
+    <None Remove="images\EditWindow.png" />
+    <None Remove="images\Interface.png" />
+    <None Remove="images\Namespace.png" />
+    <None Remove="images\WebApplication.png" />
     <None Remove="images\WebServer.png" />
+    <None Remove="images\WebService.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,8 +28,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="images\AddInterface.png" />
+    <Resource Include="images\AddNamespace.png" />
+    <Resource Include="images\AddWebApplication.png" />
     <Resource Include="images\AddWebService.png" />
+    <Resource Include="images\DataServer.png" />
+    <Resource Include="images\EditWindow.png" />
+    <Resource Include="images\Interface.png" />
+    <Resource Include="images\Namespace.png" />
+    <Resource Include="images\WebApplication.png" />
     <Resource Include="images\WebServer.png" />
+    <Resource Include="images\WebService.png" />
   </ItemGroup>
 
 </Project>

@@ -15,6 +15,7 @@
     <None Remove="images\AddWebService.png" />
     <None Remove="images\ConnectToDatabase.png" />
     <None Remove="images\Database.png" />
+    <None Remove="images\DataServer.png" />
     <None Remove="images\FieldPublic.png" />
     <None Remove="images\LocalServer.png" />
     <None Remove="images\MethodPublic.png" />
@@ -39,6 +40,7 @@
     <Resource Include="images\AddWebService.png" />
     <Resource Include="images\ConnectToDatabase.png" />
     <Resource Include="images\Database.png" />
+    <Resource Include="images\DataServer.png" />
     <Resource Include="images\FieldPublic.png" />
     <Resource Include="images\LocalServer.png" />
     <Resource Include="images\MethodPublic.png" />

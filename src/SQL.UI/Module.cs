@@ -15,7 +15,7 @@ namespace OneCSharp.SQL.UI
     public sealed class Module : IModule
     {
         private const string ONE_C_SHARP = "ONE-C-SHARP";
-        public const string LOCAL_SERVER = "pack://application:,,,/OneCSharp.SQL.UI;component/images/LocalServer.png";
+        public const string LOCAL_SERVER = "pack://application:,,,/OneCSharp.SQL.UI;component/images/DataServer.png";
         public const string ADD_LOCAL_SERVER = "pack://application:,,,/OneCSharp.SQL.UI;component/images/AddLocalServer.png";
         public const string CONNECT_TO_DATABASE = "pack://application:,,,/OneCSharp.SQL.UI;component/images/ConnectToDatabase.png";
         public const string DATABASE = "pack://application:,,,/OneCSharp.SQL.UI;component/images/Database.png";
