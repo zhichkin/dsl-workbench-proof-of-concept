@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>OneCSharp.WEB.Module</AssemblyName>
+    <RootNamespace>OneCSharp.WEB.Module</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="images\AddWebService.png" />
+    <None Remove="images\WebServer.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Model\Core.Model.csproj" />
+    <ProjectReference Include="..\MVVM\MVVM.csproj" />
+    <ProjectReference Include="..\WEB.Model\WEB.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\AddWebService.png" />
+    <Resource Include="images\WebServer.png" />
+  </ItemGroup>
+
+</Project>

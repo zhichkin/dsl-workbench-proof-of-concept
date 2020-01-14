@@ -66,6 +66,10 @@ namespace OneCSharp.Shell
             IModule module1 = new OneCSharp.SQL.UI.Module();
             module1.Initialize(this);
 
+            // Plug in WEB module
+            IModule module2 = new OneCSharp.WEB.Module.Module();
+            module2.Initialize(this);
+
             // Plug in AST module
             //IModule module2 = new OneCSharp.AST.UI.Module();
             //module2.Initialize(this);

@@ -37,7 +37,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SQL.Services", "SQL.Service
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SQL.UI", "SQL.UI\SQL.UI.csproj", "{CBF54E0D-0CC2-42DD-8EB5-B7394EE15577}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WEB.Model", "WEB.Model\WEB.Model.csproj", "{2F993171-C78A-4D5F-A962-D80F2C95A12E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WEB.Model", "WEB.Model\WEB.Model.csproj", "{2F993171-C78A-4D5F-A962-D80F2C95A12E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WEB.Module", "WEB.Module\WEB.Module.csproj", "{D0D3A25A-13A7-41E7-AB10-3EBBD1C6EFB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,6 +119,10 @@ Global
 		{2F993171-C78A-4D5F-A962-D80F2C95A12E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F993171-C78A-4D5F-A962-D80F2C95A12E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F993171-C78A-4D5F-A962-D80F2C95A12E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0D3A25A-13A7-41E7-AB10-3EBBD1C6EFB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0D3A25A-13A7-41E7-AB10-3EBBD1C6EFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0D3A25A-13A7-41E7-AB10-3EBBD1C6EFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0D3A25A-13A7-41E7-AB10-3EBBD1C6EFB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
