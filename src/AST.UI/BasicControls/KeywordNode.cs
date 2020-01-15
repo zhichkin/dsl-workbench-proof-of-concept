@@ -1,7 +1,6 @@
-﻿using OneCSharp.Core;
+﻿using OneCSharp.Core.Model;
 using OneCSharp.MVVM;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 
 namespace OneCSharp.AST.UI
 {

@@ -1,5 +1,5 @@
 ﻿using OneCSharp.AST.Model;
-using OneCSharp.Core;
+using OneCSharp.Core.Model;
 using OneCSharp.MVVM;
 using System;
 using System.Windows.Media.Imaging;
@@ -46,7 +46,8 @@ namespace OneCSharp.AST.UI
             {
                 Name = (string)dialog.Result
             };
-            parent.AddChild(child);
+            child.Owner = parent;
+            parent.Namespaces.Add(child);
 
             IController controller = _module.GetController<Namespace>();
             controller.BuildTreeNode(child, out TreeNodeViewModel childNode);

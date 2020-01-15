@@ -1,5 +1,5 @@
 ﻿using OneCSharp.AST.Model;
-using OneCSharp.Core;
+using OneCSharp.Core.Model;
 using OneCSharp.MVVM;
 using System;
 using System.Linq;
@@ -203,7 +203,8 @@ namespace OneCSharp.AST.UI
             {
                 Name = $"Property_{concept.Properties.Count}"
             };
-            concept.AddChild(property);
+            property.Owner = concept;
+            concept.Properties.Add(property);
             _module.Persist(concept);
 
             BuildConceptProperty(node.Owner, property);

@@ -1,5 +1,4 @@
-﻿using OneCSharp.AST.Model;
-using OneCSharp.Core;
+﻿using OneCSharp.Core.Model;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 

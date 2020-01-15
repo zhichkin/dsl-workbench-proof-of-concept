@@ -1,8 +1,8 @@
-﻿using OneCSharp.Core;
+﻿using OneCSharp.Core.Model;
 
 namespace OneCSharp.AST.Model
 {
-    public sealed class Concept : ComplexEntity
+    public sealed class Concept : ComplexType
     {
         public bool IsAncestor { get; set; }
     }

@@ -1,5 +1,5 @@
 ﻿using OneCSharp.AST.Model;
-using OneCSharp.Core;
+using OneCSharp.Core.Model;
 using OneCSharp.Core.Services;
 using OneCSharp.MVVM;
 using System;
@@ -125,7 +125,7 @@ namespace OneCSharp.AST.UI
             }
             else if (entity is Concept se)
             {
-                return GetRootEntity(se.Namespace);
+                return GetRootEntity(se.Owner);
             }
             else
             {
@@ -162,8 +162,7 @@ namespace OneCSharp.AST.UI
             Type entityType = entity.GetType();
             foreach(PropertyInfo property in entityType.GetProperties())
             {
-                HierarchyAttribute purpose = property.GetCustomAttribute<HierarchyAttribute>();
-                if (purpose != null)
+                if (property.PropertyType.IsGenericType) // List<T>
                 {
                     IEnumerable source = (IEnumerable)property.GetValue(entity);
                     BuildTreeNodesRecursively(source, target.TreeNodes);

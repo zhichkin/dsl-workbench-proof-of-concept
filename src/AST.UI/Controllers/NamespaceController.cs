@@ -1,5 +1,5 @@
 ﻿using OneCSharp.AST.Model;
-using OneCSharp.Core;
+using OneCSharp.Core.Model;
 using OneCSharp.MVVM;
 using System;
 using System.Windows.Media.Imaging;
@@ -55,11 +55,13 @@ namespace OneCSharp.AST.UI
             };
             if (treeNode.NodePayload is Language language)
             {
-                language.AddChild(child);
+                child.Owner = language;
+                language.Namespaces.Add(child);
             }
             else if (treeNode.NodePayload is Namespace parent)
             {
-                parent.AddChild(child);
+                child.Owner = parent;
+                parent.Namespaces.Add(child);
             }
 
             IController controller = _module.GetController<Namespace>();
@@ -83,7 +85,8 @@ namespace OneCSharp.AST.UI
             };
             if (treeNode.NodePayload is Namespace parent)
             {
-                parent.AddChild(child);
+                child.Owner = parent;
+                parent.DataTypes.Add(child);
             }
 
             IController controller = _module.GetController<Concept>();

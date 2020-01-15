@@ -1,4 +1,4 @@
-﻿using OneCSharp.Core;
+﻿using OneCSharp.Core.Model;
 using OneCSharp.MVVM;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
