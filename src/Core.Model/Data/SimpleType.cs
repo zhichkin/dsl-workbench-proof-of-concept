@@ -4,6 +4,7 @@
     {
         public SimpleType() { }
         public SimpleType(string name) { Name = name; }
+        public static SimpleType NULL { get; } = new SimpleType(nameof(NULL));
         public static SimpleType Binary { get; } = new SimpleType(nameof(Binary));
         public static SimpleType Boolean { get; } = new SimpleType(nameof(Boolean));
         public static SimpleType Numeric { get; } = new SimpleType(nameof(Numeric));

@@ -6,6 +6,7 @@ namespace OneCSharp.Core.Model
     {
         public ComplexType Owner { get; set; }
         public DataType ValueType { get; set; }
+        public object DefaultValue { get; set; }
         public List<Field> Fields { get; set; } = new List<Field>();
     }
 }
