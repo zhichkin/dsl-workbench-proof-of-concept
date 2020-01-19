@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AST.UI\AST.UI.csproj" />
     <ProjectReference Include="..\Core.Model\Core.Model.csproj" />
     <ProjectReference Include="..\MVVM\MVVM.csproj" />
     <ProjectReference Include="..\WEB.Model\WEB.Model.csproj" />

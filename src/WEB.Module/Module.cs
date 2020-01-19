@@ -1,4 +1,6 @@
-﻿using OneCSharp.Core.Model;
+﻿using OneCSharp.AST.Model;
+using OneCSharp.AST.UI;
+using OneCSharp.Core.Model;
 using OneCSharp.MVVM;
 using OneCSharp.WEB.Model;
 using System;
@@ -38,7 +40,7 @@ namespace OneCSharp.WEB.Module
         {
             Shell = shell ?? throw new ArgumentNullException(nameof(shell));
 
-            //_controllers.Add(typeof(Namespace), new NamespaceController());
+            //_controllers.Add(typeof(WebMethod), new FunctionConceptController());
 
             Shell.AddMenuItem(new MenuItemViewModel()
             {
@@ -229,7 +231,20 @@ namespace OneCSharp.WEB.Module
             WebMethod method = (WebMethod)treeNode.NodePayload;
             if (method == null) return;
 
-            Shell.ShowStatusBarMessage($"Edit web method {method.Name} ...");
+            //TODO: bind/deserialize WebMethod with LanguageConcept !!!
+            FunctionConcept syntaxTree = new FunctionConcept()
+            {
+                Owner = method
+            };
+            syntaxTree.PrepareForEditing(); // remove optional nodes
+            
+            SyntaxConceptController controller = new SyntaxConceptController();
+            CodeEditor editor = new CodeEditor()
+            {
+                DataContext = controller.CreateSyntaxNode(syntaxTree)
+            };
+
+            Shell.AddTabItem(method.Name, editor);
         }
     }
 }

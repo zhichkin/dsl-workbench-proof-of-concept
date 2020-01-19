@@ -3,9 +3,20 @@ using System;
 
 namespace OneCSharp.AST.Model
 {
-    public abstract class ConceptElement : Property
+    public abstract class ConceptElement : Property, ICloneable
     {
         public bool IsOptional { get; set; }
+        public abstract object Clone();
+        //public static KeywordElement CreateKeyword(LanguageConcept owner, string name)
+        //{
+        //    return new KeywordElement()
+        //    {
+        //        Owner = owner,
+        //        Name = name,
+        //        ValueType = SimpleType.NULL,
+        //        IsOptional = false
+        //    };
+        //}
     }
     public abstract class LanguageConcept : ComplexType
     {
@@ -93,18 +104,21 @@ namespace OneCSharp.AST.Model
             {
                 Owner = this,
                 Name = string.Empty,
-                ValueType = concept
+                ValueType = new ListType()
+                {
+                    Type = concept
+                }
             });
             return this;
         }
         public LanguageConcept Selector(DataType dataType)
         {
-            Properties.Add(new SelectorElement()
-            {
-                Owner = this,
-                Name = string.Empty,
-                ValueType = dataType
-            });
+            //Properties.Add(new SelectorElement()
+            //{
+            //    Owner = this,
+            //    Name = string.Empty,
+            //    ValueType = dataType
+            //});
             return this;
         }
     }
@@ -118,18 +132,21 @@ namespace OneCSharp.AST.Model
             Keyword(FUNCTION)
                 .UserName()
                 .Keyword(RETURNS, true).WithParameter(new MultipleType())
+                .Literal(";")
                 .Repeat(new ParameterConcept());
         }
     }
     public sealed class ParameterConcept : LanguageConcept
     {
-        private const string KEYWORD = "@"; // DECLARE | VAR | PARAM ?
+        private const string PARAMETER = "PARAMETER";
+        private const string KEYWORD = "@";
         private const string EQUALS_SIGN = "=";
         private const string INPUT = "INPUT";
         private const string OUTPUT = "OUTPUT";
         private const string PLACEHOLDER = "<parameter name>";
         public ParameterConcept()
         {
+            Name = PARAMETER;
             Keyword(KEYWORD)
                 .UserName(PLACEHOLDER)
                 .Literal(EQUALS_SIGN)
@@ -137,15 +154,67 @@ namespace OneCSharp.AST.Model
                 .Keyword(OUTPUT, true);
         }
     }
-    public sealed class NameElement : ConceptElement { }
-    public sealed class LiteralElement : ConceptElement { }
-    public sealed class KeywordElement : ConceptElement { }
+    public sealed class NameElement : ConceptElement
+    {
+        private const string PLACEHOLDER = "<name>";
+        public override object Clone()
+        {
+            return new NameElement()
+            {
+                Owner = null,
+                Name = PLACEHOLDER,
+                IsOptional = false,
+                ValueType = SimpleType.NULL
+            };
+        }
+    }
+    public sealed class LiteralElement : ConceptElement
+    {
+        public override object Clone()
+        {
+            return new LiteralElement()
+            {
+                Owner = null,
+                Name = this.Name,
+                ValueType = this.ValueType,
+                IsOptional = this.IsOptional
+            };
+        }
+    }
+    public sealed class KeywordElement : ConceptElement
+    {
+        public override object Clone()
+        {
+            return new KeywordElement()
+            {
+                Owner = null,
+                Name = this.Name,
+                ValueType = this.ValueType,
+                IsOptional = this.IsOptional,
+                DefaultValue = this.DefaultValue
+            };
+        }
+    }
     public sealed class RepeatableElement : ConceptElement
     {
         public RepeatableElement()
         {
             ValueType = new ListType();
         }
+        public override object Clone()
+        {
+            return new RepeatableElement()
+            {
+                Owner = null,
+                Name = this.Name,
+                ValueType = new ListType()
+                {
+                    Type = ((ListType)this.ValueType).Type
+                },
+                IsOptional = this.IsOptional
+            };
+        }
     }
-    public sealed class SelectorElement : ConceptElement { } // !?
+    
+    //public sealed class SelectorElement : ConceptElement { } // !?
 }
