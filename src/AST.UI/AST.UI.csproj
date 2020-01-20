@@ -51,4 +51,16 @@
     <Resource Include="images\SQLFileNode.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="BasicControls\ConceptNodeView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="BasicControls\ConceptNodeView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>

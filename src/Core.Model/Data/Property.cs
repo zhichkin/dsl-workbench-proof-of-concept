@@ -5,8 +5,8 @@ namespace OneCSharp.Core.Model
     public class Property : Entity
     {
         public ComplexType Owner { get; set; }
+        public int Ordinal { get; set; }
         public DataType ValueType { get; set; }
-        public object DefaultValue { get; set; }
         public List<Field> Fields { get; set; } = new List<Field>();
     }
 }

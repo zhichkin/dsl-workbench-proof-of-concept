@@ -75,7 +75,8 @@ namespace OneCSharp.SQL.UI
                     if (property.ValueType is ListType listType) // nested meta-object = table part
                     {
                         treeNode.NodeToolTip = GetNodeToolTip(listType.Type.GetType(), listType.Type);
-                        IEnumerable source = listType.Type.Properties.OrderBy(p => p.Name);
+                        ComplexType complex = (ComplexType)listType.Type;
+                        IEnumerable source = complex.Properties.OrderBy(p => p.Name);
                         BuildTreeNodesRecursively(source, treeNode.TreeNodes);
                     }
                 }

@@ -1,12 +1,17 @@
 ﻿using OneCSharp.Core.Model;
 using System;
+using System.Collections.Generic;
 
 namespace OneCSharp.AST.Model
 {
     public abstract class ConceptElement : Property, ICloneable
     {
         public bool IsOptional { get; set; }
+        public object Value { get; set; } // used to keep values of concrete syntax tree : parameterized keywords and repeatable concept lists
+        public int LineNumber { get; set; }
+        public int LineOrdinal { get; set; }
         public abstract object Clone();
+
         //public static KeywordElement CreateKeyword(LanguageConcept owner, string name)
         //{
         //    return new KeywordElement()
@@ -39,10 +44,12 @@ namespace OneCSharp.AST.Model
         public LanguageConcept Literal(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
+            int ordinal = Properties.Count;
             Properties.Add(new LiteralElement()
             {
                 Owner = this,
                 Name = name,
+                Ordinal = ordinal,
                 IsOptional = false,
                 ValueType = SimpleType.NULL
             });
@@ -55,10 +62,12 @@ namespace OneCSharp.AST.Model
         public LanguageConcept Keyword(string name, bool optional)
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
+            int ordinal = Properties.Count;
             Properties.Add(new KeywordElement()
             {
                 Owner = this,
                 Name = name,
+                Ordinal = ordinal,
                 IsOptional = optional,
                 ValueType = SimpleType.NULL
             });
@@ -66,13 +75,12 @@ namespace OneCSharp.AST.Model
         }
         public LanguageConcept WithParameter(DataType parameterType)
         {
-            return WithParameter(parameterType, null);
-        }
-        public LanguageConcept WithParameter(DataType parameterType, object defaultValue)
-        {
             int count = Properties.Count;
             if (count == 0) throw new InvalidOperationException("Concept properties list is empty.");
-            if (!(Properties[count - 1] is KeywordElement keyword)) throw new InvalidOperationException("No preceding keyword is found.");
+            if (!(Properties[count - 1] is KeywordElement keyword))
+            {
+                throw new InvalidOperationException("No preceding keyword is found.");
+            }
             if (parameterType == null)
             {
                 keyword.ValueType = SimpleType.NULL;
@@ -81,7 +89,6 @@ namespace OneCSharp.AST.Model
             {
                 keyword.ValueType = parameterType;
             }
-            keyword.DefaultValue = defaultValue;
             return this;
         }
         public LanguageConcept UserName()
@@ -90,9 +97,11 @@ namespace OneCSharp.AST.Model
         }
         public LanguageConcept UserName(string placeholder)
         {
+            int ordinal = Properties.Count;
             Properties.Add(new NameElement()
             {
                 Owner = this,
+                Ordinal = ordinal,
                 Name = string.IsNullOrWhiteSpace(placeholder) ? "<name>" : placeholder,
                 ValueType = SimpleType.NULL
             });
@@ -100,23 +109,26 @@ namespace OneCSharp.AST.Model
         }
         public LanguageConcept Repeat(LanguageConcept concept)
         {
-            Properties.Add(new RepeatableElement()
+            int ordinal = Properties.Count;
+            RepeatableElement repeatable = new RepeatableElement()
             {
                 Owner = this,
                 Name = string.Empty,
-                ValueType = new ListType()
-                {
-                    Type = concept
-                }
-            });
+                Ordinal = ordinal,
+                IsOptional = true // TODO !
+            };
+            ((MultipleType)((ListType)repeatable.ValueType).Type).Types.Add(concept);
+            Properties.Add(repeatable);
             return this;
         }
         public LanguageConcept Selector(DataType dataType)
         {
+            //int ordinal = Properties.Count;
             //Properties.Add(new SelectorElement()
             //{
             //    Owner = this,
             //    Name = string.Empty,
+            //    Ordinal = ordinal,
             //    ValueType = dataType
             //});
             return this;
@@ -132,7 +144,6 @@ namespace OneCSharp.AST.Model
             Keyword(FUNCTION)
                 .UserName()
                 .Keyword(RETURNS, true).WithParameter(new MultipleType())
-                .Literal(";")
                 .Repeat(new ParameterConcept());
         }
     }
@@ -163,6 +174,7 @@ namespace OneCSharp.AST.Model
             {
                 Owner = null,
                 Name = PLACEHOLDER,
+                Ordinal = this.Ordinal,
                 IsOptional = false,
                 ValueType = SimpleType.NULL
             };
@@ -176,6 +188,7 @@ namespace OneCSharp.AST.Model
             {
                 Owner = null,
                 Name = this.Name,
+                Ordinal = this.Ordinal,
                 ValueType = this.ValueType,
                 IsOptional = this.IsOptional
             };
@@ -189,9 +202,10 @@ namespace OneCSharp.AST.Model
             {
                 Owner = null,
                 Name = this.Name,
+                Value = this.Value,
+                Ordinal = this.Ordinal,
                 ValueType = this.ValueType,
-                IsOptional = this.IsOptional,
-                DefaultValue = this.DefaultValue
+                IsOptional = this.IsOptional
             };
         }
     }
@@ -199,7 +213,10 @@ namespace OneCSharp.AST.Model
     {
         public RepeatableElement()
         {
-            ValueType = new ListType();
+            ValueType = new ListType()
+            {
+                Type = new MultipleType()
+            };
         }
         public override object Clone()
         {
@@ -207,6 +224,7 @@ namespace OneCSharp.AST.Model
             {
                 Owner = null,
                 Name = this.Name,
+                Ordinal = this.Ordinal,
                 ValueType = new ListType()
                 {
                     Type = ((ListType)this.ValueType).Type

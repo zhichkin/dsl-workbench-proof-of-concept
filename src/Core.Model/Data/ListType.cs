@@ -2,6 +2,6 @@
 {
     public sealed class ListType : DataType
     {
-        public ComplexType Type { get; set; }
+        public DataType Type { get; set; }
     }
 }

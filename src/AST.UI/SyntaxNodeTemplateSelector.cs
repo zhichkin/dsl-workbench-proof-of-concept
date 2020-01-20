@@ -12,7 +12,8 @@ namespace OneCSharp.AST.UI
             { typeof(NameNode), typeof(Name) },
             { typeof(IndentNode), typeof(Indent) },
             { typeof(KeywordNode), typeof(Keyword) },
-            { typeof(LiteralNode), typeof(Literal) }
+            { typeof(LiteralNode), typeof(Literal) },
+            { typeof(ConceptNode), typeof(ConceptNodeView) },
         };
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {

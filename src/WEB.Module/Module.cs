@@ -237,11 +237,11 @@ namespace OneCSharp.WEB.Module
                 Owner = method
             };
             syntaxTree.PrepareForEditing(); // remove optional nodes
-            
-            SyntaxConceptController controller = new SyntaxConceptController();
+
+            LanguageConceptController controller = new LanguageConceptController();
             CodeEditor editor = new CodeEditor()
             {
-                DataContext = controller.CreateSyntaxNode(syntaxTree)
+                DataContext = controller.CreateConceptNode(null, syntaxTree)
             };
 
             Shell.AddTabItem(method.Name, editor);
