@@ -4,25 +4,47 @@ using System.Collections.Generic;
 
 namespace OneCSharp.AST.Model
 {
-    public abstract class ConceptElement : Property, ICloneable
+    public interface ISyntaxElement
     {
-        public bool IsOptional { get; set; }
-        public object Value { get; set; } // used to keep values of concrete syntax tree : parameterized keywords and repeatable concept lists
-        public int LineNumber { get; set; }
-        public int LineOrdinal { get; set; }
-        public abstract object Clone();
+        int Ordinal { get; }
+        ISyntaxConcept Parent { get; set; }
 
-        //public static KeywordElement CreateKeyword(LanguageConcept owner, string name)
-        //{
-        //    return new KeywordElement()
-        //    {
-        //        Owner = owner,
-        //        Name = name,
-        //        ValueType = SimpleType.NULL,
-        //        IsOptional = false
-        //    };
-        //}
+        bool UseIndent { get; set; }
+        bool IsOptional { get; set; }
+        SyntaxElementPlacement Placement { get; set; }
     }
+    //public interface INameSyntaxElement : ISyntaxElement { string Name { get; set; } } // !? editable string
+    //public interface ILiteralSyntaxElement : ISyntaxElement { string Literal { get; set; } } // !? not editable string
+    //public interface IKeywordSyntaxElement : ISyntaxElement { string Keyword { get; set; } } // !?
+    //public interface IStringSyntaxElement : ISyntaxElement { string Value { get; set; } } // !? editable string
+    //public interface IIntegerSyntaxElement : ISyntaxElement { int Value { get; set; } } // !? editable integer
+    public interface ISyntaxConcept : ISyntaxElement
+    {
+        List<ISyntaxElement> Elements { get; }
+        void AddElement(ISyntaxElement child);
+        void RemoveElement(ISyntaxElement child);
+    }
+    public interface ISyntaxElementSelector : ISyntaxConcept
+    {
+        // not keywords and literals !? constant is not concept ...
+        List<ISyntaxElement> ElementTypes { get; } // ?
+    }
+    public interface IRepeatableSyntaxElement : ISyntaxElement // where to store selected by user elements ?
+    {
+        ISyntaxElementSelector Selector { get; }
+
+        string OpeningLiteral { get; set; }
+        string ClosingLiteral { get; set; }
+        string DelimiterLiteral { get; set; }
+        SyntaxElementOrientation Orientation { get; set; }
+    }
+    public enum SyntaxElementPlacement { OneLine, NewLine }
+    public enum SyntaxElementOrientation { Vertical, Horizontal }
+
+
+
+
+
     public abstract class LanguageConcept : ComplexType
     {
         public void PrepareForEditing() // prepare object for editing as parse syntax tree
@@ -134,6 +156,30 @@ namespace OneCSharp.AST.Model
             return this;
         }
     }
+    public abstract class ConceptElement : Property, ICloneable
+    {
+        public bool UseIndent { get; set; } = false;
+        public bool IsOptional { get; set; } = false;
+        public SyntaxElementPlacement Placement { get; set; } = SyntaxElementPlacement.OneLine;
+        public object Value { get; set; } // used to keep values of concrete syntax tree : parameterized keywords and repeatable concept lists
+        public int LineNumber { get; set; }
+        public int LineOrdinal { get; set; }
+        public abstract object Clone();
+
+        //public static KeywordElement CreateKeyword(LanguageConcept owner, string name)
+        //{
+        //    return new KeywordElement()
+        //    {
+        //        Owner = owner,
+        //        Name = name,
+        //        ValueType = SimpleType.NULL,
+        //        IsOptional = false
+        //    };
+        //}
+    }
+
+
+
     public sealed class FunctionConcept : LanguageConcept
     {
         private const string FUNCTION = "FUNCTION";
@@ -211,6 +257,9 @@ namespace OneCSharp.AST.Model
     }
     public sealed class RepeatableElement : ConceptElement
     {
+        public string OpeningLiteral { get; set; } = string.Empty;
+        public string ClosingLiteral { get; set; } = string.Empty;
+        public SyntaxElementOrientation Orientation { get; set; } = SyntaxElementOrientation.Vertical;
         public RepeatableElement()
         {
             ValueType = new ListType()
