@@ -6,9 +6,8 @@ namespace OneCSharp.AST.Model
 {
     public interface ISyntaxElement
     {
-        int Ordinal { get; }
+        int Ordinal { get; set; }
         ISyntaxConcept Parent { get; set; }
-
         bool UseIndent { get; set; }
         bool IsOptional { get; set; }
         SyntaxElementPlacement Placement { get; set; }
@@ -26,13 +25,11 @@ namespace OneCSharp.AST.Model
     }
     public interface ISyntaxElementSelector : ISyntaxConcept
     {
-        // not keywords and literals !? constant is not concept ...
-        List<ISyntaxElement> ElementTypes { get; } // ?
+        
     }
     public interface IRepeatableSyntaxElement : ISyntaxElement // where to store selected by user elements ?
     {
         ISyntaxElementSelector Selector { get; }
-
         string OpeningLiteral { get; set; }
         string ClosingLiteral { get; set; }
         string DelimiterLiteral { get; set; }

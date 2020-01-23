@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 
 namespace OneCSharp.AST.UI
 {
-    public sealed class LanguageConceptController // TODO: ISyntaxController !?
+    public sealed class LanguageConceptController // TODO: ISyntaxTreeController !
     {
         public ConceptNode CreateConceptNode(ISyntaxNode parentNode, LanguageConcept syntaxNode)
         {

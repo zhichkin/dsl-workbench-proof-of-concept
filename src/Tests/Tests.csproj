@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AST.Model\AST.Model.csproj" />
     <ProjectReference Include="..\Core.Model\Core.Model.csproj" />
   </ItemGroup>
 
