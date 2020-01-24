@@ -6,12 +6,26 @@ using System.Windows.Input;
 
 namespace OneCSharp.AST.UI
 {
-    public class SyntaxNode : ISyntaxNode, INotifyPropertyChanged
+    public interface ISyntaxNodeViewModel
+    {
+        object Model { get; set; }
+        ISyntaxNodeViewModel Owner { get; set; }
+        ObservableCollection<ICodeLineViewModel> Lines { get; }
+        bool IsFocused { get; set; }
+        bool IsMouseOver { get; set; }
+        ICommand KeyDownCommand { get; set; }
+        ICommand MouseDownCommand { get; set; }
+        ICommand MouseEnterCommand { get; set; }
+        ICommand MouseLeaveCommand { get; set; }
+        ICommand CtrlCCommand { get; set; }
+        ICommand CtrlVCommand { get; set; }
+    }
+    public abstract class SyntaxNodeViewModel : ISyntaxNodeViewModel, INotifyPropertyChanged
     {
         private bool _isFocused = false;
         private bool _isMouseOver = false;
         public event PropertyChangedEventHandler PropertyChanged;
-        public SyntaxNode()
+        public SyntaxNodeViewModel()
         {
             KeyDownCommand = new RelayCommand(OnKeyDown);
             MouseDownCommand = new RelayCommand(OnMouseDown);
@@ -20,15 +34,15 @@ namespace OneCSharp.AST.UI
             CtrlCCommand = new RelayCommand(OnCtrlC);
             CtrlVCommand = new RelayCommand(OnCtrlV);
         }
-        public SyntaxNode(ISyntaxNode owner) : this() { Owner = owner; }
-        public SyntaxNode(ISyntaxNode owner, Entity model) : this(owner) { Model = model; }
+        public SyntaxNodeViewModel(ISyntaxNodeViewModel owner) : this() { Owner = owner; }
+        public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, Entity model) : this(owner) { Model = model; }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public Entity Model { get; set; }
-        public ISyntaxNode Owner { get; set; }
-        public ObservableCollection<ISyntaxNodeLine> Lines { get; } = new ObservableCollection<ISyntaxNodeLine>();
+        public object Model { get; set; }
+        public ISyntaxNodeViewModel Owner { get; set; }
+        public ObservableCollection<ICodeLineViewModel> Lines { get; } = new ObservableCollection<ICodeLineViewModel>();
         
         
         public bool IsFocused
@@ -113,16 +127,16 @@ namespace OneCSharp.AST.UI
         }
 
 
-        public void BreakLine(ISyntaxNode node)
+        public void BreakLine(ISyntaxNodeViewModel node)
         {
             for (int current = 0; current < Lines.Count; current++)
             {
-                ISyntaxNodeLine line = Lines[current];
+                ICodeLineViewModel line = Lines[current];
                 int position = line.Nodes.IndexOf(node);
                 if (position == -1 || position == 0) continue; // position == 0 means no empty line allowed
                 if (line.Nodes.Count == 1) return; // no empty line allowed
 
-                ISyntaxNodeLine newLine = new SyntaxNodeLine(this);
+                ICodeLineViewModel newLine = new CodeLineViewModel(this);
                 while (position != line.Nodes.Count)
                 {
                     newLine.Nodes.Add(line.Nodes[position]);
@@ -135,17 +149,17 @@ namespace OneCSharp.AST.UI
             //    FocusManager.SetFocus((KeywordViewModel)node);
             //}
         }
-        public void RestoreLine(ISyntaxNode node)
+        public void RestoreLine(ISyntaxNodeViewModel node)
         {
             if (Lines.Count == 0 || Lines.Count == 1) return;
 
             for (int current = 1; current < Lines.Count; current++)
             {
-                ISyntaxNodeLine line = Lines[current];
+                ICodeLineViewModel line = Lines[current];
                 int position = line.Nodes.IndexOf(node);
                 if (position != 0) continue; // only first item can restore line
 
-                ISyntaxNodeLine restoringLine = Lines[--current];
+                ICodeLineViewModel restoringLine = Lines[--current];
                 while (position != line.Nodes.Count)
                 {
                     restoringLine.Nodes.Add(line.Nodes[position]);
@@ -158,11 +172,11 @@ namespace OneCSharp.AST.UI
             //    FocusManager.SetFocus((KeywordViewModel)item);
             //}
         }
-        public void FocusLeft(ISyntaxNode node)
+        public void FocusLeft(ISyntaxNodeViewModel node)
         {
             for (int current = 0; current < Lines.Count; current++)
             {
-                ISyntaxNodeLine line = Lines[current];
+                ICodeLineViewModel line = Lines[current];
                 int position = line.Nodes.IndexOf(node);
                 if (position == -1) continue;
                 if (position == 0) return;
@@ -173,11 +187,11 @@ namespace OneCSharp.AST.UI
                 //}
             }
         }
-        public void FocusRight(ISyntaxNode node)
+        public void FocusRight(ISyntaxNodeViewModel node)
         {
             for (int current = 0; current < Lines.Count; current++)
             {
-                ISyntaxNodeLine line = Lines[current];
+                ICodeLineViewModel line = Lines[current];
                 int position = line.Nodes.IndexOf(node);
                 if (position == -1) continue;
                 if (position == line.Nodes.Count - 1) return;
@@ -188,7 +202,7 @@ namespace OneCSharp.AST.UI
                 //}
             }
         }
-        public void IndentLine(ISyntaxNode node)
+        public void IndentLine(ISyntaxNodeViewModel node)
         {
             // TODO: don't forget about remove indent command
         }

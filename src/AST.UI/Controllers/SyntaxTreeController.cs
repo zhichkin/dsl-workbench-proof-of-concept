@@ -5,24 +5,24 @@ namespace OneCSharp.AST.UI
 {
     public sealed class SyntaxTreeController
     {
-        public ConceptNode CreateSyntaxNode(ISyntaxNode parentNode, ISyntaxConcept model, ISyntaxConcept grammar)
+        public ConceptNodeViewModel CreateSyntaxNodeViewModel(ISyntaxNodeViewModel parentNode, ISyntaxConcept model, ISyntaxConcept grammar)
         {
-            ConceptNode node = new ConceptNode(parentNode, (Entity)model);
-            SyntaxNodeLine codeLine = new SyntaxNodeLine(node);
+            ConceptNodeViewModel node = new ConceptNodeViewModel(parentNode, (Entity)model);
+            CodeLineViewModel codeLine = new CodeLineViewModel(node);
             node.Lines.Add(codeLine);
 
-            foreach (ISyntaxElement element in model.Elements)
+            foreach (ISyntaxNode element in model.Nodes)
             {
-                if (element.Placement == SyntaxElementPlacement.NewLine)
+                if (element.Placement == SyntaxNodePlacement.NewLine)
                 {
-                    codeLine = new SyntaxNodeLine(node);
+                    codeLine = new CodeLineViewModel(node);
                     node.Lines.Add(codeLine);
                 }
                 if (element.UseIndent)
                 {
-                    codeLine.Nodes.Add(new IndentNode(node));
+                    codeLine.Nodes.Add(new IndentNodeViewModel(node));
                 }
-                //CreateSyntaxElement(node, codeLine, (ConceptElement)element);
+                //CreateSyntaxNode(node, codeLine, (ConceptNode)element);
             }
 
             return node;

@@ -2,9 +2,9 @@
 
 namespace OneCSharp.AST.UI
 {
-    public partial class Name : TextBox
+    public partial class CodeLineView : UserControl
     {
-        public Name()
+        public CodeLineView()
         {
             InitializeComponent();
         }

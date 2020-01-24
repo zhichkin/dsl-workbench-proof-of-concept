@@ -8,8 +8,8 @@
 
     <ItemsControl ItemsSource="{Binding Lines}">
         <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="{x:Type ast:SyntaxNodeLine}">
-                <ast:LineView/>
+            <DataTemplate DataType="{x:Type ast:CodeLineViewModel}">
+                <ast:CodeLineView/>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>

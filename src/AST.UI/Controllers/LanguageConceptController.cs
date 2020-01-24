@@ -11,11 +11,11 @@ namespace OneCSharp.AST.UI
 {
     public sealed class LanguageConceptController // TODO: ISyntaxTreeController !
     {
-        public ConceptNode CreateConceptNode(ISyntaxNode parentNode, LanguageConcept syntaxNode)
+        public ConceptNodeViewModel CreateConceptNode(ISyntaxNodeViewModel parentNode, LanguageConcept syntaxNode)
         {
-            ConceptNode node = new ConceptNode(parentNode, syntaxNode);
+            ConceptNodeViewModel node = new ConceptNodeViewModel(parentNode, syntaxNode);
 
-            SyntaxNodeLine codeLine = new SyntaxNodeLine(node);
+            CodeLineViewModel codeLine = new CodeLineViewModel(node);
             int lineNumber = node.Lines.Count;
             node.Lines.Add(codeLine);
 
@@ -27,7 +27,7 @@ namespace OneCSharp.AST.UI
 
             return node;
         }
-        private void CreateConceptElement(ISyntaxNode rootNode, ISyntaxNodeLine codeLine, ConceptElement element)
+        private void CreateConceptElement(ISyntaxNodeViewModel rootNode, ICodeLineViewModel codeLine, ConceptElement element)
         {
             if (element is KeywordElement)
             {
@@ -48,7 +48,7 @@ namespace OneCSharp.AST.UI
         }
 
 
-        private void BuildRepeatableElement(ISyntaxNode rootNode, ISyntaxNodeLine codeLine, RepeatableElement repeatable)
+        private void BuildRepeatableElement(ISyntaxNodeViewModel rootNode, ICodeLineViewModel codeLine, RepeatableElement repeatable)
         {
             //LiteralNode node = new LiteralNode(rootNode, literal)
             //{
@@ -63,7 +63,7 @@ namespace OneCSharp.AST.UI
 
             //TODO ?
         }
-        private void AddRepeatableElement(ISyntaxNode syntaxNode, RepeatableElement template, LanguageConcept elementType)
+        private void AddRepeatableElement(ISyntaxNodeViewModel syntaxNode, RepeatableElement template, LanguageConcept elementType)
         {
             LanguageConcept syntaxTree = (LanguageConcept)syntaxNode.Model;
             RepeatableElement repeatable = (RepeatableElement)GetConceptElementFromSyntaxTree(syntaxTree, template);
@@ -77,11 +77,11 @@ namespace OneCSharp.AST.UI
             concept.Owner = syntaxTree;
             ((List<LanguageConcept>)repeatable.Value).Add(concept);
 
-            SyntaxNodeLine codeLine = new SyntaxNodeLine(syntaxNode);
-            codeLine.Nodes.Add(new IndentNode(syntaxNode));
+            CodeLineViewModel codeLine = new CodeLineViewModel(syntaxNode);
+            codeLine.Nodes.Add(new IndentNodeViewModel(syntaxNode));
             syntaxNode.Lines.Add(codeLine);
 
-            ConceptNode conceptNode = CreateConceptNode(syntaxNode, concept);
+            ConceptNodeViewModel conceptNode = CreateConceptNode(syntaxNode, concept);
             codeLine.Nodes.Add(conceptNode);
         }
         private ConceptElement GetConceptElementFromSyntaxTree(LanguageConcept syntaxTree, ConceptElement template)
@@ -115,24 +115,24 @@ namespace OneCSharp.AST.UI
 
 
 
-        private void AddNameElement(ISyntaxNode rootNode, ISyntaxNodeLine codeLine, NameElement name)
+        private void AddNameElement(ISyntaxNodeViewModel rootNode, ICodeLineViewModel codeLine, NameElement name)
         {
-            NameNode node = new NameNode(rootNode, name);
+            NameNodeViewModel node = new NameNodeViewModel(rootNode, name);
             name.LineOrdinal = codeLine.Nodes.Count;
             codeLine.Nodes.Add(node);
         }
-        private void AddLiteralElement(ISyntaxNode rootNode, ISyntaxNodeLine codeLine, LiteralElement literal)
+        private void AddLiteralElement(ISyntaxNodeViewModel rootNode, ICodeLineViewModel codeLine, LiteralElement literal)
         {
-            LiteralNode node = new LiteralNode(rootNode, literal)
+            LiteralNodeViewModel node = new LiteralNodeViewModel(rootNode, literal)
             {
                 Literal = literal.Name
             };
             literal.LineOrdinal = codeLine.Nodes.Count;
             codeLine.Nodes.Add(node);
         }
-        private void AddKeywordElement(ISyntaxNode rootNode, ISyntaxNodeLine codeLine, KeywordElement keyword)
+        private void AddKeywordElement(ISyntaxNodeViewModel rootNode, ICodeLineViewModel codeLine, KeywordElement keyword)
         {
-            KeywordNode node = new KeywordNode(rootNode, keyword)
+            KeywordNodeViewModel node = new KeywordNodeViewModel(rootNode, keyword)
             {
                 Keyword = keyword.Name
             };
@@ -145,13 +145,13 @@ namespace OneCSharp.AST.UI
             }
             CreateContextMenu(node, keyword);
         }
-        private void InsertKeywordElement(ISyntaxNode rootNode, KeywordElement keyword)
+        private void InsertKeywordElement(ISyntaxNodeViewModel rootNode, KeywordElement keyword)
         {
-            KeywordNode node = new KeywordNode(rootNode, keyword)
+            KeywordNodeViewModel node = new KeywordNodeViewModel(rootNode, keyword)
             {
                 Keyword = keyword.Name
             };
-            ISyntaxNodeLine codeLine = rootNode.Lines[keyword.LineNumber];
+            ICodeLineViewModel codeLine = rootNode.Lines[keyword.LineNumber];
             codeLine.Nodes.Insert(keyword.LineOrdinal, node);
 
             if (keyword.ValueType != SimpleType.NULL)
@@ -160,7 +160,7 @@ namespace OneCSharp.AST.UI
             }
             CreateContextMenu(node, keyword);
         }
-        private void CreateContextMenu(KeywordNode node, KeywordElement keyword)
+        private void CreateContextMenu(KeywordNodeViewModel node, KeywordElement keyword)
         {
             if (keyword.IsOptional)
             {
@@ -213,11 +213,11 @@ namespace OneCSharp.AST.UI
 
 
 
-        private void GetLineNumberAndOrdinal(ISyntaxNode node, ConceptElement element, ref int lineNumber, ref int lineOrdinal)
+        private void GetLineNumberAndOrdinal(ISyntaxNodeViewModel node, ConceptElement element, ref int lineNumber, ref int lineOrdinal)
         {
             for (int number = 0; number < node.Lines.Count; number++)
             {
-                ISyntaxNodeLine line = node.Lines[number];
+                ICodeLineViewModel line = node.Lines[number];
                 for (int ordinal = 0; ordinal < line.Nodes.Count; ordinal++)
                 {
                     if (line.Nodes[ordinal].Model == element)
@@ -232,7 +232,7 @@ namespace OneCSharp.AST.UI
         private void AddConceptElementCommand(object parameter)
         {
             object[] parametersArray = (object[])parameter;
-            SyntaxNode syntaxNode = (SyntaxNode)parametersArray[0];
+            SyntaxNodeViewModel syntaxNode = (SyntaxNodeViewModel)parametersArray[0];
             ConceptElement template = (ConceptElement)parametersArray[1];
             LanguageConcept syntaxTree = (LanguageConcept)syntaxNode.Model;
 

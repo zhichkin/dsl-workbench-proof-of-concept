@@ -2,9 +2,9 @@
 
 namespace OneCSharp.AST.UI
 {
-    public partial class Keyword : TextBlock
+    public partial class KeywordNodeView : TextBlock
     {
-        public Keyword()
+        public KeywordNodeView()
         {
             InitializeComponent();
         }

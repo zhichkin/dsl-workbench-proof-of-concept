@@ -2,14 +2,15 @@
 
 namespace OneCSharp.AST.UI
 {
-    public sealed class NameNode : SyntaxNode
+    public sealed class NameNodeViewModel : SyntaxNodeViewModel
     {
         private bool _isReadOnly = false;
-        public NameNode(ISyntaxNode owner, Entity model) : base(owner, model) { }
+        private string _name = string.Empty;
+        public NameNodeViewModel(ISyntaxNodeViewModel owner, Entity model) : base(owner, model) { }
         public string Name
         {
-            get { return Model.Name; }
-            set { Model.Name = value; OnPropertyChanged(nameof(Name)); }
+            get { return _name; }
+            set { _name = value; OnPropertyChanged(nameof(Name)); }
         }
         public bool IsReadOnly
         {

@@ -2,9 +2,9 @@
 
 namespace OneCSharp.AST.UI
 {
-    public partial class Literal : TextBlock
+    public partial class NameNodeView : TextBox
     {
-        public Literal()
+        public NameNodeView()
         {
             InitializeComponent();
         }

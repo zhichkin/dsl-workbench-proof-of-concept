@@ -25,7 +25,7 @@ namespace OneCSharp.AST.Model
             this.Keyword(FUNCTION)
                 .Name()
                 .Keyword(RETURNS).Optional()
-                .Repeatable(new List<ISyntaxElement>()
+                .Repeatable(new List<ISyntaxNode>()
                 {
                     new ParameterSyntaxConcept()
                 }).Optional();

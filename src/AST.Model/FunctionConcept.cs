@@ -4,44 +4,6 @@ using System.Collections.Generic;
 
 namespace OneCSharp.AST.Model
 {
-    public interface ISyntaxElement
-    {
-        int Ordinal { get; set; }
-        ISyntaxConcept Parent { get; set; }
-        bool UseIndent { get; set; }
-        bool IsOptional { get; set; }
-        SyntaxElementPlacement Placement { get; set; }
-    }
-    //public interface INameSyntaxElement : ISyntaxElement { string Name { get; set; } } // !? editable string
-    //public interface ILiteralSyntaxElement : ISyntaxElement { string Literal { get; set; } } // !? not editable string
-    //public interface IKeywordSyntaxElement : ISyntaxElement { string Keyword { get; set; } } // !?
-    //public interface IStringSyntaxElement : ISyntaxElement { string Value { get; set; } } // !? editable string
-    //public interface IIntegerSyntaxElement : ISyntaxElement { int Value { get; set; } } // !? editable integer
-    public interface ISyntaxConcept : ISyntaxElement
-    {
-        List<ISyntaxElement> Elements { get; }
-        void AddElement(ISyntaxElement child);
-        void RemoveElement(ISyntaxElement child);
-    }
-    public interface ISyntaxElementSelector : ISyntaxConcept
-    {
-        
-    }
-    public interface IRepeatableSyntaxElement : ISyntaxElement // where to store selected by user elements ?
-    {
-        ISyntaxElementSelector Selector { get; }
-        string OpeningLiteral { get; set; }
-        string ClosingLiteral { get; set; }
-        string DelimiterLiteral { get; set; }
-        SyntaxElementOrientation Orientation { get; set; }
-    }
-    public enum SyntaxElementPlacement { OneLine, NewLine }
-    public enum SyntaxElementOrientation { Vertical, Horizontal }
-
-
-
-
-
     public abstract class LanguageConcept : ComplexType
     {
         public void PrepareForEditing() // prepare object for editing as parse syntax tree
@@ -157,7 +119,7 @@ namespace OneCSharp.AST.Model
     {
         public bool UseIndent { get; set; } = false;
         public bool IsOptional { get; set; } = false;
-        public SyntaxElementPlacement Placement { get; set; } = SyntaxElementPlacement.OneLine;
+        public SyntaxNodePlacement Placement { get; set; } = SyntaxNodePlacement.OneLine;
         public object Value { get; set; } // used to keep values of concrete syntax tree : parameterized keywords and repeatable concept lists
         public int LineNumber { get; set; }
         public int LineOrdinal { get; set; }
@@ -256,7 +218,7 @@ namespace OneCSharp.AST.Model
     {
         public string OpeningLiteral { get; set; } = string.Empty;
         public string ClosingLiteral { get; set; } = string.Empty;
-        public SyntaxElementOrientation Orientation { get; set; } = SyntaxElementOrientation.Vertical;
+        public SyntaxNodeOrientation Orientation { get; set; } = SyntaxNodeOrientation.Vertical;
         public RepeatableElement()
         {
             ValueType = new ListType()

@@ -7,37 +7,37 @@ namespace OneCSharp.AST.Model
     {
         public static ISyntaxConcept Name(this ISyntaxConcept concept)
         {
-            concept.AddElement(new NameSyntaxElement());
+            concept.Add(new NameSyntaxNode());
             return concept;
         }
         public static ISyntaxConcept Literal(this ISyntaxConcept concept, string literal)
         {
             if (string.IsNullOrWhiteSpace(literal)) throw new ArgumentNullException(nameof(literal));
-            concept.AddElement(new LiteralSyntaxElement() { Literal = literal });
+            concept.Add(new LiteralSyntaxNode() { Literal = literal });
             return concept;
         }
         public static ISyntaxConcept Keyword(this ISyntaxConcept concept, string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword)) throw new ArgumentNullException(nameof(keyword));
-            concept.AddElement(new KeywordSyntaxElement() { Keyword = keyword });
+            concept.Add(new KeywordSyntaxNode() { Keyword = keyword });
             return concept;
         }
-        public static ISyntaxConcept Repeatable(this ISyntaxConcept concept, List<ISyntaxElement> elements)
+        public static ISyntaxConcept Repeatable(this ISyntaxConcept concept, List<ISyntaxNode> elements)
         {
-            RepeatableSyntaxElement repeatable = new RepeatableSyntaxElement();
-            foreach (ISyntaxElement element in elements)
+            RepeatableSyntaxNode repeatable = new RepeatableSyntaxNode();
+            foreach (ISyntaxNode element in elements)
             {
-                repeatable.Selector.AddElement(element);
+                repeatable.Selector.AddConstraint(element);
             }
-            concept.AddElement(repeatable);
+            concept.Add(repeatable);
             return concept;
         }
         public static ISyntaxConcept Optional(this ISyntaxConcept concept)
         {
-            int count = concept.Elements.Count;
+            int count = concept.Nodes.Count;
             if (count > 0)
             {
-                concept.Elements[count - 1].IsOptional = true;
+                concept.Nodes[count - 1].IsOptional = true;
             }
             return concept;
         }

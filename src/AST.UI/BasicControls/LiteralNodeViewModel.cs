@@ -2,11 +2,11 @@
 
 namespace OneCSharp.AST.UI
 {
-    public sealed class LiteralNode : SyntaxNode
+    public sealed class LiteralNodeViewModel : SyntaxNodeViewModel
     {
         private string _literal = string.Empty;
-        public LiteralNode(ISyntaxNode owner) : base(owner) { }
-        public LiteralNode(ISyntaxNode owner, Entity model) : base(owner, model) { }
+        public LiteralNodeViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
+        public LiteralNodeViewModel(ISyntaxNodeViewModel owner, Entity model) : base(owner, model) { }
         public string Literal
         {
             get { return _literal; }

@@ -2,9 +2,9 @@
 
 namespace OneCSharp.AST.UI
 {
-    public partial class LineView : UserControl
+    public partial class LiteralNodeView : TextBlock
     {
-        public LineView()
+        public LiteralNodeView()
         {
             InitializeComponent();
         }
