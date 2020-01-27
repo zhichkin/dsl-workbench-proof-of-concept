@@ -5,7 +5,7 @@ namespace OneCSharp.AST.UI
 {
     public sealed class SyntaxTreeController
     {
-        public ConceptNodeViewModel CreateSyntaxNodeViewModel(ISyntaxNodeViewModel parentNode, ISyntaxConcept model, ISyntaxConcept grammar)
+        public ConceptNodeViewModel CreateSyntaxNode(ISyntaxNodeViewModel parentNode, ISyntaxConcept model, ISyntaxConcept grammar)
         {
             ConceptNodeViewModel node = new ConceptNodeViewModel(parentNode, (Entity)model);
             CodeLineViewModel codeLine = new CodeLineViewModel(node);

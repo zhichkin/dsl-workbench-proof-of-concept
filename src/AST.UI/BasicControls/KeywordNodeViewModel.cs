@@ -1,5 +1,4 @@
-﻿using OneCSharp.Core.Model;
-using OneCSharp.MVVM;
+﻿using OneCSharp.MVVM;
 using System.Collections.ObjectModel;
 
 namespace OneCSharp.AST.UI
@@ -9,7 +8,6 @@ namespace OneCSharp.AST.UI
         private string _keyword = string.Empty;
         private bool _isContextMenuEnabled = true;
         public KeywordNodeViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
-        public KeywordNodeViewModel(ISyntaxNodeViewModel owner, Entity model) : base(owner, model) { }
         public string Keyword
         {
             get { return _keyword; }

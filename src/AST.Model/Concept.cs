@@ -2,8 +2,8 @@
 
 namespace OneCSharp.AST.Model
 {
-    public class Concept : ComplexType
+    public sealed class LanguageConcept : ComplexType
     {
-        public bool IsAncestor { get; set; }
+        public LanguageConcept() { }
     }
 }

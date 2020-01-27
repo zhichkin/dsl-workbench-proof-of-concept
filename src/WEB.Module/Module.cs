@@ -232,16 +232,14 @@ namespace OneCSharp.WEB.Module
             if (method == null) return;
 
             //TODO: bind/deserialize WebMethod with LanguageConcept !!!
-            FunctionConcept syntaxTree = new FunctionConcept()
-            {
-                Owner = method
-            };
-            syntaxTree.PrepareForEditing(); // remove optional nodes
+            Language language = AST.Model.OneCSharp.ONECSHARP;
+            LanguageConcept grammar = language.Concept(AST.Model.OneCSharp.FUNCTION);
+            //syntaxTree.Owner = method;
 
             LanguageConceptController controller = new LanguageConceptController();
             CodeEditor editor = new CodeEditor()
             {
-                DataContext = controller.CreateConceptNode(null, syntaxTree)
+                DataContext = controller.CreateConceptNode(null, grammar) // TODO: add parameter for syntaxTree to be edited by user
             };
 
             Shell.AddTabItem(method.Name, editor);

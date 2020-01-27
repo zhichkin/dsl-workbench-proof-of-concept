@@ -1,5 +1,4 @@
-﻿using OneCSharp.Core.Model;
-using OneCSharp.MVVM;
+﻿using OneCSharp.MVVM;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -35,7 +34,7 @@ namespace OneCSharp.AST.UI
             CtrlVCommand = new RelayCommand(OnCtrlV);
         }
         public SyntaxNodeViewModel(ISyntaxNodeViewModel owner) : this() { Owner = owner; }
-        public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, Entity model) : this(owner) { Model = model; }
+        public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, object model) : this(owner) { Model = model; }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
