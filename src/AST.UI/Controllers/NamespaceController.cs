@@ -79,7 +79,7 @@ namespace OneCSharp.AST.UI
 
             TreeNodeViewModel treeNode = (TreeNodeViewModel)parameter;
 
-            Concept child = new Concept()
+            LanguageConcept child = new LanguageConcept()
             {
                 Name = (string)dialog.Result
             };
@@ -89,7 +89,7 @@ namespace OneCSharp.AST.UI
                 parent.DataTypes.Add(child);
             }
 
-            IController controller = _module.GetController<Concept>();
+            IController controller = _module.GetController<LanguageConcept>();
             controller.BuildTreeNode(child, out TreeNodeViewModel childNode);
             
             _module.Persist(child);

@@ -1,4 +1,5 @@
-﻿using OneCSharp.MVVM;
+﻿using OneCSharp.AST.Model;
+using OneCSharp.MVVM;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -7,7 +8,7 @@ namespace OneCSharp.AST.UI
 {
     public interface ISyntaxNodeViewModel
     {
-        object Model { get; set; }
+        ISyntaxNode Model { get; set; }
         ISyntaxNodeViewModel Owner { get; set; }
         ObservableCollection<ICodeLineViewModel> Lines { get; }
         bool IsFocused { get; set; }
@@ -34,12 +35,12 @@ namespace OneCSharp.AST.UI
             CtrlVCommand = new RelayCommand(OnCtrlV);
         }
         public SyntaxNodeViewModel(ISyntaxNodeViewModel owner) : this() { Owner = owner; }
-        public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, object model) : this(owner) { Model = model; }
+        public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : this(owner) { Model = model; }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public object Model { get; set; }
+        public ISyntaxNode Model { get; set; }
         public ISyntaxNodeViewModel Owner { get; set; }
         public ObservableCollection<ICodeLineViewModel> Lines { get; } = new ObservableCollection<ICodeLineViewModel>();
         

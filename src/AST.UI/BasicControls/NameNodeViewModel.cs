@@ -1,10 +1,12 @@
-﻿namespace OneCSharp.AST.UI
+﻿using OneCSharp.AST.Model;
+
+namespace OneCSharp.AST.UI
 {
     public sealed class NameNodeViewModel : SyntaxNodeViewModel
     {
         private bool _isReadOnly = false;
         private string _name = string.Empty;
-        public NameNodeViewModel(ISyntaxNodeViewModel owner, object model) : base(owner, model) { }
+        public NameNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : base(owner, model) { }
         public string Name
         {
             get { return _name; } // TODO: bind to model's name property
