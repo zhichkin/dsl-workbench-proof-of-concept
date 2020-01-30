@@ -46,7 +46,8 @@ namespace OneCSharp.WEB.Module
             {
                 MenuItemIcon = new BitmapImage(new Uri(ADD_WEB_SERVER)),
                 MenuItemHeader = "Add web server",
-                MenuItemCommand = new RelayCommand(CreateWebServer),
+                //MenuItemCommand = new RelayCommand(CreateWebServer),
+                MenuItemCommand = new RelayCommand(CreateTestCodeEditor),
                 MenuItemPayload = this
             });
         }
@@ -231,18 +232,27 @@ namespace OneCSharp.WEB.Module
             WebMethod method = (WebMethod)treeNode.NodePayload;
             if (method == null) return;
 
-            //TODO: bind/deserialize WebMethod with LanguageConcept !!!
-            Language language = AST.Model.OneCSharp.ONECSHARP;
-            LanguageConcept grammar = language.Concept(AST.Model.OneCSharp.FUNCTION);
-            //syntaxTree.Owner = method;
-
-            LanguageConceptController controller = new LanguageConceptController();
+            //TODO: bind WebMethod with LanguageConcept !!!
+            FunctionConcept concept = new FunctionConcept();
+            SyntaxTreeController controller = new SyntaxTreeController();
             CodeEditor editor = new CodeEditor()
             {
-                DataContext = controller.CreateConceptNode(null, grammar) // TODO: add parameter for syntaxTree to be edited by user
+                DataContext = controller.CreateSyntaxNode(null, concept)
             };
-
             Shell.AddTabItem(method.Name, editor);
+        }
+
+
+
+        private void CreateTestCodeEditor(object parameter)
+        {
+            FunctionConcept concept = new FunctionConcept();
+            SyntaxTreeController controller = new SyntaxTreeController();
+            CodeEditor editor = new CodeEditor()
+            {
+                DataContext = controller.CreateSyntaxNode(null, concept)
+            };
+            Shell.AddTabItem("TEST", editor);
         }
     }
 }

@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace OneCSharp.AST.Model
 {
+    public interface IIdentifiable
+    {
+        string Identifier { get; set; }
+    }
     public interface ISyntaxNode
     {
         ISyntaxNode Parent { get; set; }
@@ -47,10 +51,5 @@ namespace OneCSharp.AST.Model
                 _children[index] = replacer;
             }
         }
-    }
-    public sealed class Optional<T>
-    {
-        public T Value { get; set; } = default;
-        public bool HasValue { get; set; } = false;
     }
 }

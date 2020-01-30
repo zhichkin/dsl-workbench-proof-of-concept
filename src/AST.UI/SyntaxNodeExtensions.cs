@@ -9,9 +9,16 @@ namespace OneCSharp.AST.UI
         {
             Type ancestorType = typeof(T);
             ISyntaxNodeViewModel ancestor = node.Owner;
-            while (ancestor != null || ancestor.GetType() != ancestorType)
+            while (ancestor != null)
             {
-                ancestor = ancestor.Owner;
+                if (ancestor.GetType() != ancestorType)
+                {
+                    ancestor = ancestor.Owner;
+                }
+                else
+                {
+                    break;
+                }
             }
             return ancestor;
         }
@@ -33,8 +40,7 @@ namespace OneCSharp.AST.UI
         public static ConceptNodeViewModel Name(this ConceptNodeViewModel node)
         {
             ICodeLineViewModel codeLine = node.BottomCodeLine();
-            ISyntaxNodeViewModel ancestor = node.Ancestor<ConceptNodeViewModel>();
-            codeLine.Nodes.Add(new NameNodeViewModel(node, ancestor.Model));
+            codeLine.Nodes.Add(new NameNodeViewModel(node, node.Model));
             return node;
         }
         public static ConceptNodeViewModel Literal(this ConceptNodeViewModel node, string literal)

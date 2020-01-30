@@ -1,69 +1,30 @@
-﻿using OneCSharp.Core.Model;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OneCSharp.AST.Model
 {
-    public static class OneCSharp
+    public sealed class FunctionConcept : SyntaxNode, IIdentifiable, IScopeProvider
     {
-        private const string ONE_C_SHARP = "1C#";
-        public readonly static Language ONECSHARP = new Language() { Name = ONE_C_SHARP };
+        private const string PLACEHOLDER = "<function name>";
+        public string Identifier { get; set; } = PLACEHOLDER;
 
-        static OneCSharp()
-        {
-            FunctionConcept();
-            ParameterConcept();
-            // TODO: add more new concepts
-        }
-        private static void FunctionConcept() // TODO: IScopeProvider for ParameterConcept
-        {
-            _ = ONECSHARP.Concept(nameof(FunctionConcept))
-                .Name()
-                .Property("ReturnType").Optional() // TODO: cross-reference selection list ? MultipleType is indication for selection ?
-                .List("Parameters").Optional().ValueType(ONECSHARP.Concept(nameof(ParameterConcept)));
-        }
-        private static void ParameterConcept()
-        {
-            _ = ONECSHARP.Concept(nameof(ParameterConcept))
-                .Name()
-                .Property("ParameterType") // TODO: cross-reference selected by user ?
-                .Property("IsOutput").Optional().ValueType(SimpleType.Boolean);
-        }
-    }
-
-    #region "LayoutNode"
-    public sealed class KeywordNode : SyntaxNode { }
-    public sealed class LiteralNode : SyntaxNode { }
-    #endregion
-
-    public sealed class FunctionConcept : SyntaxNode, IScopeProvider
-    {
-        public string Name { get; set; } = string.Empty; // TODO: placeholder ? example: <function name> ?
-        // what kind of concept can be scope provider for DataType ???
-        // SimpleTypes + imported ComplexTypes by USING statement ???
-        public Optional<DataType> ReturnType { get; } = new Optional<DataType>();
-        // how to restrict generic type of lists if multiple types are allowed ???
-        // use abstract classes as generic type constraint in that case ???
+        [SimpleTypeConstraint]
+        public Optional<object> ReturnType { get; } = new Optional<object>();
         public Optional<List<ParameterConcept>> Parameters { get; } = new Optional<List<ParameterConcept>>();
-        public IEnumerable<ISyntaxNode> Scope<T>() where T : ISyntaxNode
+        public IEnumerable<ISyntaxNode> Scope(Type scopeType)
         {
             if (!Parameters.HasValue) return null;
-            if (typeof(T) != typeof(ParameterConcept)) return null;
-
+            if (scopeType != typeof(ParameterConcept)) return null;
             return Parameters.Value;
         }
-        public ISyntaxNode LayoutTemplate
-        {
-            get
-            {
-                return new KeywordNode(); // ???
-            }
-        }
     }
-    public sealed class ParameterConcept : SyntaxNode
+    public sealed class ParameterConcept : SyntaxNode, IIdentifiable
     {
-        public string Name { get; set; } = string.Empty; // TODO: placeholder ?
-        public DataType ParameterType { get; set; } = SimpleType.String; // what kind of concept can be scope provider for DataType ???
+        private const string PLACEHOLDER = "<parameter name>";
+        public string Identifier { get; set; } = PLACEHOLDER;
+
+        [SimpleTypeConstraint]
+        public Optional<object> ParameterType { get; set; } = new Optional<object>();
         public Optional<bool> IsOutput { get; } = new Optional<bool>();
     }
 }
