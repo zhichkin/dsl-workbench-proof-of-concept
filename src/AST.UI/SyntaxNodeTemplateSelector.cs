@@ -9,11 +9,12 @@ namespace OneCSharp.AST.UI
     {
         private readonly Dictionary<Type, Type> _map_models_to_views = new Dictionary<Type, Type>()
         {
-            { typeof(NameNodeViewModel), typeof(NameNodeView) },
+            { typeof(IdentifierNodeViewModel), typeof(IdentifierNodeView) },
             { typeof(IndentNodeViewModel), typeof(IndentNodeView) },
             { typeof(KeywordNodeViewModel), typeof(KeywordNodeView) },
             { typeof(LiteralNodeViewModel), typeof(LiteralNodeView) },
             { typeof(ConceptNodeViewModel), typeof(ConceptNodeView) },
+            { typeof(RepeatableViewModel), typeof(RepeatableView) }
         };
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {

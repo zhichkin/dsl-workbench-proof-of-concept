@@ -10,16 +10,15 @@ namespace OneCSharp.AST.UI
     {
         public ISyntaxNodeViewModel Layout(ISyntaxNode model)
         {
-            //FunctionConcept concept = (FunctionConcept)model;
+            FunctionConcept concept;
             return (new ConceptNodeViewModel(null, model))
                 .Keyword("FUNCTION")
-                .Name(); // looks for IIdentifiable interface
-            // .Keyword("RETURNS").Optional(nameof(concept.ReturnType)) ... Map(nameof(concept.ReturnType))
+                .Identifier()
+                //.NewLine()
+                //.Indent()
+                .Keyword("RETURNS").Bind(nameof(concept.ReturnType))
+                .Repeatable().Decorate("{", "}").Bind(nameof(concept.Parameters));
             // .Reference(nameof(concept.ReturnType)).Optional() ... using IScopeProvider
-            // .NewLine()
-            // .Indent()
-            // .Repeatable().Vertical().Optional(nameof(concept.Parameters))
-            // TODO: Visibility = Hidden + bind to PropertyName of the model + Visibility depends on IOptional.HasValue
         }
     }
 }

@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace OneCSharp.AST.UI
 {
-    public sealed class NameNodeViewModel : SyntaxNodeViewModel
+    public sealed class IdentifierNodeViewModel : SyntaxNodeViewModel
     {
         private bool _isReadOnly = false;
         private IIdentifiable _identifiable = null;
-        public NameNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : base(owner, model)
+        public IdentifierNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : base(owner, model)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 

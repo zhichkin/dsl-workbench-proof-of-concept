@@ -53,21 +53,14 @@ namespace OneCSharp.AST.UI
                         });
                     }
                 }
-                //CreateSyntaxNode(node, codeLine, (ConceptNode)element);
             }
+            node.IsContextMenuEnabled = (node.ContextMenu.Count > 0);
         }
         private void ShowSyntaxNode(object parameter)
         {
             ValueTuple<ISyntaxNodeViewModel, string> tuple = (ValueTuple<ISyntaxNodeViewModel, string>)parameter;
-            if (tuple.Item2 == "ReturnType")
-            {
-                ((ConceptNodeViewModel)tuple.Item1).Keyword("RETURNS");
-            }
-            else if (tuple.Item2 == "Parameters")
-            {
-                var concept = Activator.CreateInstance(typeof(ParameterConcept));
-                ((ConceptNodeViewModel)tuple.Item1).Literal(concept.ToString());
-            }
+            if (!(tuple.Item1 is ConceptNodeViewModel node)) return;
+            node.ShowSyntaxNodes(tuple.Item2);
         }
     }
 }

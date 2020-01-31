@@ -1,14 +1,18 @@
 ﻿using OneCSharp.AST.Model;
 using OneCSharp.MVVM;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows.Input;
 
 namespace OneCSharp.AST.UI
 {
     public interface ISyntaxNodeViewModel
     {
+        bool IsVisible { get; set; }
         ISyntaxNode Model { get; set; }
+        string PropertyBinding { get; set; }
         ISyntaxNodeViewModel Owner { get; set; }
         ObservableCollection<ICodeLineViewModel> Lines { get; }
         bool IsFocused { get; set; }
@@ -24,6 +28,7 @@ namespace OneCSharp.AST.UI
     {
         private bool _isFocused = false;
         private bool _isMouseOver = false;
+        private string _propertyBinding = null;
         public event PropertyChangedEventHandler PropertyChanged;
         public SyntaxNodeViewModel()
         {
@@ -36,11 +41,16 @@ namespace OneCSharp.AST.UI
         }
         public SyntaxNodeViewModel(ISyntaxNodeViewModel owner) : this() { Owner = owner; }
         public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : this(owner) { Model = model; }
-        protected void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         public ISyntaxNode Model { get; set; }
+        public string PropertyBinding
+        {
+            get { return _propertyBinding; }
+            set { _propertyBinding = value; SetVisibility(); }
+        }
         public ISyntaxNodeViewModel Owner { get; set; }
         public ObservableCollection<ICodeLineViewModel> Lines { get; } = new ObservableCollection<ICodeLineViewModel>();
         
@@ -112,7 +122,6 @@ namespace OneCSharp.AST.UI
             }
             else if (args.Key == Key.Tab)
             {
-                IndentLine(this);
                 args.Handled = true;
             }
             //MessageBox.Show($"{Keyword}: {args.Key}");
@@ -202,9 +211,44 @@ namespace OneCSharp.AST.UI
                 //}
             }
         }
-        public void IndentLine(ISyntaxNodeViewModel node)
+
+
+
+        private bool _isVisible = true;
+        public bool IsVisible
         {
-            // TODO: don't forget about remove indent command
+            get { return _isVisible; }
+            set { _isVisible = value; SetHasValue(); OnPropertyChanged(nameof(IsVisible)); }
+        }
+        private void SetVisibility()
+        {
+            if (string.IsNullOrWhiteSpace(PropertyBinding)) return;
+
+            Type metadata = Owner.Model.GetType();
+            PropertyInfo property = metadata.GetProperty(PropertyBinding);
+            if (property == null) return;
+
+            if (property.IsOptional())
+            {
+                IOptional optional = (IOptional)property.GetValue(Owner.Model);
+                IsVisible = optional.HasValue;
+            }
+            else
+            {
+                IsVisible = true;
+            }
+        }
+        private void SetHasValue()
+        {
+            Type metadata = Owner.Model.GetType();
+            PropertyInfo property = metadata.GetProperty(PropertyBinding);
+            if (property == null) return;
+
+            if (property.IsOptional())
+            {
+                IOptional optional = (IOptional)property.GetValue(Owner.Model);
+                optional.HasValue = IsVisible;
+            }
         }
     }
 }

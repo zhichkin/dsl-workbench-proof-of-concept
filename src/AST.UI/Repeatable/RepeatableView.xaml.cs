@@ -2,9 +2,9 @@
 
 namespace OneCSharp.AST.UI
 {
-    public partial class NameNodeView : TextBox
+    public partial class RepeatableView : UserControl
     {
-        public NameNodeView()
+        public RepeatableView()
         {
             InitializeComponent();
         }

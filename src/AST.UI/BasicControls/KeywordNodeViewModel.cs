@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 namespace OneCSharp.AST.UI
 {
     public sealed class KeywordNodeViewModel : SyntaxNodeViewModel
-    {   
+    {
         private string _keyword = string.Empty;
-        private bool _isContextMenuEnabled = true;
+        private bool _isContextMenuEnabled = false;
         public KeywordNodeViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
         public string Keyword
         {

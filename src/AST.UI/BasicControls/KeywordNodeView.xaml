@@ -35,7 +35,8 @@
         
     </TextBlock.Resources>
 
-    <Border BorderThickness="1" Cursor="Hand" Style="{StaticResource SyntaxNodeBorderStyle}">
+    <Border BorderThickness="1" Cursor="Hand" Style="{StaticResource SyntaxNodeBorderStyle}"
+            Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
         
         <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Focusable="True" Margin="1"
                    Style="{StaticResource KeywordStyle}" ContextMenuService.Placement="Bottom">
