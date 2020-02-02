@@ -53,31 +53,26 @@ namespace OneCSharp.AST.UI
                 Lines.Add(line);
             }
         }
-        public void Add(ConceptNodeViewModel node)
+        public override void Add(ISyntaxNodeViewModel node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
-
-            if (Lines.Count == 0)
-            {
-                if (!string.IsNullOrEmpty(OpeningLiteral))
-                {
-                    ICodeLineViewModel firstLine = new CodeLineViewModel(this);
-                    firstLine.Nodes.Add(new LiteralNodeViewModel(this) { Literal = OpeningLiteral });
-                    Lines.Add(firstLine);
-                }
-                if (!string.IsNullOrEmpty(ClosingLiteral))
-                {
-                    ICodeLineViewModel bottomLine = new CodeLineViewModel(this);
-                    bottomLine.Nodes.Add(new LiteralNodeViewModel(this) { Literal = ClosingLiteral });
-                    Lines.Add(bottomLine);
-                }
-            }
 
             ICodeLineViewModel line = new CodeLineViewModel(this);
             if (!string.IsNullOrEmpty(Delimiter))
             {
                 //TODO: evaluate number of concepts - delimiter is added if count > 1
             }
+
+            if (string.IsNullOrEmpty(OpeningLiteral))
+            {
+                line.Nodes.Add(new IndentNodeViewModel(this));
+            }
+            else
+            {
+                line.Nodes.Add(new IndentNodeViewModel(this));
+                line.Nodes.Add(new IndentNodeViewModel(this));
+            }
+
             line.Nodes.Add(node);
             if (string.IsNullOrEmpty(ClosingLiteral))
             {

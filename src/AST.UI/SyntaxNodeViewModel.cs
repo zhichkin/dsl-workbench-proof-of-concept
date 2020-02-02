@@ -13,6 +13,7 @@ namespace OneCSharp.AST.UI
         bool IsVisible { get; set; }
         ISyntaxNode Model { get; set; }
         string PropertyBinding { get; set; }
+        void Add(ISyntaxNodeViewModel child);
         ISyntaxNodeViewModel Owner { get; set; }
         ObservableCollection<ICodeLineViewModel> Lines { get; }
         bool IsFocused { get; set; }
@@ -52,8 +53,10 @@ namespace OneCSharp.AST.UI
             set { _propertyBinding = value; SetVisibility(); }
         }
         public ISyntaxNodeViewModel Owner { get; set; }
+        public virtual void Add(ISyntaxNodeViewModel child) { }
         public ObservableCollection<ICodeLineViewModel> Lines { get; } = new ObservableCollection<ICodeLineViewModel>();
         
+
         
         public bool IsFocused
         {
@@ -248,6 +251,10 @@ namespace OneCSharp.AST.UI
             {
                 IOptional optional = (IOptional)property.GetValue(Owner.Model);
                 optional.HasValue = IsVisible;
+                if (optional.Value is bool && IsVisible)
+                {
+                    optional.Value = IsVisible; // TODO: move to controller ???
+                }
             }
         }
     }

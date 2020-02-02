@@ -24,7 +24,7 @@ namespace OneCSharp.AST.Model
         public string Identifier { get; set; } = PLACEHOLDER;
 
         [SimpleTypeConstraint]
-        public Optional<object> ParameterType { get; set; } = new Optional<object>();
+        public object ParameterType { get; set; }
         public Optional<bool> IsOutput { get; } = new Optional<bool>();
     }
 }

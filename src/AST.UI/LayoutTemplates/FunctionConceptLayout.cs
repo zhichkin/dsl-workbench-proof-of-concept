@@ -17,8 +17,20 @@ namespace OneCSharp.AST.UI
                 //.NewLine()
                 //.Indent()
                 .Keyword("RETURNS").Bind(nameof(concept.ReturnType))
-                .Repeatable().Decorate("{", "}").Bind(nameof(concept.Parameters));
-            // .Reference(nameof(concept.ReturnType)).Optional() ... using IScopeProvider
+                .Repeatable().Bind(nameof(concept.Parameters)); // .Decorate("{", "}")
+
+        }
+    }
+    public sealed class ParameterConceptLayout : IConceptLayout
+    {
+        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        {
+            ParameterConcept concept;
+            return (new ConceptNodeViewModel(null, model))
+                .Keyword("@")
+                .Identifier()
+                .Keyword("OUTPUT").Bind(nameof(concept.IsOutput));
+            // .Reference(nameof(concept.ParameterType)) ... using IScopeProvider
         }
     }
 }

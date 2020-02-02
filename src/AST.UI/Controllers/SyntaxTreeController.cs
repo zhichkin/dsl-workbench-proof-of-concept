@@ -1,6 +1,7 @@
 ﻿using OneCSharp.AST.Model;
 using OneCSharp.MVVM;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
@@ -10,11 +11,25 @@ namespace OneCSharp.AST.UI
     public sealed class SyntaxTreeController
     {
         private const string ADD_PROPERTY = "pack://application:,,,/OneCSharp.AST.UI;component/images/AddProperty.png";
+        private IConceptLayout GetLayout(ISyntaxNode model)
+        {
+            if (model is FunctionConcept)
+            {
+                return new FunctionConceptLayout();
+            }
+            else if (model is ParameterConcept)
+            {
+                return new ParameterConceptLayout();
+            }
+            return null;
+        }
         public ConceptNodeViewModel CreateSyntaxNode(ISyntaxNodeViewModel parentNode, ISyntaxNode model)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
-            IConceptLayout layout = new FunctionConceptLayout();
+            IConceptLayout layout = GetLayout(model);
+            if (layout == null) return null;
+
             ConceptNodeViewModel node = layout.Layout(model) as ConceptNodeViewModel;
             node.Owner = parentNode;
 
@@ -61,6 +76,24 @@ namespace OneCSharp.AST.UI
             ValueTuple<ISyntaxNodeViewModel, string> tuple = (ValueTuple<ISyntaxNodeViewModel, string>)parameter;
             if (!(tuple.Item1 is ConceptNodeViewModel node)) return;
             node.ShowSyntaxNodes(tuple.Item2);
+
+            PropertyInfo property = node.Model.GetPropertyInfo(tuple.Item2);
+            if (property == null) return;
+            if (property.IsRepeatable())
+            {
+                List<Type> types = property.GetRepeatableTypes();
+                if (types.Count == 1)
+                {
+                    CreateConceptCommand command = new CreateConceptCommand();
+                    ISyntaxNode model = command.Create(node.Model, property.Name, types[0]);
+                    ConceptNodeViewModel child = CreateSyntaxNode(node, model);
+                    List<ISyntaxNodeViewModel> list = node.GetNodesByPropertyName(property.Name);
+                    if (list != null && list.Count == 1)
+                    {
+                        list[0].Add(child);
+                    }
+                }
+            }
         }
     }
 }
