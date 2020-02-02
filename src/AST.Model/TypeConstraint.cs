@@ -2,20 +2,6 @@
 
 namespace OneCSharp.AST.Model
 {
-    public static class SimpleTypes
-    {
-        public static readonly Type[] List = new Type[]
-        {
-            typeof(int),
-            typeof(bool),
-            typeof(string),
-            typeof(decimal),
-            typeof(Guid),
-            typeof(DateTime),
-            typeof(byte[])
-        };
-    }
-
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public sealed class TypeConstraintAttribute : Attribute
     {

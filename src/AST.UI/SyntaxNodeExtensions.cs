@@ -139,5 +139,20 @@ namespace OneCSharp.AST.UI
             repeatable.ClosingLiteral = closingLiteral;
             return @this;
         }
+        public static ConceptNodeViewModel Delimiter(this ConceptNodeViewModel @this, string delimiterLiteral)
+        {
+            ISyntaxNodeViewModel syntaxNode = @this.LastSyntaxNode();
+            if (syntaxNode == null) throw new ArgumentNullException(nameof(syntaxNode));
+            if (!(syntaxNode is RepeatableViewModel repeatable)) return @this;
+
+            repeatable.Delimiter = delimiterLiteral;
+            return @this;
+        }
+        public static ConceptNodeViewModel Reference(this ConceptNodeViewModel @this)
+        {
+            ICodeLineViewModel codeLine = @this.BottomCodeLine();
+            codeLine.Nodes.Add(new ReferenceViewModel(@this));
+            return @this;
+        }
     }
 }

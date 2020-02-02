@@ -17,7 +17,8 @@ namespace OneCSharp.AST.UI
                 //.NewLine()
                 //.Indent()
                 .Keyword("RETURNS").Bind(nameof(concept.ReturnType))
-                .Repeatable().Bind(nameof(concept.Parameters)); // .Decorate("{", "}")
+                .Reference().Bind(nameof(concept.ReturnType))   // uses IScopeProvider
+                .Repeatable().Bind(nameof(concept.Parameters)); // .Decorate("{", "}").Delimiter(",")
 
         }
     }
@@ -29,8 +30,8 @@ namespace OneCSharp.AST.UI
             return (new ConceptNodeViewModel(null, model))
                 .Keyword("@")
                 .Identifier()
+                .Reference().Bind(nameof(concept.ParameterType))
                 .Keyword("OUTPUT").Bind(nameof(concept.IsOutput));
-            // .Reference(nameof(concept.ParameterType)) ... using IScopeProvider
         }
     }
 }

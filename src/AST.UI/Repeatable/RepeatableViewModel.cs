@@ -58,11 +58,6 @@ namespace OneCSharp.AST.UI
             if (node == null) throw new ArgumentNullException(nameof(node));
 
             ICodeLineViewModel line = new CodeLineViewModel(this);
-            if (!string.IsNullOrEmpty(Delimiter))
-            {
-                //TODO: evaluate number of concepts - delimiter is added if count > 1
-            }
-
             if (string.IsNullOrEmpty(OpeningLiteral))
             {
                 line.Nodes.Add(new IndentNodeViewModel(this));
@@ -71,6 +66,17 @@ namespace OneCSharp.AST.UI
             {
                 line.Nodes.Add(new IndentNodeViewModel(this));
                 line.Nodes.Add(new IndentNodeViewModel(this));
+            }
+            if (!string.IsNullOrEmpty(Delimiter))
+            {
+                int count = 0;
+                count += (string.IsNullOrEmpty(OpeningLiteral) ? 0 : 1);
+                count += (string.IsNullOrEmpty(ClosingLiteral) ? 0 : 1);
+                count = Lines.Count - count;
+                if (count > 0)
+                {
+                    line.Nodes.Add(new LiteralNodeViewModel(this) { Literal = Delimiter });
+                }
             }
 
             line.Nodes.Add(node);

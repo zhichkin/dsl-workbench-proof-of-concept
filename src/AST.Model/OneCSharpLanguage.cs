@@ -13,6 +13,11 @@ namespace OneCSharp.AST.Model
         public Optional<List<ParameterConcept>> Parameters { get; } = new Optional<List<ParameterConcept>>();
         public IEnumerable<ISyntaxNode> Scope(Type scopeType)
         {
+            if (scopeType == typeof(object))
+            {
+                return SimpleTypes.Types;
+            }
+
             if (!Parameters.HasValue) return null;
             if (scopeType != typeof(ParameterConcept)) return null;
             return Parameters.Value;
