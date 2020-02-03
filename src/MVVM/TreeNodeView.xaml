@@ -4,12 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:mvvm="clr-namespace:OneCSharp.MVVM"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
 
-    <TreeView ItemsSource="{Binding TreeNodes}"
+    <TreeView x:Name="CONTROL_ROOT" ItemsSource="{Binding TreeNodes}"
               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               BorderThickness="0" BorderBrush="Transparent">
-        
+
+        <behaviors:Interaction.Triggers>
+            <behaviors:EventTrigger EventName="SelectedItemChanged" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+                <behaviors:InvokeCommandAction Command="{Binding SelectedItemChanged}" PassEventArgsToCommand="True"/>
+            </behaviors:EventTrigger>
+        </behaviors:Interaction.Triggers>
+
         <TreeView.ItemTemplate>
             
             <HierarchicalDataTemplate DataType="{x:Type mvvm:TreeNodeViewModel}" ItemsSource="{Binding TreeNodes}">

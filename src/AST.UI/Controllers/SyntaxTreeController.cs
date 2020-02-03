@@ -21,6 +21,14 @@ namespace OneCSharp.AST.UI
             {
                 return new ParameterConceptLayout();
             }
+            else if (model is SelectConcept)
+            {
+                return new SelectConceptLayout();
+            }
+            else if (model is SelectExpression)
+            {
+                return new SelectExpressionLayout();
+            }
             return null;
         }
         public ConceptNodeViewModel CreateSyntaxNode(ISyntaxNodeViewModel parentNode, ISyntaxNode model)

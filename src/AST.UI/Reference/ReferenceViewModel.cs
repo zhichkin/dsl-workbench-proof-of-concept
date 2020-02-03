@@ -1,8 +1,8 @@
 ﻿using OneCSharp.AST.Model;
 using OneCSharp.MVVM;
 using System;
+using System.Collections;
 using System.Reflection;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -15,7 +15,7 @@ namespace OneCSharp.AST.UI
         public ReferenceViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
         public string Presentation
         {
-            get { return $"{{{PropertyBinding}}}"; }
+            get { return (Model == null ? $"{{{PropertyBinding}}}" : Model.ToString()); }
         }
         public Brush TextColor
         {
@@ -25,6 +25,8 @@ namespace OneCSharp.AST.UI
         protected override void OnMouseDown(object parameter)
         {
             if (!(parameter is MouseButtonEventArgs args)) return;
+
+            // TODO: delegate this code to the SyntaxTreeController !?
             if (args.ChangedButton == MouseButton.Left || args.ChangedButton == MouseButton.Right)
             {
                 args.Handled = true;
@@ -32,18 +34,20 @@ namespace OneCSharp.AST.UI
                 var ancestor = this.Ancestor<ConceptNodeViewModel>();
                 if (ancestor == null) return;
 
+                // get scope provider from parent ConceptNode
                 IScopeProvider scopeProvider = (ancestor.Owner == null)
                     ? ancestor.Model as IScopeProvider
                     : ancestor.Owner.Model as IScopeProvider;
                 if (scopeProvider == null) return;
 
+                // get type to reference: it can be simple type or ConceptNode type
                 Type scopeType;
                 PropertyInfo property = ancestor.Model.GetPropertyInfo(PropertyBinding);
                 if (property.IsOptional())
                 {
                     property = property.PropertyType.GetProperty("Value");
                 }
-
+                // TODO: check for TypeConstraint and SimpleTypeConstraint attributes of the property !
                 if (property.IsRepeatable())
                 {
                     scopeType = property.GetRepeatableTypes()[0];
@@ -52,27 +56,44 @@ namespace OneCSharp.AST.UI
                 {
                     scopeType = property.PropertyType;
                 }
-
+                // get possible references in the current scope
                 var scope = scopeProvider.Scope(scopeType);
-                //TODO: open selection dialog
+                if (scope == null) return;
 
-                // Get absolute location on screen of upper left corner of the TextBlock
+                // build tree view
+                TreeNodeViewModel viewModel = new TreeNodeViewModel();
+                foreach (ISyntaxNode node in scope)
+                {
+                    viewModel.TreeNodes.Add(new TreeNodeViewModel()
+                    {
+                        NodeText = node.ToString(),
+                        NodePayload = node
+                    });
+                }
+                // open dialog window
                 Visual control = args.Source as Visual;
-                Point locationFromScreen = control.PointToScreen(new Point(0, 0));
-                locationFromScreen.Y += 18; // control's height
-                locationFromScreen.X -= 6;  // correction
-                // Transform screen point to WPF device independent point
-                PresentationSource source = PresentationSource.FromVisual(control);
-                Point targetPoints = source.CompositionTarget.TransformFromDevice.Transform(locationFromScreen);
-
-                PopupWindow dialog = new PopupWindow();
-                // Set coordinates
-                dialog.Top = locationFromScreen.Y;
-                dialog.Left = targetPoints.X;
+                PopupWindow dialog = new PopupWindow(control, viewModel);
                 _ = dialog.ShowDialog();
                 if (dialog.Result == null) { return; }
+                if (!(dialog.Result.NodePayload is ISyntaxNode model)) return;
 
+                // set binded property of the model by selected reference
+                // TODO: check if simple type selected so as to set int to int property, not Numeric ...
+                property = ancestor.Model.GetPropertyInfo(PropertyBinding);
+                if (property.IsOptional())
+                {
+                    IOptional optional = (IOptional)property.GetValue(ancestor.Model);
+                    optional.Value = model;
+                }
+                else
+                {
+                    property.SetValue(ancestor.Model, model);
+                }
+
+                // reset view model's state
+                Model = model;
                 TextColor = _selectedValueBrush;
+                OnPropertyChanged(nameof(Presentation));
             }
         }
     }

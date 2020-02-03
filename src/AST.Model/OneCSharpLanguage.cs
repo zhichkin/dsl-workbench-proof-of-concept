@@ -11,6 +11,7 @@ namespace OneCSharp.AST.Model
         [SimpleTypeConstraint]
         public Optional<object> ReturnType { get; } = new Optional<object>();
         public Optional<List<ParameterConcept>> Parameters { get; } = new Optional<List<ParameterConcept>>();
+        public Optional<List<SelectConcept>> Statements { get; } = new Optional<List<SelectConcept>>();
         public IEnumerable<ISyntaxNode> Scope(Type scopeType)
         {
             if (scopeType == typeof(object))

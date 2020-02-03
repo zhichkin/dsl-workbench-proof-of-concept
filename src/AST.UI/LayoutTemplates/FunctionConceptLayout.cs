@@ -17,9 +17,9 @@ namespace OneCSharp.AST.UI
                 //.NewLine()
                 //.Indent()
                 .Keyword("RETURNS").Bind(nameof(concept.ReturnType))
-                .Reference().Bind(nameof(concept.ReturnType))   // uses IScopeProvider
-                .Repeatable().Bind(nameof(concept.Parameters)); // .Decorate("{", "}").Delimiter(",")
-
+                .Reference().Bind(nameof(concept.ReturnType))
+                .Repeatable().Bind(nameof(concept.Parameters))
+                .Repeatable().Bind(nameof(concept.Statements));
         }
     }
     public sealed class ParameterConceptLayout : IConceptLayout
