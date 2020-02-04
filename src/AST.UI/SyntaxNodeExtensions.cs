@@ -1,5 +1,9 @@
-﻿using System;
+﻿using OneCSharp.AST.Model;
+using OneCSharp.MVVM;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace OneCSharp.AST.UI
 {
@@ -153,6 +157,63 @@ namespace OneCSharp.AST.UI
             ICodeLineViewModel codeLine = @this.BottomCodeLine();
             codeLine.Nodes.Add(new ReferenceViewModel(@this));
             return @this;
+        }
+        public static TreeNodeViewModel BuildReferenceSelectorTree(IEnumerable<ISyntaxNode> references)
+        {
+            TreeNodeViewModel tree = new TreeNodeViewModel();
+
+            Type baseType;
+            TreeNodeViewModel currentNode;
+            Stack<Type> stack = new Stack<Type>();
+            
+            foreach (ISyntaxNode node in references)
+            {
+                currentNode = tree;
+                baseType = node.GetType().BaseType;
+
+                while (baseType != typeof(SyntaxNode))
+                {
+                    stack.Push(baseType);
+                    baseType = baseType.BaseType;
+                }
+                while (stack.Count > 0)
+                {
+                    baseType = stack.Pop();
+                    currentNode = AddNodeToReferenceSelectorTree(currentNode, baseType);
+                }
+                if (currentNode != tree)
+                {
+                    currentNode.TreeNodes.Add(new TreeNodeViewModel()
+                    {
+                        NodeText = node.ToString(),
+                        NodePayload = node
+                    });
+                }
+            }
+
+            // expand only top level nodes
+            foreach (TreeNodeViewModel treeNode in tree.TreeNodes)
+            {
+                treeNode.IsExpanded = true;
+            }
+
+            return tree;
+        }
+        private static TreeNodeViewModel AddNodeToReferenceSelectorTree(TreeNodeViewModel root, Type baseType)
+        {
+            foreach (TreeNodeViewModel node in root.TreeNodes)
+            {
+                if ((Type)node.NodePayload == baseType) return node;
+            }
+            DescriptionAttribute attribute = baseType.GetCustomAttribute<DescriptionAttribute>();
+            string description = (attribute == null ? baseType.Name : attribute.Description);
+            TreeNodeViewModel child = new TreeNodeViewModel()
+            {
+                NodeText = description,
+                NodePayload = baseType
+            };
+            root.TreeNodes.Add(child);
+            return child;
         }
     }
 }

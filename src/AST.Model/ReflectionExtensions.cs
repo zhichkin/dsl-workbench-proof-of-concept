@@ -12,6 +12,11 @@ namespace OneCSharp.AST.Model
             PropertyInfo property = metadata.GetProperty(propertyName);
             return property;
         }
+        public static bool IsList(this PropertyInfo @this)
+        {
+            return @this.PropertyType.IsGenericType
+                && @this.PropertyType.GetGenericTypeDefinition() == typeof(List<>);
+        }
         public static bool IsOptional(this PropertyInfo @this)
         {
             return (@this.PropertyType.IsGenericType
@@ -52,7 +57,7 @@ namespace OneCSharp.AST.Model
                     var simpleTypeConstraint = @this.GetCustomAttribute<SimpleTypeConstraintAttribute>();
                     if (simpleTypeConstraint != null)
                     {
-                        repeatableTypes.AddRange(SimpleTypes.List);
+                        repeatableTypes.AddRange(SimpleTypes.DotNetTypes);
                     }
                     var typeConstraint = @this.GetCustomAttribute<TypeConstraintAttribute>();
                     if (typeConstraint != null)
@@ -69,6 +74,24 @@ namespace OneCSharp.AST.Model
                 }
             }
             return repeatableTypes;
+        }
+
+
+        public static void SetConceptReferenceProperty(this ISyntaxNode concept, string propertyName, object value)
+        {
+            PropertyInfo property = concept.GetPropertyInfo(propertyName);
+            if (property == null) throw new NullReferenceException($"Property \"{propertyName}\" of the \"{concept.GetType()}\" type is not found!");
+            if (property.IsRepeatable()) throw new InvalidOperationException($"Reference property \"{propertyName}\" can not be repeatable!");
+
+            if (property.IsOptional())
+            {
+                IOptional optional = (IOptional)property.GetValue(concept);
+                optional.Value = value;
+            }
+            else
+            {
+                property.SetValue(concept, value);
+            }
         }
     }
 }

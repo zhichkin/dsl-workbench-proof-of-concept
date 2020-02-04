@@ -3,18 +3,10 @@ using System.Collections.Generic;
 
 namespace OneCSharp.AST.Model
 {
-    public sealed class SelectConcept : SyntaxNode, IScopeProvider
+    public sealed class SelectConcept : SyntaxNode
     {
         public Optional<List<SelectExpression>> SelectExpressions { get; } = new Optional<List<SelectExpression>>();
         public FromConcept From { get; } = new FromConcept();
-        public IEnumerable<ISyntaxNode> Scope(Type scopeType)
-        {
-            if (scopeType == typeof(object))
-            {
-                return SimpleTypes.Types;
-            }
-            return null;
-        }
     }
     public sealed class SelectExpression : SyntaxNode, IIdentifiable
     {

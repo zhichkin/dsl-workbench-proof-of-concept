@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace OneCSharp.AST.Model
 {
@@ -12,7 +13,16 @@ namespace OneCSharp.AST.Model
             Numeric = new NumericTypeConcept();
             DateTime = new DateTimeTypeConcept();
             UniqueIdentifier = new UniqueIdentifierTypeConcept();
-            Types = new ISyntaxNode[]
+            Types = new Type[]
+            {
+                typeof(BinaryTypeConcept),
+                typeof(StringTypeConcept),
+                typeof(BooleanTypeConcept),
+                typeof(NumericTypeConcept),
+                typeof(DateTimeTypeConcept),
+                typeof(UniqueIdentifierTypeConcept)
+            };
+            References = new ISyntaxNode[]
             {
                 Binary,
                 String,
@@ -21,35 +31,39 @@ namespace OneCSharp.AST.Model
                 DateTime,
                 UniqueIdentifier
             };
+            DotNetTypes = new Type[]
+            {
+                typeof(int),
+                typeof(bool),
+                typeof(string),
+                typeof(decimal),
+                typeof(Guid),
+                typeof(DateTime),
+                typeof(byte[])
+            };
         }
-        public static readonly ISyntaxNode[] Types;
-        public static readonly TypeConcept Binary;
-        public static readonly TypeConcept String;
-        public static readonly TypeConcept Boolean;
-        public static readonly TypeConcept Numeric;
-        public static readonly TypeConcept DateTime;
-        public static readonly TypeConcept UniqueIdentifier;
-
-        public static readonly Type[] List = new Type[]
-        {
-            typeof(int),
-            typeof(bool),
-            typeof(string),
-            typeof(decimal),
-            typeof(Guid),
-            typeof(DateTime),
-            typeof(byte[])
-        };
+        public static readonly Type[] Types;
+        public static readonly Type[] DotNetTypes;
+        public static readonly ISyntaxNode[] References;
+        
+        public static readonly SimpleTypeConcept Binary;
+        public static readonly SimpleTypeConcept String;
+        public static readonly SimpleTypeConcept Boolean;
+        public static readonly SimpleTypeConcept Numeric;
+        public static readonly SimpleTypeConcept DateTime;
+        public static readonly SimpleTypeConcept UniqueIdentifier;
     }
-    public abstract class TypeConcept : SyntaxNode, IIdentifiable
+    [Description("Simple data types")]
+    public abstract class SimpleTypeConcept : SyntaxNode, IIdentifiable
     {
         public string Identifier { get; set; }
         public override string ToString() { return Identifier; }
     }
-    public sealed class BinaryTypeConcept : TypeConcept { public BinaryTypeConcept() { Identifier = nameof(SimpleTypes.Binary); } }
-    public sealed class StringTypeConcept : TypeConcept { public StringTypeConcept() { Identifier = nameof(SimpleTypes.String); } }
-    public sealed class BooleanTypeConcept : TypeConcept { public BooleanTypeConcept() { Identifier = nameof(SimpleTypes.Boolean); } }
-    public sealed class NumericTypeConcept : TypeConcept { public NumericTypeConcept() { Identifier = nameof(SimpleTypes.Numeric); } }
-    public sealed class DateTimeTypeConcept : TypeConcept { public DateTimeTypeConcept() { Identifier = nameof(SimpleTypes.DateTime); } }
-    public sealed class UniqueIdentifierTypeConcept : TypeConcept { public UniqueIdentifierTypeConcept() { Identifier = nameof(SimpleTypes.UniqueIdentifier); } }
+    // definition classes, ex. TableDefinition : SyntaxNode (data type definition) - ComplexTypeConcept !
+    public sealed class BinaryTypeConcept : SimpleTypeConcept { public BinaryTypeConcept() { Identifier = nameof(SimpleTypes.Binary); } }
+    public sealed class StringTypeConcept : SimpleTypeConcept { public StringTypeConcept() { Identifier = nameof(SimpleTypes.String); } }
+    public sealed class BooleanTypeConcept : SimpleTypeConcept { public BooleanTypeConcept() { Identifier = nameof(SimpleTypes.Boolean); } }
+    public sealed class NumericTypeConcept : SimpleTypeConcept { public NumericTypeConcept() { Identifier = nameof(SimpleTypes.Numeric); } }
+    public sealed class DateTimeTypeConcept : SimpleTypeConcept { public DateTimeTypeConcept() { Identifier = nameof(SimpleTypes.DateTime); } }
+    public sealed class UniqueIdentifierTypeConcept : SimpleTypeConcept { public UniqueIdentifierTypeConcept() { Identifier = nameof(SimpleTypes.UniqueIdentifier); } }
 }

@@ -7,12 +7,8 @@ namespace OneCSharp.AST.Model
     public sealed class CreateConceptCommand
     {
         /// <summary>
-        /// propertyName parameter must be of type List<<T>> !
+        /// propertyName parameter must be of type generic list
         /// </summary>
-        /// <param name="concept"></param>
-        /// <param name="propertyName"></param>
-        /// <param name="child"></param>
-        /// <returns></returns>
         public ISyntaxNode Create(ISyntaxNode concept, string propertyName, Type child)
         {
             ISyntaxNode item = (ISyntaxNode)Activator.CreateInstance(child);

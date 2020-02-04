@@ -11,6 +11,7 @@ namespace OneCSharp.MVVM
         private string _nodeToolTip;
         private BitmapImage _nodeIcon;
         private object _nodePayload;
+        private bool _isExpanded;
         public TreeNodeViewModel()
         {
             SelectedItemChanged = new RelayCommand(SelectedItemChangedHandler);
@@ -34,6 +35,15 @@ namespace OneCSharp.MVVM
         {
             get { return _nodePayload; }
             set { _nodePayload = value; OnPropertyChanged(nameof(NodePayload)); }
+        }
+        public bool IsExpanded
+        {
+            get { return _isExpanded; }
+            set
+            {
+                if (_isExpanded == value) return;
+                _isExpanded = value; OnPropertyChanged("IsExpanded");
+            }
         }
         public ICommand SelectedItemChanged { get; set; }
         private void SelectedItemChangedHandler(object parameter)

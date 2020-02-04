@@ -11,6 +11,12 @@
               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               BorderThickness="0" BorderBrush="Transparent">
 
+        <TreeView.Resources>
+            <Style TargetType="{x:Type TreeViewItem}">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+            </Style>
+        </TreeView.Resources>
+        
         <behaviors:Interaction.Triggers>
             <behaviors:EventTrigger EventName="SelectedItemChanged" SourceObject="{Binding ElementName=CONTROL_ROOT}">
                 <behaviors:InvokeCommandAction Command="{Binding SelectedItemChanged}" PassEventArgsToCommand="True"/>
