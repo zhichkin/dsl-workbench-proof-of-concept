@@ -9,7 +9,9 @@ namespace OneCSharp.AST.UI
             SelectConcept concept;
             return (new ConceptNodeViewModel(null, model))
                 .Keyword("SELECT")
-                .Repeatable().Bind(nameof(concept.SelectExpressions));
+                .Repeatable().Bind(nameof(concept.Expressions))
+                .Concept().Bind(nameof(concept.From))
+                .Concept().Bind(nameof(concept.Where));
         }
     }
     public sealed class SelectExpressionLayout : IConceptLayout
@@ -21,6 +23,35 @@ namespace OneCSharp.AST.UI
                 .Identifier()
                 .Literal(" = ")
                 .Reference().Bind(nameof(concept.ColumnReference));
+        }
+    }
+    public sealed class FromConceptLayout : IConceptLayout
+    {
+        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        {
+            FromConcept concept;
+            return (new ConceptNodeViewModel(null, model))
+                .Keyword("FROM")
+                .Repeatable().Bind(nameof(concept.Expressions));
+        }
+    }
+    public sealed class WhereConceptLayout : IConceptLayout
+    {
+        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        {
+            WhereConcept concept;
+            return (new ConceptNodeViewModel(null, model))
+                .Keyword("WHERE")
+                .Repeatable().Bind(nameof(concept.Expressions));
+        }
+    }
+    public sealed class TableConceptLayout : IConceptLayout
+    {
+        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        {
+            //TableConcept concept;
+            return (new ConceptNodeViewModel(null, model))
+                .Identifier();
         }
     }
 }

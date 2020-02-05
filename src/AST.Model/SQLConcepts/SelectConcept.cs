@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace OneCSharp.AST.Model
 {
     public sealed class SelectConcept : SyntaxNode
     {
-        public Optional<List<SelectExpression>> SelectExpressions { get; } = new Optional<List<SelectExpression>>();
+        public Optional<List<SelectExpression>> Expressions { get; } = new Optional<List<SelectExpression>>();
         public FromConcept From { get; } = new FromConcept();
+        public Optional<WhereConcept> Where { get; } = new Optional<WhereConcept>();
     }
     public sealed class SelectExpression : SyntaxNode, IIdentifiable
     {
@@ -16,7 +16,11 @@ namespace OneCSharp.AST.Model
     }
     public sealed class FromConcept : SyntaxNode
     {
-        public List<TableConcept> FromExpressions { get; } = new List<TableConcept>();
+        public List<TableConcept> Expressions { get; } = new List<TableConcept>();
+    }
+    public sealed class WhereConcept : SyntaxNode
+    {
+        public List<TableConcept> Expressions { get; } = new List<TableConcept>();
     }
     public sealed class TableConcept : SyntaxNode, IIdentifiable
     {

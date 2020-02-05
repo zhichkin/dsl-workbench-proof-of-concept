@@ -6,7 +6,12 @@
              mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
              xmlns:ast="clr-namespace:OneCSharp.AST.UI">
 
-    <ItemsControl ItemsSource="{Binding Lines}">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <ItemsControl ItemsSource="{Binding Lines}"
+                  Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type ast:CodeLineViewModel}">
                 <ast:CodeLineView/>

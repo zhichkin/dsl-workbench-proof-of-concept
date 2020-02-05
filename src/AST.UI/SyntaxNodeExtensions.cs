@@ -215,5 +215,11 @@ namespace OneCSharp.AST.UI
             root.TreeNodes.Add(child);
             return child;
         }
+        public static ConceptNodeViewModel Concept(this ConceptNodeViewModel @this)
+        {
+            ICodeLineViewModel codeLine = @this.NewLine().BottomCodeLine();
+            codeLine.Nodes.Add(new ConceptNodeViewModel(@this, null));
+            return @this;
+        }
     }
 }

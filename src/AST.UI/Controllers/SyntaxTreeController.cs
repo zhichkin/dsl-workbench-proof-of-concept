@@ -11,23 +11,28 @@ namespace OneCSharp.AST.UI
     public sealed class SyntaxTreeController
     {
         private const string ADD_PROPERTY = "pack://application:,,,/OneCSharp.AST.UI;component/images/AddProperty.png";
-        private IConceptLayout GetLayout(ISyntaxNode model)
+        private readonly Dictionary<Type, IConceptLayout> _layouts = new Dictionary<Type, IConceptLayout>();
+        public SyntaxTreeController()
         {
-            if (model is FunctionConcept)
+            InitializeLayouts();
+        }
+        private void InitializeLayouts()
+        {
+            _layouts.Add(typeof(FunctionConcept), new FunctionConceptLayout());
+            _layouts.Add(typeof(ParameterConcept), new ParameterConceptLayout());
+            _layouts.Add(typeof(SelectConcept), new SelectConceptLayout());
+            _layouts.Add(typeof(SelectExpression), new SelectExpressionLayout());
+            _layouts.Add(typeof(FromConcept), new FromConceptLayout());
+            _layouts.Add(typeof(WhereConcept), new WhereConceptLayout());
+            _layouts.Add(typeof(TableConcept), new TableConceptLayout());
+        }
+        private IConceptLayout GetLayout(ISyntaxNode concept)
+        {
+            if (concept == null) throw new ArgumentNullException(nameof(concept));
+            Type type = concept.GetType();
+            if (_layouts.TryGetValue(type, out IConceptLayout layout))
             {
-                return new FunctionConceptLayout();
-            }
-            else if (model is ParameterConcept)
-            {
-                return new ParameterConceptLayout();
-            }
-            else if (model is SelectConcept)
-            {
-                return new SelectConceptLayout();
-            }
-            else if (model is SelectExpression)
-            {
-                return new SelectExpressionLayout();
+                return layout;
             }
             return null;
         }
@@ -49,6 +54,32 @@ namespace OneCSharp.AST.UI
                 if (keyword != null)
                 {
                     CreateContextMenu(keyword, model);
+                }
+            }
+
+            foreach (ICodeLineViewModel line in node.Lines)
+            {
+                for (int i = 0; i < line.Nodes.Count; i++)
+                {
+                    if (line.Nodes[i] is ConceptNodeViewModel)
+                    {
+                        string propertyBinding = line.Nodes[i].PropertyBinding;
+                        PropertyInfo property = node.Model.GetPropertyInfo(propertyBinding);
+                        if (property.IsOptional())
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            ISyntaxNode concept = (ISyntaxNode)property.GetValue(node.Model);
+                            ConceptNodeViewModel conceptNode = CreateSyntaxNode(node, concept);
+                            if (conceptNode != null)
+                            {
+                                line.Nodes[i] = conceptNode;
+                                conceptNode.Bind(propertyBinding);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -75,6 +106,16 @@ namespace OneCSharp.AST.UI
                             MenuItemIcon = new BitmapImage(new Uri(ADD_PROPERTY)),
                         });
                     }
+                }
+                else if (property.IsRepeatable())
+                {
+                    node.ContextMenu.Add(new MenuItemViewModel()
+                    {
+                        MenuItemHeader = $"Add {property.Name}",
+                        MenuItemPayload = (node.Owner, property.Name), // ValueTuple<ISyntaxNodeViewModel, string>
+                        MenuItemCommand = new RelayCommand(ShowSyntaxNode),
+                        MenuItemIcon = new BitmapImage(new Uri(ADD_PROPERTY)),
+                    });
                 }
             }
             node.IsContextMenuEnabled = (node.ContextMenu.Count > 0);
