@@ -20,6 +20,7 @@ namespace OneCSharp.AST.UI
         {
             _layouts.Add(typeof(FunctionConcept), new FunctionConceptLayout());
             _layouts.Add(typeof(ParameterConcept), new ParameterConceptLayout());
+            _layouts.Add(typeof(VariableConcept), new VariableConceptLayout());
             _layouts.Add(typeof(SelectConcept), new SelectConceptLayout());
             _layouts.Add(typeof(SelectExpression), new SelectExpressionLayout());
             _layouts.Add(typeof(FromConcept), new FromConceptLayout());

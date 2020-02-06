@@ -54,13 +54,13 @@ namespace OneCSharp.AST.Model
         public static readonly SimpleTypeConcept UniqueIdentifier;
     }
     [Description("Data types")]
-    public abstract class DataTypeConcept : SyntaxNode, IIdentifiable
+    public abstract class DataType : SyntaxNode, IIdentifiable
     {
         public string Identifier { get; set; }
         public override string ToString() { return Identifier; }
     }
-    [Description("Simple data types")] public abstract class SimpleTypeConcept : DataTypeConcept { }
-    [Description("Complex data types")] public abstract class ComplexTypeConcept : DataTypeConcept { }
+    [Description("Simple data types")] public abstract class SimpleTypeConcept : DataType { }
+    [Description("Complex data types")] public abstract class ComplexTypeConcept : DataType { }
     public sealed class BinaryTypeConcept : SimpleTypeConcept { public BinaryTypeConcept() { Identifier = nameof(SimpleTypes.Binary); } }
     public sealed class StringTypeConcept : SimpleTypeConcept { public StringTypeConcept() { Identifier = nameof(SimpleTypes.String); } }
     public sealed class BooleanTypeConcept : SimpleTypeConcept { public BooleanTypeConcept() { Identifier = nameof(SimpleTypes.Boolean); } }

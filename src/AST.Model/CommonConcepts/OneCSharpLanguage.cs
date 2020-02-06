@@ -8,6 +8,7 @@ namespace OneCSharp.AST.Model
         public string Identifier { get; set; } = PLACEHOLDER;
         public Optional<SimpleTypeConcept> ReturnType { get; } = new Optional<SimpleTypeConcept>();
         public Optional<List<ParameterConcept>> Parameters { get; } = new Optional<List<ParameterConcept>>();
+        public Optional<List<VariableConcept>> Variables { get; } = new Optional<List<VariableConcept>>();
         public Optional<List<SelectConcept>> Statements { get; } = new Optional<List<SelectConcept>>();
     }
     public sealed class ParameterConcept : SyntaxNode, IIdentifiable
@@ -16,5 +17,11 @@ namespace OneCSharp.AST.Model
         public string Identifier { get; set; } = PLACEHOLDER;
         public SimpleTypeConcept ParameterType { get; set; }
         public Optional<bool> IsOutput { get; } = new Optional<bool>();
+    }
+    public sealed class VariableConcept : SyntaxNode, IIdentifiable
+    {
+        private const string PLACEHOLDER = "<variable name>";
+        public string Identifier { get; set; } = PLACEHOLDER;
+        public SimpleTypeConcept VariableType { get; set; }
     }
 }

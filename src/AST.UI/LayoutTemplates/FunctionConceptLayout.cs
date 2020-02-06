@@ -19,6 +19,7 @@ namespace OneCSharp.AST.UI
                 .Keyword("RETURNS").Bind(nameof(concept.ReturnType))
                 .Reference().Bind(nameof(concept.ReturnType))
                 .Repeatable().Bind(nameof(concept.Parameters))
+                .Repeatable().Bind(nameof(concept.Variables))
                 .Repeatable().Bind(nameof(concept.Statements));
         }
     }
@@ -32,6 +33,17 @@ namespace OneCSharp.AST.UI
                 .Identifier()
                 .Reference().Bind(nameof(concept.ParameterType))
                 .Keyword("OUTPUT").Bind(nameof(concept.IsOutput));
+        }
+    }
+    public sealed class VariableConceptLayout : IConceptLayout
+    {
+        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        {
+            VariableConcept concept;
+            return (new ConceptNodeViewModel(null, model))
+                .Keyword("DECLARE")
+                .Identifier()
+                .Reference().Bind(nameof(concept.VariableType));
         }
     }
 }
