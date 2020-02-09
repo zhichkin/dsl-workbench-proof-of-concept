@@ -9,6 +9,11 @@ namespace OneCSharp.AST.UI
             SelectConcept concept;
             return (new ConceptNodeViewModel(null, model))
                 .Keyword("SELECT")
+                .Keyword("DISTINCT").Bind(nameof(concept.IsDistinct))
+                .Keyword("TOP").Bind(nameof(concept.TopExpression))
+                .Literal("(").Bind(nameof(concept.TopExpression))
+                .Selector().Bind(nameof(concept.TopExpression))
+                .Literal(")").Bind(nameof(concept.TopExpression))
                 .Repeatable().Bind(nameof(concept.Expressions))
                 .Concept().Bind(nameof(concept.From))
                 .Concept().Bind(nameof(concept.Where));

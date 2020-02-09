@@ -7,20 +7,20 @@ namespace OneCSharp.AST.Model
     {
         static SimpleTypes()
         {
-            Binary = new BinaryTypeConcept();
-            String = new StringTypeConcept();
-            Boolean = new BooleanTypeConcept();
-            Numeric = new NumericTypeConcept();
-            DateTime = new DateTimeTypeConcept();
-            UniqueIdentifier = new UniqueIdentifierTypeConcept();
+            Binary = new BinaryDataType();
+            String = new StringDataType();
+            Boolean = new BooleanDataType();
+            Numeric = new NumericDataType();
+            DateTime = new DateTimeDataType();
+            UniqueIdentifier = new UniqueIdentifierDataType();
             Types = new Type[]
             {
-                typeof(BinaryTypeConcept),
-                typeof(StringTypeConcept),
-                typeof(BooleanTypeConcept),
-                typeof(NumericTypeConcept),
-                typeof(DateTimeTypeConcept),
-                typeof(UniqueIdentifierTypeConcept)
+                typeof(BinaryDataType),
+                typeof(StringDataType),
+                typeof(BooleanDataType),
+                typeof(NumericDataType),
+                typeof(DateTimeDataType),
+                typeof(UniqueIdentifierDataType)
             };
             References = new ISyntaxNode[]
             {
@@ -46,12 +46,12 @@ namespace OneCSharp.AST.Model
         public static readonly Type[] DotNetTypes;
         public static readonly ISyntaxNode[] References;
         
-        public static readonly SimpleTypeConcept Binary;
-        public static readonly SimpleTypeConcept String;
-        public static readonly SimpleTypeConcept Boolean;
-        public static readonly SimpleTypeConcept Numeric;
-        public static readonly SimpleTypeConcept DateTime;
-        public static readonly SimpleTypeConcept UniqueIdentifier;
+        public static readonly SimpleDataType Binary;
+        public static readonly SimpleDataType String;
+        public static readonly SimpleDataType Boolean;
+        public static readonly SimpleDataType Numeric;
+        public static readonly SimpleDataType DateTime;
+        public static readonly SimpleDataType UniqueIdentifier;
     }
     [Description("Data types")]
     public abstract class DataType : SyntaxNode, IIdentifiable
@@ -59,12 +59,12 @@ namespace OneCSharp.AST.Model
         public string Identifier { get; set; }
         public override string ToString() { return Identifier; }
     }
-    [Description("Simple data types")] public abstract class SimpleTypeConcept : DataType { }
-    [Description("Complex data types")] public abstract class ComplexTypeConcept : DataType { }
-    public sealed class BinaryTypeConcept : SimpleTypeConcept { public BinaryTypeConcept() { Identifier = nameof(SimpleTypes.Binary); } }
-    public sealed class StringTypeConcept : SimpleTypeConcept { public StringTypeConcept() { Identifier = nameof(SimpleTypes.String); } }
-    public sealed class BooleanTypeConcept : SimpleTypeConcept { public BooleanTypeConcept() { Identifier = nameof(SimpleTypes.Boolean); } }
-    public sealed class NumericTypeConcept : SimpleTypeConcept { public NumericTypeConcept() { Identifier = nameof(SimpleTypes.Numeric); } }
-    public sealed class DateTimeTypeConcept : SimpleTypeConcept { public DateTimeTypeConcept() { Identifier = nameof(SimpleTypes.DateTime); } }
-    public sealed class UniqueIdentifierTypeConcept : SimpleTypeConcept { public UniqueIdentifierTypeConcept() { Identifier = nameof(SimpleTypes.UniqueIdentifier); } }
+    [Description("Simple data types")] public abstract class SimpleDataType : DataType { }
+    [Description("Complex data types")] public abstract class ComplexDataType : DataType { }
+    public sealed class BinaryDataType : SimpleDataType { public BinaryDataType() { Identifier = nameof(SimpleTypes.Binary); } }
+    public sealed class StringDataType : SimpleDataType { public StringDataType() { Identifier = nameof(SimpleTypes.String); } }
+    public sealed class BooleanDataType : SimpleDataType { public BooleanDataType() { Identifier = nameof(SimpleTypes.Boolean); } }
+    public sealed class NumericDataType : SimpleDataType { public NumericDataType() { Identifier = nameof(SimpleTypes.Numeric); } }
+    public sealed class DateTimeDataType : SimpleDataType { public DateTimeDataType() { Identifier = nameof(SimpleTypes.DateTime); } }
+    public sealed class UniqueIdentifierDataType : SimpleDataType { public UniqueIdentifierDataType() { Identifier = nameof(SimpleTypes.UniqueIdentifier); } }
 }

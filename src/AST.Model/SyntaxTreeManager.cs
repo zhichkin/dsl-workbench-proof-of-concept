@@ -14,6 +14,37 @@ namespace OneCSharp.AST.Model
     public static class SyntaxTreeManager
     {
         private const string OPTIONAL_VALUE = "Value";
+        private static readonly Dictionary<Type, IScopeProvider> _scopeProviders = new Dictionary<Type, IScopeProvider>();
+        static SyntaxTreeManager()
+        {
+            _scopeProviders.Add(typeof(VariableConcept), new VariableScopeProvider());
+        }
+        public static IScopeProvider GetScopeProvider(Type concept)
+        {
+            if (concept == null) throw new ArgumentNullException(nameof(concept));
+            if (_scopeProviders.TryGetValue(concept, out IScopeProvider provider))
+            {
+                return provider;
+            }
+            return null;
+        }
+        public static ISyntaxNode Ancestor<T>(this ISyntaxNode @this)
+        {
+            Type ancestorType = typeof(T);
+            ISyntaxNode ancestor = @this.Parent;
+            while (ancestor != null)
+            {
+                if (ancestor.GetType() != ancestorType)
+                {
+                    ancestor = ancestor.Parent;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return ancestor;
+        }
         public static Type GetPropertyType(PropertyInfo property)
         {
             Type propertyType;
@@ -91,6 +122,22 @@ namespace OneCSharp.AST.Model
                 {
                     ClassifyTypeConstraint(constraints, type);
                 }
+            }
+        }
+        public static void SetConceptProperty(ISyntaxNode concept, string propertyName, object value)
+        {
+            PropertyInfo property = concept.GetPropertyInfo(propertyName);
+            if (property == null) throw new NullReferenceException($"Property \"{propertyName}\" of the \"{concept.GetType()}\" type is not found!");
+            if (property.IsRepeatable()) throw new InvalidOperationException($"Property \"{propertyName}\" can not be repeatable!");
+
+            if (property.IsOptional())
+            {
+                IOptional optional = (IOptional)property.GetValue(concept);
+                optional.Value = value;
+            }
+            else
+            {
+                property.SetValue(concept, value);
             }
         }
     }

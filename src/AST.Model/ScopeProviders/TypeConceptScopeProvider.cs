@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace OneCSharp.AST.Model
 {
@@ -7,6 +8,10 @@ namespace OneCSharp.AST.Model
         public IEnumerable<ISyntaxNode> Scope(ISyntaxNode concept, string propertyName)
         {
             return TypeConstraints.GetPropertyTypeConstraints(concept, propertyName);
+        }
+        public IEnumerable<ISyntaxNode> Scope(ISyntaxNode concept, string propertyName, ISyntaxNode consumer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

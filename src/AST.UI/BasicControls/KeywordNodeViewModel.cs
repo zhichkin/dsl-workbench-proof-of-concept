@@ -19,13 +19,5 @@ namespace OneCSharp.AST.UI
             set { _isContextMenuEnabled = value; OnPropertyChanged(nameof(IsContextMenuEnabled)); }
         }
         public ObservableCollection<MenuItemViewModel> ContextMenu { get; } = new ObservableCollection<MenuItemViewModel>();
-        protected override void OnMouseDown(object parameter)
-        {
-            //if (!(parameter is MouseButtonEventArgs args)) return;
-            //if (args.ChangedButton == MouseButton.Right)
-            //{
-            //    args.Handled = true;
-            //}
-        }
     }
 }

@@ -9,13 +9,13 @@ namespace OneCSharp.AST.UI
 {
     public static class SyntaxNodeSelector
     {
-        public static TreeNodeViewModel BuildTypeConstraintsTree(TypeConstraint constraints)
+        public static TreeNodeViewModel BuildSelectorTree(TypeConstraint constraints)
         {
             TreeNodeViewModel tree = new TreeNodeViewModel();
 
             BuildConstantSelectorTree(tree, constraints.DotNetTypes);
-            BuildTypeSelectorTree(tree, constraints.DataTypes, typeof(DataType));
-            BuildTypeSelectorTree(tree, constraints.Concepts, typeof(SyntaxNode));
+            BuildConceptSelectorTree(tree, constraints.DataTypes, typeof(DataType));
+            BuildConceptSelectorTree(tree, constraints.Concepts, typeof(SyntaxNode));
 
             // expand only top level nodes
             foreach (TreeNodeViewModel treeNode in tree.TreeNodes)
@@ -43,7 +43,7 @@ namespace OneCSharp.AST.UI
                 groupingNode.TreeNodes.Add(typeNode);
             }
         }
-        private static void BuildTypeSelectorTree(TreeNodeViewModel root, List<Type> types, Type rootType)
+        private static void BuildConceptSelectorTree(TreeNodeViewModel root, List<Type> types, Type rootType)
         {
             Type baseType;
             TreeNodeViewModel currentNode;
@@ -54,8 +54,13 @@ namespace OneCSharp.AST.UI
                 baseType = type;
                 currentNode = root;
 
-                while (baseType != rootType || baseType != null)
+                while (baseType != null)
                 {
+                    if (baseType == rootType)
+                    {
+                        stack.Push(baseType);
+                        break;
+                    }
                     stack.Push(baseType);
                     baseType = baseType.BaseType;
                 }
@@ -73,7 +78,7 @@ namespace OneCSharp.AST.UI
             {
                 if ((Type)node.NodePayload == baseType) return node;
             }
-            DescriptionAttribute attribute = baseType.GetCustomAttribute<DescriptionAttribute>();
+            DescriptionAttribute attribute = baseType.GetCustomAttribute<DescriptionAttribute>(false);
             string description = (attribute == null ? baseType.Name : attribute.Description);
             TreeNodeViewModel child = new TreeNodeViewModel()
             {

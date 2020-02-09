@@ -9,24 +9,22 @@
 
     <TextBlock.Resources>
         
-        <Style x:Key="SyntaxNodeBorderStyle" TargetType="Border">
+        <!--<Style x:Key="SyntaxNodeBorderStyle" TargetType="Border">
             <Setter Property="BorderBrush" Value="White"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsMouseOver}" Value="True">
                     <Setter Property="BorderBrush" Value="Black"/>
                 </DataTrigger>
             </Style.Triggers>
-        </Style>
+        </Style>-->
         
         <Style x:Key="KeywordStyle" TargetType="TextBlock">
-            <Style.Setters>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="FontFamily" Value="Segoe UI"/>
-                <Setter Property="Foreground" Value="Blue"/>
-            </Style.Setters>
+            <Setter Property="Foreground" Value="Blue"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsFocused}" Value="True">
-                    <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=CONTROL_ROOT}"/>
+                <DataTrigger Binding="{Binding IsTemporallyVisible}" Value="True">
+                    <Setter Property="Foreground" Value="LightGray"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -35,11 +33,9 @@
         
     </TextBlock.Resources>
 
-    <Border BorderThickness="1" Cursor="Hand" Style="{StaticResource SyntaxNodeBorderStyle}"
-            Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-        
-        <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Focusable="True" Margin="1"
-                   Style="{StaticResource KeywordStyle}" ContextMenuService.Placement="Bottom">
+    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Cursor="Hand" Focusable="True" Margin="1"
+                   Style="{StaticResource KeywordStyle}" ContextMenuService.Placement="Bottom"
+                   Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
             <TextBlock.ContextMenu>
                 <mvvm:ContextMenuView ItemsSource="{Binding ContextMenu}"
@@ -62,15 +58,13 @@
                     <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
                 <behaviors:EventTrigger EventName="MouseEnter" SourceObject="{Binding ElementName=CONTROL_ROOT}">
-                    <behaviors:InvokeCommandAction Command="{Binding MouseEnterCommand}"/>
+                    <behaviors:InvokeCommandAction Command="{Binding MouseEnterCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
                 <behaviors:EventTrigger EventName="MouseLeave" SourceObject="{Binding ElementName=CONTROL_ROOT}">
-                    <behaviors:InvokeCommandAction Command="{Binding MouseLeaveCommand}"/>
+                    <behaviors:InvokeCommandAction Command="{Binding MouseLeaveCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
             </behaviors:Interaction.Triggers>
             
         </TextBlock>
-    
-    </Border>
     
 </TextBlock>

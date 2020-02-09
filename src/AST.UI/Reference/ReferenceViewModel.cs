@@ -1,10 +1,7 @@
 ﻿using OneCSharp.AST.Model;
 using OneCSharp.MVVM;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -13,6 +10,8 @@ namespace OneCSharp.AST.UI
     public sealed class ReferenceViewModel : SyntaxNodeViewModel
     {
         private Brush _textColor = Brushes.Black;
+        private Brush _defaultColor = Brushes.Black;
+        private Brush _temporallyVisibleColor = Brushes.LightGray;
         private Brush _selectedValueBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2B91AF"));
         public ReferenceViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
         public string Presentation
@@ -23,6 +22,15 @@ namespace OneCSharp.AST.UI
         {
             get { return _textColor; }
             set { _textColor = value; OnPropertyChanged(nameof(TextColor)); }
+        }
+        public override bool IsTemporallyVisible
+        {
+            get { return base.IsTemporallyVisible; }
+            set
+            {
+                base.IsTemporallyVisible = value;
+                TextColor = (IsTemporallyVisible ? _temporallyVisibleColor : _defaultColor);
+            }
         }
         protected override void OnMouseDown(object parameter)
         {
@@ -55,7 +63,7 @@ namespace OneCSharp.AST.UI
                 // set binded property of the model by selected reference
                 ISyntaxNode model = dialog.Result.NodePayload as ISyntaxNode;
                 if (model == null) { return; }
-                ancestor.Model.SetConceptReferenceProperty(PropertyBinding, model);
+                SyntaxTreeManager.SetConceptProperty(ancestor.Model, PropertyBinding, model);
 
                 // reset view model's state
                 Model = model;

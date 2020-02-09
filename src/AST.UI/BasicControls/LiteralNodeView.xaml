@@ -7,17 +7,23 @@
 
     <TextBlock.Resources>
 
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
         <Style x:Key="LiteralStyle" TargetType="TextBlock">
-            <Style.Setters>
-                <Setter Property="Margin" Value="2"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="FontFamily" Value="Segoe UI"/>
-                <Setter Property="Foreground" Value="Black"/>
-            </Style.Setters>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsTemporallyVisible}" Value="True">
+                    <Setter Property="Foreground" Value="LightGray"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
     </TextBlock.Resources>
     
-    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Literal}" Style="{StaticResource LiteralStyle}"/>
+    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Literal}" Style="{StaticResource LiteralStyle}"
+               Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     
 </TextBlock>

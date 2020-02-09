@@ -58,6 +58,9 @@
     <Compile Update="Repeatable\RepeatableView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Selector\SelectorView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -65,6 +68,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Repeatable\RepeatableView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Selector\SelectorView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

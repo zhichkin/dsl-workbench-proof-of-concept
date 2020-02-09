@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace OneCSharp.AST.Model
 {
@@ -11,6 +12,7 @@ namespace OneCSharp.AST.Model
     {
         ISyntaxNode Parent { get; set; }
     }
+    [Description("Language concepts")]
     public abstract class SyntaxNode : ISyntaxNode
     {
         public ISyntaxNode Parent { get; set; }

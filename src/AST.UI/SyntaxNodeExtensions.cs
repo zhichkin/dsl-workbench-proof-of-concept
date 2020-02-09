@@ -169,7 +169,7 @@ namespace OneCSharp.AST.UI
             foreach (ISyntaxNode node in references)
             {
                 currentNode = tree;
-                baseType = node.GetType().BaseType;
+                baseType = node.GetType();
 
                 while (baseType != typeof(SyntaxNode))
                 {
@@ -205,7 +205,7 @@ namespace OneCSharp.AST.UI
             {
                 if ((Type)node.NodePayload == baseType) return node;
             }
-            DescriptionAttribute attribute = baseType.GetCustomAttribute<DescriptionAttribute>();
+            DescriptionAttribute attribute = baseType.GetCustomAttribute<DescriptionAttribute>(false);
             string description = (attribute == null ? baseType.Name : attribute.Description);
             TreeNodeViewModel child = new TreeNodeViewModel()
             {
@@ -219,6 +219,12 @@ namespace OneCSharp.AST.UI
         {
             ICodeLineViewModel codeLine = @this.NewLine().BottomCodeLine();
             codeLine.Nodes.Add(new ConceptNodeViewModel(@this, null));
+            return @this;
+        }
+        public static ConceptNodeViewModel Selector(this ConceptNodeViewModel @this)
+        {
+            ICodeLineViewModel codeLine = @this.BottomCodeLine();
+            codeLine.Nodes.Add(new SelectorViewModel(@this));
             return @this;
         }
     }

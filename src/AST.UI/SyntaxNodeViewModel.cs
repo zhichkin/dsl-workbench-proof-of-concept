@@ -11,6 +11,7 @@ namespace OneCSharp.AST.UI
     public interface ISyntaxNodeViewModel
     {
         bool IsVisible { get; set; }
+        bool IsTemporallyVisible { get; set; }
         ISyntaxNode Model { get; set; }
         string PropertyBinding { get; set; }
         void Add(ISyntaxNodeViewModel child);
@@ -75,22 +76,33 @@ namespace OneCSharp.AST.UI
         public ICommand CtrlCCommand { get; set; }
         public ICommand CtrlVCommand { get; set; }
 
-
         protected virtual void OnMouseEnter(object parameter)
         {
             IsMouseOver = true;
-            if (IsFocused) return;
+            if (!(parameter is MouseEventArgs args)) { return; }
+            ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
+            if (concept != null)
+            {
+                concept.ShowOptions();
+            }
+            //if (IsFocused) return;
             //IsBorderVisible = true;
             //BorderBrush = Brushes.Black;
         }
         protected virtual void OnMouseLeave(object parameter)
         {
             IsMouseOver = false;
-            if (!IsFocused)
+            if (!(parameter is MouseEventArgs)) { return; }
+            ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
+            if (concept != null)
             {
-                //IsBorderVisible = false;
-                //BorderBrush = Brushes.White;
+                concept.HideOptions();
             }
+            //if (!IsFocused)
+            //{
+            //    //IsBorderVisible = false;
+            //    //BorderBrush = Brushes.White;
+            //}
         }
         protected virtual void OnMouseDown(object parameter)
         {
@@ -218,10 +230,11 @@ namespace OneCSharp.AST.UI
 
 
         private bool _isVisible = true;
+        private bool _isTemporallyVisible = false;
         public bool IsVisible
         {
             get { return _isVisible; }
-            set { _isVisible = value; SetHasValue(); OnPropertyChanged(nameof(IsVisible)); }
+            set { _isVisible = value; OnPropertyChanged(nameof(IsVisible)); }
         }
         private void SetVisibility()
         {
@@ -235,26 +248,23 @@ namespace OneCSharp.AST.UI
             {
                 IOptional optional = (IOptional)property.GetValue(Owner.Model);
                 IsVisible = optional.HasValue;
+                _isTemporallyVisible = false;
             }
             else
             {
                 IsVisible = true;
+                _isTemporallyVisible = false;
             }
         }
-        private void SetHasValue()
+        public virtual bool IsTemporallyVisible
         {
-            Type metadata = Owner.Model.GetType();
-            PropertyInfo property = metadata.GetProperty(PropertyBinding);
-            if (property == null) return;
-
-            if (property.IsOptional())
+            get { return _isTemporallyVisible; }
+            set
             {
-                IOptional optional = (IOptional)property.GetValue(Owner.Model);
-                optional.HasValue = IsVisible;
-                if (optional.Value is bool && IsVisible)
-                {
-                    optional.Value = IsVisible; // TODO: move to controller ???
-                }
+                if (IsVisible && !_isTemporallyVisible) { return; }
+                _isTemporallyVisible = value;
+                IsVisible = _isTemporallyVisible;
+                OnPropertyChanged(nameof(IsTemporallyVisible));
             }
         }
     }

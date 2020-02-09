@@ -4,6 +4,9 @@ namespace OneCSharp.AST.Model
 {
     public sealed class SelectConcept : SyntaxNode
     {
+        public Optional<bool> IsDistinct { get; } = new Optional<bool>();
+        [TypeConstraint(typeof(int), typeof(ParameterConcept), typeof(VariableConcept))]
+        public Optional<object> TopExpression { get; } = new Optional<object>();
         public Optional<List<SelectExpression>> Expressions { get; } = new Optional<List<SelectExpression>>();
         public FromConcept From { get; } = new FromConcept();
         public Optional<WhereConcept> Where { get; } = new Optional<WhereConcept>();
@@ -22,9 +25,9 @@ namespace OneCSharp.AST.Model
     {
         public List<TableConcept> Expressions { get; } = new List<TableConcept>();
     }
-    public sealed class TableConcept : SyntaxNode, IIdentifiable
+    public sealed class TableConcept : ComplexDataType, IIdentifiable
     {
         private const string PLACEHOLDER = "<table>";
-        public string Identifier { get; set; } = PLACEHOLDER;
+        public TableConcept() { Identifier = PLACEHOLDER; }
     }
 }
