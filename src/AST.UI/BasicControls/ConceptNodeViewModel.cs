@@ -12,8 +12,8 @@ namespace OneCSharp.AST.UI
         }
         public void HideOptions()
         {
-            IsMouseOver = false;
-            ShowHideOptions(this);
+            //IsMouseOver = false;
+            //ShowHideOptions(this);
         }
         private void ShowHideOptions(ISyntaxNodeViewModel parent)
         {
@@ -64,5 +64,29 @@ namespace OneCSharp.AST.UI
         //{
         //    return uiElement.FadeFromTo(1, 0, durationInMilliseconds, false, false, true);
         //}
+
+//        <DataTrigger Binding = "{Binding PageToolBarVisible}" Value="false">
+//    <DataTrigger.EnterActions>
+//        <BeginStoryboard>
+//            <Storyboard>
+//                <DoubleAnimation
+//                Storyboard.TargetName="PageToolBar"
+//                Storyboard.TargetProperty= "(TextBlock.Opacity)"
+//                From= "0.0" To= "1.0" Duration= "0:0:3" />
+//            </ Storyboard >
+//        </ BeginStoryboard >
+//    </ DataTrigger.EnterActions >
+
+//    < DataTrigger.ExitActions >
+//        < BeginStoryboard >
+//            < Storyboard >
+//                < DoubleAnimation
+//                    Storyboard.TargetName= "PageToolBar"
+//                    Storyboard.TargetProperty= "(TextBlock.Opacity)"
+//                    From= "1.0" To= "0.0" Duration= "0:0:3" />
+//            </ Storyboard >
+//        </ BeginStoryboard >
+//    </ DataTrigger.ExitActions >
+//</ DataTrigger >
     }
 }

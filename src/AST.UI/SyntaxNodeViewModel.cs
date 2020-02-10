@@ -40,6 +40,7 @@ namespace OneCSharp.AST.UI
             MouseLeaveCommand = new RelayCommand(OnMouseLeave);
             CtrlCCommand = new RelayCommand(OnCtrlC);
             CtrlVCommand = new RelayCommand(OnCtrlV);
+            FadeOutCommand = new RelayCommand(OnFadeOut);
         }
         public SyntaxNodeViewModel(ISyntaxNodeViewModel owner) : this() { Owner = owner; }
         public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : this(owner) { Model = model; }
@@ -75,7 +76,7 @@ namespace OneCSharp.AST.UI
         public ICommand MouseLeaveCommand { get; set; }
         public ICommand CtrlCCommand { get; set; }
         public ICommand CtrlVCommand { get; set; }
-
+        public ICommand FadeOutCommand { get; set; }
         protected virtual void OnMouseEnter(object parameter)
         {
             IsMouseOver = true;
@@ -149,7 +150,10 @@ namespace OneCSharp.AST.UI
         {
 
         }
-
+        protected virtual void OnFadeOut(object parameter)
+        {
+            IsVisible = false;
+        }
 
         public void BreakLine(ISyntaxNodeViewModel node)
         {

@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 
 namespace OneCSharp.AST.UI
 {
@@ -7,6 +8,13 @@ namespace OneCSharp.AST.UI
         public KeywordNodeView()
         {
             InitializeComponent();
+        }
+        private void FadeOutAnimation_Completed(object sender, EventArgs args)
+        {
+            if (DataContext is SyntaxNodeViewModel vm)
+            {
+                vm.FadeOutCommand.Execute(args);
+            }
         }
     }
 }

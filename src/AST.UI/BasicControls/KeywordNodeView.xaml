@@ -8,23 +8,21 @@
            mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
 
     <TextBlock.Resources>
-        
-        <!--<Style x:Key="SyntaxNodeBorderStyle" TargetType="Border">
-            <Setter Property="BorderBrush" Value="White"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsMouseOver}" Value="True">
-                    <Setter Property="BorderBrush" Value="Black"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>-->
-        
+
+        <Storyboard x:Key="FadeOutAnimation" x:Shared="False" Completed="FadeOutAnimation_Completed">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.2" Duration="0:0:5"/>
+        </Storyboard>
+
         <Style x:Key="KeywordStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="Blue"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsTemporallyVisible}" Value="True">
-                    <Setter Property="Foreground" Value="LightGray"/>
+                    <Setter Property="Foreground" Value="Gray"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}"/>
+                    </DataTrigger.EnterActions>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -36,7 +34,7 @@
     <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Cursor="Hand" Focusable="True" Margin="1"
                    Style="{StaticResource KeywordStyle}" ContextMenuService.Placement="Bottom"
                    Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-
+           
             <TextBlock.ContextMenu>
                 <mvvm:ContextMenuView ItemsSource="{Binding ContextMenu}"
                                       Visibility="{Binding IsContextMenuEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
