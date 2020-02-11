@@ -9,7 +9,7 @@
 
     <TextBlock.Resources>
 
-        <Storyboard x:Key="FadeOutAnimation" x:Shared="False" Completed="FadeOutAnimation_Completed">
+        <Storyboard x:Key="HideOptionsAnimation" x:Shared="False" Completed="HideOptionsAnimation_Completed">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.2" Duration="0:0:5"/>
         </Storyboard>
 
@@ -21,7 +21,19 @@
                 <DataTrigger Binding="{Binding IsTemporallyVisible}" Value="True">
                     <Setter Property="Foreground" Value="Gray"/>
                     <DataTrigger.EnterActions>
-                        <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}"/>
+                        <BeginStoryboard x:Name="HideOptionsStoryboard" Storyboard="{StaticResource HideOptionsAnimation}"/>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ResetHideOptionsAnimation}" Value="True">
+                    <Setter Property="Opacity" Value="1"/>
+                    <DataTrigger.EnterActions>
+                        <SeekStoryboard BeginStoryboardName="HideOptionsStoryboard" Origin="BeginTime" Offset="0:0:0"/>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StopHideOptionsAnimation}" Value="True">
+                    <Setter Property="Opacity" Value="1"/>
+                    <DataTrigger.EnterActions>
+                        <StopStoryboard BeginStoryboardName="HideOptionsStoryboard"/>
                     </DataTrigger.EnterActions>
                 </DataTrigger>
             </Style.Triggers>
@@ -32,7 +44,7 @@
     </TextBlock.Resources>
 
     <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Cursor="Hand" Focusable="True" Margin="1"
-                   Style="{StaticResource KeywordStyle}" ContextMenuService.Placement="Bottom"
+                   Style="{StaticResource KeywordStyle}" Foreground="{Binding TextBrush}" ContextMenuService.Placement="Bottom" 
                    Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
            
             <TextBlock.ContextMenu>

@@ -9,11 +9,11 @@ namespace OneCSharp.AST.UI
         {
             InitializeComponent();
         }
-        private void FadeOutAnimation_Completed(object sender, EventArgs args)
+        private void HideOptionsAnimation_Completed(object sender, EventArgs args)
         {
-            if (DataContext is SyntaxNodeViewModel vm)
+            if (DataContext is ISyntaxNodeViewModel vm)
             {
-                vm.FadeOutCommand.Execute(args);
+                vm.HideOptionsCommand.Execute(args);
             }
         }
     }

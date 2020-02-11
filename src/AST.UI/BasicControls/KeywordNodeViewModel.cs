@@ -1,5 +1,6 @@
 ﻿using OneCSharp.MVVM;
 using System.Collections.ObjectModel;
+using System.Windows.Media;
 
 namespace OneCSharp.AST.UI
 {
@@ -7,7 +8,10 @@ namespace OneCSharp.AST.UI
     {
         private string _keyword = string.Empty;
         private bool _isContextMenuEnabled = false;
-        public KeywordNodeViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
+        public KeywordNodeViewModel(ISyntaxNodeViewModel owner) : base(owner)
+        {
+            TextBrush = Brushes.Blue;
+        }
         public string Keyword
         {
             get { return _keyword; }

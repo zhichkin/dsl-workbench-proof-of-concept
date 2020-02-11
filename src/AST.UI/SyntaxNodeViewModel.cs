@@ -5,13 +5,17 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace OneCSharp.AST.UI
 {
     public interface ISyntaxNodeViewModel
     {
+        Brush TextBrush { get; set; }
         bool IsVisible { get; set; }
         bool IsTemporallyVisible { get; set; }
+        bool ResetHideOptionsAnimation { get; set; }
+        bool StopHideOptionsAnimation { get; set; }
         ISyntaxNode Model { get; set; }
         string PropertyBinding { get; set; }
         void Add(ISyntaxNodeViewModel child);
@@ -25,12 +29,14 @@ namespace OneCSharp.AST.UI
         ICommand MouseLeaveCommand { get; set; }
         ICommand CtrlCCommand { get; set; }
         ICommand CtrlVCommand { get; set; }
+        ICommand HideOptionsCommand { get; set; }
     }
     public abstract class SyntaxNodeViewModel : ISyntaxNodeViewModel, INotifyPropertyChanged
     {
         private bool _isFocused = false;
         private bool _isMouseOver = false;
         private string _propertyBinding = null;
+        private Brush _textBrush = Brushes.Black;
         public event PropertyChangedEventHandler PropertyChanged;
         public SyntaxNodeViewModel()
         {
@@ -40,7 +46,7 @@ namespace OneCSharp.AST.UI
             MouseLeaveCommand = new RelayCommand(OnMouseLeave);
             CtrlCCommand = new RelayCommand(OnCtrlC);
             CtrlVCommand = new RelayCommand(OnCtrlV);
-            FadeOutCommand = new RelayCommand(OnFadeOut);
+            HideOptionsCommand = new RelayCommand(OnHideOptions);
         }
         public SyntaxNodeViewModel(ISyntaxNodeViewModel owner) : this() { Owner = owner; }
         public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : this(owner) { Model = model; }
@@ -57,9 +63,13 @@ namespace OneCSharp.AST.UI
         public ISyntaxNodeViewModel Owner { get; set; }
         public virtual void Add(ISyntaxNodeViewModel child) { }
         public ObservableCollection<ICodeLineViewModel> Lines { get; } = new ObservableCollection<ICodeLineViewModel>();
-        
 
-        
+
+        public Brush TextBrush
+        {
+            get { return _textBrush; }
+            set { _textBrush = value; OnPropertyChanged(nameof(TextBrush)); }
+        }
         public bool IsFocused
         {
             get { return _isFocused; }
@@ -76,70 +86,56 @@ namespace OneCSharp.AST.UI
         public ICommand MouseLeaveCommand { get; set; }
         public ICommand CtrlCCommand { get; set; }
         public ICommand CtrlVCommand { get; set; }
-        public ICommand FadeOutCommand { get; set; }
+        public ICommand HideOptionsCommand { get; set; }
         protected virtual void OnMouseEnter(object parameter)
         {
             IsMouseOver = true;
-            if (!(parameter is MouseEventArgs args)) { return; }
             ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
             if (concept != null)
             {
                 concept.ShowOptions();
             }
-            //if (IsFocused) return;
-            //IsBorderVisible = true;
-            //BorderBrush = Brushes.Black;
         }
         protected virtual void OnMouseLeave(object parameter)
         {
             IsMouseOver = false;
-            if (!(parameter is MouseEventArgs)) { return; }
-            ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
-            if (concept != null)
-            {
-                concept.HideOptions();
-            }
-            //if (!IsFocused)
-            //{
-            //    //IsBorderVisible = false;
-            //    //BorderBrush = Brushes.White;
-            //}
         }
         protected virtual void OnMouseDown(object parameter)
         {
-            IsFocused = true;
-            //IsBorderVisible = true;
-            //BorderBrush = Brushes.Black;
-            //FocusManager.SetFocus(this);
+            ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
+            if (concept != null)
+            {
+                concept.ProcessOptionSelection(PropertyBinding);
+            }
         }
         protected virtual void OnKeyDown(object parameter)
         {
-            if (!(parameter is KeyEventArgs args)) return;
+            //if (!(parameter is KeyEventArgs args)) return;
             
-            if (args.Key == Key.Enter)
-            {
-                BreakLine(this);
-                args.Handled = true;
-            }
-            else if (args.Key == Key.Back)
-            {
-                RestoreLine(this);
-                args.Handled = true;
-            }
-            else if (args.Key == Key.Left)
-            {
-                FocusLeft(this);
-                args.Handled = true;
-            }
-            else if (args.Key == Key.Right)
-            {
-                FocusRight(this);
-                args.Handled = true;
-            }
-            else if (args.Key == Key.Tab)
-            {
-                args.Handled = true;
-            }
+            //if (args.Key == Key.Enter)
+            //{
+            //    BreakLine(this);
+            //    args.Handled = true;
+            //}
+            //else if (args.Key == Key.Back)
+            //{
+            //    RestoreLine(this);
+            //    args.Handled = true;
+            //}
+            //else if (args.Key == Key.Left)
+            //{
+            //    FocusLeft(this);
+            //    args.Handled = true;
+            //}
+            //else if (args.Key == Key.Right)
+            //{
+            //    FocusRight(this);
+            //    args.Handled = true;
+            //}
+            //else if (args.Key == Key.Tab)
+            //{
+            //    args.Handled = true;
+            //}
             //MessageBox.Show($"{Keyword}: {args.Key}");
         }
         protected virtual void OnCtrlC(object parameter)
@@ -150,11 +146,7 @@ namespace OneCSharp.AST.UI
         {
 
         }
-        protected virtual void OnFadeOut(object parameter)
-        {
-            IsVisible = false;
-        }
-
+        
         public void BreakLine(ISyntaxNodeViewModel node)
         {
             for (int current = 0; current < Lines.Count; current++)
@@ -235,6 +227,8 @@ namespace OneCSharp.AST.UI
 
         private bool _isVisible = true;
         private bool _isTemporallyVisible = false;
+        private bool _resetHideOptionsAnimation = false;
+        private bool _stopHideOptionsAnimation = false;
         public bool IsVisible
         {
             get { return _isVisible; }
@@ -267,8 +261,29 @@ namespace OneCSharp.AST.UI
             {
                 if (IsVisible && !_isTemporallyVisible) { return; }
                 _isTemporallyVisible = value;
+                TextBrush = Brushes.Gray;
                 IsVisible = _isTemporallyVisible;
                 OnPropertyChanged(nameof(IsTemporallyVisible));
+            }
+        }
+        public bool ResetHideOptionsAnimation
+        {
+            get { return _resetHideOptionsAnimation; }
+            set { _resetHideOptionsAnimation = value; OnPropertyChanged(nameof(ResetHideOptionsAnimation)); }
+        }
+        public bool StopHideOptionsAnimation
+        {
+            get { return _stopHideOptionsAnimation; }
+            set { _stopHideOptionsAnimation = value; OnPropertyChanged(nameof(StopHideOptionsAnimation)); }
+        }
+        protected virtual void OnHideOptions(object parameter)
+        {
+            if (IsTemporallyVisible)
+            {
+                IsVisible = false;
+                _isTemporallyVisible = false;
+                StopHideOptionsAnimation = false;
+                ResetHideOptionsAnimation = false;
             }
         }
     }
