@@ -19,7 +19,7 @@
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsTemporallyVisible}" Value="True">
-                    <Setter Property="Foreground" Value="LightGray"/>
+                    <Setter Property="Foreground" Value="Gray"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>

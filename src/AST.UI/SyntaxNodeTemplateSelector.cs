@@ -16,7 +16,8 @@ namespace OneCSharp.AST.UI
             { typeof(ConceptNodeViewModel), typeof(ConceptNodeView) },
             { typeof(RepeatableViewModel), typeof(RepeatableView) },
             { typeof(ReferenceViewModel), typeof(ReferenceView) },
-            { typeof(SelectorViewModel), typeof(SelectorView) }
+            { typeof(SelectorViewModel), typeof(SelectorView) },
+            { typeof(CreateRepeatableOption), typeof(CreateRepeatableOptionView) }
         };
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {

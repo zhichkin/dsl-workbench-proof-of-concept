@@ -55,6 +55,9 @@
     <Compile Update="BasicControls\ConceptNodeView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Repeatable\CreateRepeatableOptionView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Repeatable\RepeatableView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -65,6 +68,9 @@
 
   <ItemGroup>
     <Page Update="BasicControls\ConceptNodeView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Repeatable\CreateRepeatableOptionView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Repeatable\RepeatableView.xaml">
