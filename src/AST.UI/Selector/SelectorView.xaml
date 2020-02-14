@@ -26,8 +26,7 @@
 
     </UserControl.Resources>
 
-    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Presentation}" Foreground="{Binding TextColor}"
-               Style="{StaticResource ReferenceStyle}"
+    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Presentation}" Style="{StaticResource ReferenceStyle}"
                Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
         
         <behaviors:Interaction.Triggers>

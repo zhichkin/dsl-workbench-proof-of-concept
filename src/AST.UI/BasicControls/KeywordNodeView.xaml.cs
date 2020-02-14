@@ -9,11 +9,11 @@ namespace OneCSharp.AST.UI
         {
             InitializeComponent();
         }
-        private void HideOptionsAnimation_Completed(object sender, EventArgs args)
+        private void HideOptionAnimation_Completed(object sender, EventArgs args)
         {
             if (DataContext is ISyntaxNodeViewModel vm)
             {
-                vm.HideOptionsCommand.Execute(args);
+                vm.StopHideOptionAnimation();
             }
         }
     }

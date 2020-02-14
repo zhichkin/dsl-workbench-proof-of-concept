@@ -10,32 +10,14 @@ namespace OneCSharp.AST.UI
 {
     public sealed class SelectorViewModel : SyntaxNodeViewModel
     {
-        private Brush _textColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A31515"));
-        private Brush _defaultColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A31515"));
-        private Brush _temporallyVisibleColor = Brushes.LightGray;
-        private Brush _selectedValueBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2B91AF"));
+        //private Brush _textColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A31515"));
+        //private Brush _defaultColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A31515"));
+        //private Brush _temporallyVisibleColor = Brushes.LightGray;
+        //private Brush _selectedValueBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2B91AF"));
         public SelectorViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
         public string Presentation
         {
             get { return (Model == null ? $"{{{PropertyBinding}}}" : Model.ToString()); }
-        }
-        public Brush TextColor
-        {
-            get { return _textColor; }
-            set { _textColor = value; OnPropertyChanged(nameof(TextColor)); }
-        }
-        public override bool IsTemporallyVisible
-        {
-            get { return base.IsTemporallyVisible; }
-            set
-            {
-                base.IsTemporallyVisible = value;
-                TextColor = (IsTemporallyVisible
-                    ? _temporallyVisibleColor
-                    : (Model == null
-                        ? _defaultColor
-                        : _selectedValueBrush));
-            }
         }
         protected override void OnMouseDown(object parameter)
         {
@@ -74,7 +56,6 @@ namespace OneCSharp.AST.UI
 
                 // reset view model's state
                 Model = reference;
-                TextColor = _selectedValueBrush;
                 OnPropertyChanged(nameof(Presentation));
             }
         }

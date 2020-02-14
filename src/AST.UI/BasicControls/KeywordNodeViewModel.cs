@@ -8,10 +8,7 @@ namespace OneCSharp.AST.UI
     {
         private string _keyword = string.Empty;
         private bool _isContextMenuEnabled = false;
-        public KeywordNodeViewModel(ISyntaxNodeViewModel owner) : base(owner)
-        {
-            TextBrush = Brushes.Blue;
-        }
+        public KeywordNodeViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
         public string Keyword
         {
             get { return _keyword; }

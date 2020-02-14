@@ -2,8 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Windows.Media;
 
 namespace OneCSharp.AST.UI
 {
@@ -12,26 +12,33 @@ namespace OneCSharp.AST.UI
         public ConceptNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : base(owner, model) { }
         public void ShowOptions()
         {
-            foreach (var line in this.Lines)
+            Type metadata = Model.GetType();
+            foreach (PropertyInfo property in metadata
+                .GetProperties().Where(p => p.IsOptional()))
             {
-                foreach (var node in line.Nodes)
+                IOptional optional = (IOptional)property.GetValue(Model);
+                if (optional.HasValue) { continue; }
+
+                List<ISyntaxNodeViewModel> nodes = this.GetNodesByPropertyName(property.Name);
+                if (nodes.Count == 0) return;
+
+                foreach (var node in nodes)
                 {
                     if (node.IsTemporallyVisible)
                     {
-                        node.ResetHideOptionsAnimation = true;
-                        node.ResetHideOptionsAnimation = false;
+                        node.ResetHideOptionAnimation();
                         continue;
                     }
 
                     if (node is RepeatableViewModel)
                     {
                         ShowRepeatableOption(node);
-                        //node.IsTemporallyVisible = true;
                     }
                     else
                     {
                         // References, Selectors, Concepts, Keywords, Literals, Indents and Identifiers
-                        node.IsTemporallyVisible = true;
+                        node.StartHideOptionAnimation();
+                        
                     }
                     if (node is SelectorViewModel) { /* TODO */ }
                     if (node is ConceptNodeViewModel) { /* TODO */ }
@@ -57,15 +64,14 @@ namespace OneCSharp.AST.UI
             {
                 option = new CreateRepeatableOption((RepeatableViewModel)repetableNode)
                 {
-                    Presentation = $"{repetableNode.PropertyBinding} (click to add item)"
+                    Presentation = $"[{repetableNode.PropertyBinding}]"
                 };
                 repetableNode.Add(option);
             }
-            
+
             //TODO: repeatable view model does not have event handlers to reset visibility after animation is over
             repetableNode.IsVisible = true;
-            option.IsVisible = false;
-            option.IsTemporallyVisible = true;
+            option.StartHideOptionAnimation();
 
             //PropertyInfo property = Model.GetPropertyInfo(repetableNode.PropertyBinding);
             //if (property == null) return;
@@ -132,8 +138,7 @@ namespace OneCSharp.AST.UI
             {
                 if (node.IsTemporallyVisible)
                 {
-                    node.StopHideOptionsAnimation = true;
-                    node.HideOptionsCommand.Execute(propertyName);
+                    node.StopHideOptionAnimation();
                 }
             }
 
@@ -151,10 +156,6 @@ namespace OneCSharp.AST.UI
             foreach (var node in nodes)
             {
                 node.IsVisible = true;
-                if (node is KeywordNodeViewModel keyword)
-                {
-                    keyword.TextBrush = Brushes.Blue;
-                }
             }
         }
     }

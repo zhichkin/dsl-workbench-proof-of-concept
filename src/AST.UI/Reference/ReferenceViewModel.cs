@@ -9,28 +9,14 @@ namespace OneCSharp.AST.UI
 {
     public sealed class ReferenceViewModel : SyntaxNodeViewModel
     {
-        private Brush _textColor = Brushes.Black;
-        private Brush _defaultColor = Brushes.Black;
-        private Brush _temporallyVisibleColor = Brushes.LightGray;
-        private Brush _selectedValueBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2B91AF"));
+        //private Brush _textColor = Brushes.Black;
+        //private Brush _defaultColor = Brushes.Black;
+        //private Brush _temporallyVisibleColor = Brushes.LightGray;
+        //private Brush _selectedValueBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2B91AF"));
         public ReferenceViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
         public string Presentation
         {
             get { return (Model == null ? $"{{{PropertyBinding}}}" : Model.ToString()); }
-        }
-        public Brush TextColor
-        {
-            get { return _textColor; }
-            set { _textColor = value; OnPropertyChanged(nameof(TextColor)); }
-        }
-        public override bool IsTemporallyVisible
-        {
-            get { return base.IsTemporallyVisible; }
-            set
-            {
-                base.IsTemporallyVisible = value;
-                TextColor = (IsTemporallyVisible ? _temporallyVisibleColor : _defaultColor);
-            }
         }
         protected override void OnMouseDown(object parameter)
         {
@@ -67,7 +53,6 @@ namespace OneCSharp.AST.UI
 
                 // reset view model's state
                 Model = model;
-                TextColor = _selectedValueBrush;
                 OnPropertyChanged(nameof(Presentation));
             }
         }

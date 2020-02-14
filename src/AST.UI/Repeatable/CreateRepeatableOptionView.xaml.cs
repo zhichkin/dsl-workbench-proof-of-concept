@@ -13,7 +13,7 @@ namespace OneCSharp.AST.UI
         {
             if (DataContext is ISyntaxNodeViewModel vm)
             {
-                vm.HideOptionsCommand.Execute(args);
+                vm.StopHideOptionAnimation();
             }
         }
     }

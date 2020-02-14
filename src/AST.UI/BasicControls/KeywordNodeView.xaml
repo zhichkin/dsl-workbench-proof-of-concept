@@ -9,43 +9,45 @@
 
     <TextBlock.Resources>
 
-        <Storyboard x:Key="HideOptionsAnimation" x:Shared="False" Completed="HideOptionsAnimation_Completed">
-            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.2" Duration="0:0:5"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        
+        <Storyboard x:Key="HideOptionAnimation" x:Shared="False" Completed="HideOptionAnimation_Completed">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:5"/>
         </Storyboard>
 
         <Style x:Key="KeywordStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="True"/>
             <Setter Property="Foreground" Value="Blue"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="ContextMenuService.Placement" Value="Bottom"/>
             <Style.Triggers>
+                
                 <DataTrigger Binding="{Binding IsTemporallyVisible}" Value="True">
                     <Setter Property="Foreground" Value="Gray"/>
                     <DataTrigger.EnterActions>
-                        <BeginStoryboard x:Name="HideOptionsStoryboard" Storyboard="{StaticResource HideOptionsAnimation}"/>
+                        <BeginStoryboard x:Name="HideOptionStoryboard" Storyboard="{StaticResource HideOptionAnimation}"/>
                     </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <StopStoryboard BeginStoryboardName="HideOptionStoryboard"/>
+                    </DataTrigger.ExitActions>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding ResetHideOptionsAnimation}" Value="True">
-                    <Setter Property="Opacity" Value="1"/>
+
+                <DataTrigger Binding="{Binding ResetHideOptionFlag}" Value="True">
                     <DataTrigger.EnterActions>
-                        <SeekStoryboard BeginStoryboardName="HideOptionsStoryboard" Origin="BeginTime" Offset="0:0:0"/>
+                        <SeekStoryboard BeginStoryboardName="HideOptionStoryboard" Origin="BeginTime" Offset="0:0:0"/>
                     </DataTrigger.EnterActions>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding StopHideOptionsAnimation}" Value="True">
-                    <Setter Property="Opacity" Value="1"/>
-                    <DataTrigger.EnterActions>
-                        <StopStoryboard BeginStoryboardName="HideOptionsStoryboard"/>
-                    </DataTrigger.EnterActions>
-                </DataTrigger>
+                
             </Style.Triggers>
         </Style>
         
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        
     </TextBlock.Resources>
 
-    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Cursor="Hand" Focusable="True" Margin="1"
-                   Style="{StaticResource KeywordStyle}" Foreground="{Binding TextBrush}" ContextMenuService.Placement="Bottom" 
-                   Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Keyword}" Style="{StaticResource KeywordStyle}"
+               Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
            
             <TextBlock.ContextMenu>
                 <mvvm:ContextMenuView ItemsSource="{Binding ContextMenu}"
@@ -61,17 +63,17 @@
                 <behaviors:EventTrigger EventName="KeyDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
                     <behaviors:InvokeCommandAction Command="{Binding KeyDownCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
-                <behaviors:EventTrigger EventName="MouseLeftButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
-                    <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}" PassEventArgsToCommand="True"/>
-                </behaviors:EventTrigger>
-                <behaviors:EventTrigger EventName="MouseRightButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
-                    <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}" PassEventArgsToCommand="True"/>
-                </behaviors:EventTrigger>
                 <behaviors:EventTrigger EventName="MouseEnter" SourceObject="{Binding ElementName=CONTROL_ROOT}">
                     <behaviors:InvokeCommandAction Command="{Binding MouseEnterCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
                 <behaviors:EventTrigger EventName="MouseLeave" SourceObject="{Binding ElementName=CONTROL_ROOT}">
                     <behaviors:InvokeCommandAction Command="{Binding MouseLeaveCommand}" PassEventArgsToCommand="True"/>
+                </behaviors:EventTrigger>
+                <behaviors:EventTrigger EventName="MouseLeftButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+                    <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}" PassEventArgsToCommand="True"/>
+                </behaviors:EventTrigger>
+                <behaviors:EventTrigger EventName="MouseRightButtonDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">
+                    <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}" PassEventArgsToCommand="True"/>
                 </behaviors:EventTrigger>
             </behaviors:Interaction.Triggers>
             
