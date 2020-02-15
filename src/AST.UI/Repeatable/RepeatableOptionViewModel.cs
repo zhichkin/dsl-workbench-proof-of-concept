@@ -2,10 +2,10 @@
 
 namespace OneCSharp.AST.UI
 {
-    public sealed class CreateRepeatableOption : SyntaxNodeViewModel
+    public sealed class RepeatableOptionViewModel : SyntaxNodeViewModel
     {
         private string _presentation;
-        public CreateRepeatableOption(RepeatableViewModel owner) : base(owner)
+        public RepeatableOptionViewModel(RepeatableViewModel owner) : base(owner)
         {
             if (owner == null) throw new ArgumentNullException(nameof(owner));
             _presentation = owner.PropertyBinding;

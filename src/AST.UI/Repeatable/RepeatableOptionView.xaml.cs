@@ -3,13 +3,13 @@ using System.Windows.Controls;
 
 namespace OneCSharp.AST.UI
 {
-    public partial class CreateRepeatableOptionView : TextBlock
+    public partial class RepeatableOptionView : TextBlock
     {
-        public CreateRepeatableOptionView()
+        public RepeatableOptionView()
         {
             InitializeComponent();
         }
-        private void HideOptionsAnimation_Completed(object sender, EventArgs args)
+        private void HideOptionAnimation_Completed(object sender, EventArgs args)
         {
             if (DataContext is ISyntaxNodeViewModel vm)
             {

@@ -11,22 +11,40 @@
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
-        <Style x:Key="ReferenceStyle" TargetType="TextBlock">
+        <Storyboard x:Key="HideOptionAnimation" x:Shared="False" Completed="HideOptionAnimation_Completed">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:5"/>
+        </Storyboard>
+        
+        <Style x:Key="SelectorStyle" TargetType="TextBlock">
             <Setter Property="Margin" Value="2"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Style.Triggers>
+                
                 <DataTrigger Binding="{Binding IsTemporallyVisible}" Value="True">
-                    <Setter Property="Foreground" Value="LightGray"/>
+                    <Setter Property="Foreground" Value="Gray"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard x:Name="HideOptionStoryboard" Storyboard="{StaticResource HideOptionAnimation}"/>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <StopStoryboard BeginStoryboardName="HideOptionStoryboard"/>
+                    </DataTrigger.ExitActions>
                 </DataTrigger>
+
+                <DataTrigger Binding="{Binding ResetHideOptionFlag}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <SeekStoryboard BeginStoryboardName="HideOptionStoryboard" Origin="BeginTime" Offset="0:0:0"/>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+                
             </Style.Triggers>
         </Style>
 
     </UserControl.Resources>
 
-    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Presentation}" Style="{StaticResource ReferenceStyle}"
+    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Presentation}" Style="{StaticResource SelectorStyle}"
                Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
         
         <behaviors:Interaction.Triggers>

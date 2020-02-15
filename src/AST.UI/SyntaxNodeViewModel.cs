@@ -19,6 +19,7 @@ namespace OneCSharp.AST.UI
         ISyntaxNode Model { get; set; }
         string PropertyBinding { get; set; }
         void Add(ISyntaxNodeViewModel child);
+        void Remove(ISyntaxNodeViewModel child);
         ISyntaxNodeViewModel Owner { get; set; }
         ObservableCollection<ICodeLineViewModel> Lines { get; }
         bool IsFocused { get; set; }
@@ -59,6 +60,7 @@ namespace OneCSharp.AST.UI
         }
         public ISyntaxNodeViewModel Owner { get; set; }
         public virtual void Add(ISyntaxNodeViewModel child) { }
+        public virtual void Remove(ISyntaxNodeViewModel child) { }
         public ObservableCollection<ICodeLineViewModel> Lines { get; } = new ObservableCollection<ICodeLineViewModel>();
 
 
@@ -190,6 +192,14 @@ namespace OneCSharp.AST.UI
                 IsTemporallyVisible = true;
             }
         }
+        public void ResetHideOptionAnimation()
+        {
+            if (IsTemporallyVisible)
+            {
+                ResetHideOptionFlag = true;
+                ResetHideOptionFlag = false;
+            }
+        }
         public void StopHideOptionAnimation()
         {
             if (IsTemporallyVisible)
@@ -197,14 +207,15 @@ namespace OneCSharp.AST.UI
                 IsVisible = false;
                 IsTemporallyVisible = false;
                 ResetHideOptionFlag = false;
-            }
-        }
-        public void ResetHideOptionAnimation()
-        {
-            if (IsTemporallyVisible)
-            {
-                ResetHideOptionFlag = true;
-                ResetHideOptionFlag = false;
+                if (this is RepeatableOptionViewModel)
+                {
+                    if (Owner == null) return;
+                    Owner.Remove(this);
+                    if (Owner.Lines.Count == 0)
+                    {
+                        Owner.StopHideOptionAnimation();
+                    }
+                }
             }
         }
     }

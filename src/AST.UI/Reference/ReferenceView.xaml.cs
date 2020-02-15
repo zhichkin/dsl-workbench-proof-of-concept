@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 
 namespace OneCSharp.AST.UI
 {
@@ -7,6 +8,13 @@ namespace OneCSharp.AST.UI
         public ReferenceView()
         {
             InitializeComponent();
+        }
+        private void HideOptionAnimation_Completed(object sender, EventArgs args)
+        {
+            if (DataContext is ISyntaxNodeViewModel vm)
+            {
+                vm.StopHideOptionAnimation();
+            }
         }
     }
 }

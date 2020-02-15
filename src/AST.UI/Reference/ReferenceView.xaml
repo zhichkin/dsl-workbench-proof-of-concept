@@ -10,7 +10,11 @@
     <UserControl.Resources>
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        
+
+        <Storyboard x:Key="HideOptionAnimation" x:Shared="False" Completed="HideOptionAnimation_Completed">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:5"/>
+        </Storyboard>
+
         <Style x:Key="ReferenceStyle" TargetType="TextBlock">
             <Setter Property="Margin" Value="2"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -18,9 +22,23 @@
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Style.Triggers>
+                
                 <DataTrigger Binding="{Binding IsTemporallyVisible}" Value="True">
                     <Setter Property="Foreground" Value="Gray"/>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard x:Name="HideOptionStoryboard" Storyboard="{StaticResource HideOptionAnimation}"/>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <StopStoryboard BeginStoryboardName="HideOptionStoryboard"/>
+                    </DataTrigger.ExitActions>
                 </DataTrigger>
+
+                <DataTrigger Binding="{Binding ResetHideOptionFlag}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <SeekStoryboard BeginStoryboardName="HideOptionStoryboard" Origin="BeginTime" Offset="0:0:0"/>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+                
             </Style.Triggers>
         </Style>
 

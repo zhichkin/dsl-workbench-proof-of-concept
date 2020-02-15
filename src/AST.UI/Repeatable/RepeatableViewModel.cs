@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace OneCSharp.AST.UI
 {
@@ -80,13 +81,48 @@ namespace OneCSharp.AST.UI
             }
 
             line.Nodes.Add(node);
-            if (string.IsNullOrEmpty(ClosingLiteral))
+            if (node is RepeatableOptionViewModel)
             {
-                Lines.Add(line);
+                if (string.IsNullOrEmpty(OpeningLiteral))
+                {
+                    Lines.Insert(0, line);
+                }
+                else
+                {
+                    Lines.Insert(1, line);
+                }
             }
             else
             {
-                Lines.Insert(Lines.Count - 1, line);
+                if (string.IsNullOrEmpty(ClosingLiteral))
+                {
+                    Lines.Add(line);
+                }
+                else
+                {
+                    Lines.Insert(Lines.Count - 1, line);
+                }
+            }
+        }
+        public override void Remove(ISyntaxNodeViewModel node)
+        {
+            if (node == null) throw new ArgumentNullException(nameof(node));
+
+            for (int l = 0; l < Lines.Count; l++)
+            {
+                var line = Lines[l];
+                for (int i = 0; i < line.Nodes.Count; i++)
+                {
+                    if (line.Nodes[i] == node)
+                    {
+                        line.Nodes.Remove(node);
+                        if (line.Nodes.Where(n => !(n is IndentNodeViewModel)).Count() == 0)
+                        {
+                            Lines.Remove(line);
+                        }
+                        return;
+                    }
+                }
             }
         }
     }

@@ -17,7 +17,7 @@ namespace OneCSharp.AST.UI
                 .GetProperties().Where(p => p.IsOptional()))
             {
                 IOptional optional = (IOptional)property.GetValue(Model);
-                if (optional.HasValue) { continue; }
+                if (!property.IsRepeatable() && optional.HasValue) { continue; }
 
                 List<ISyntaxNodeViewModel> nodes = this.GetNodesByPropertyName(property.Name);
                 if (nodes.Count == 0) return;
@@ -47,55 +47,31 @@ namespace OneCSharp.AST.UI
         }
         private void ShowRepeatableOption(ISyntaxNodeViewModel repetableNode)
         {
-            //if (repetableNode.IsVisible) return; // TODO: add command view model to add new repeatable item
+            if (!repetableNode.IsVisible)
+            {
+                repetableNode.IsVisible = true;
+            }
 
-            CreateRepeatableOption option = null;
+            RepeatableOptionViewModel option = null;
             foreach (var line in repetableNode.Lines)
             {
                 foreach (var node in line.Nodes)
                 {
-                    if (node is CreateRepeatableOption)
+                    if (node is RepeatableOptionViewModel)
                     {
-                        option = (CreateRepeatableOption)node;
+                        option = (RepeatableOptionViewModel)node;
+                        option.ResetHideOptionAnimation();
                     }
                 }
             }
-            if (option == null)
+            if (option != null) { return; }
+
+            option = new RepeatableOptionViewModel((RepeatableViewModel)repetableNode)
             {
-                option = new CreateRepeatableOption((RepeatableViewModel)repetableNode)
-                {
-                    Presentation = $"[{repetableNode.PropertyBinding}]"
-                };
-                repetableNode.Add(option);
-            }
-
-            //TODO: repeatable view model does not have event handlers to reset visibility after animation is over
-            repetableNode.IsVisible = true;
+                Presentation = $"[{repetableNode.PropertyBinding}]"
+            };
+            repetableNode.Add(option);
             option.StartHideOptionAnimation();
-
-            //PropertyInfo property = Model.GetPropertyInfo(repetableNode.PropertyBinding);
-            //if (property == null) return;
-            //if (!property.IsRepeatable()) return;
-
-            //TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(Model, repetableNode.PropertyBinding);
-
-            //if (constraints.DataTypes.Count == 0
-            //    && constraints.Concepts.Count == 1
-            //    && constraints.DotNetTypes.Count == 0)
-            //{
-            //    //TODO: replace with SyntaxTreeManager !?
-            //    SyntaxTreeController controller = new SyntaxTreeController();
-
-            //    ISyntaxNode model = CreateRepeatableConcept(constraints.Concepts[0], Model, property.Name);
-            //    ConceptNodeViewModel repeatable = controller.CreateSyntaxNode(repetableNode, model);
-            //    repetableNode.Add(repeatable);
-            //    repetableNode.IsTemporallyVisible = true;
-            //    repeatable.IsTemporallyVisible = true;
-            //}
-            //else
-            //{
-            //    // TODO: handle this repeatable as repeatable selector
-            //}
         }
         private ISyntaxNode CreateRepeatableConcept(Type repeatable, ISyntaxNode parent, string propertyName)
         {
