@@ -22,42 +22,37 @@ namespace OneCSharp.AST.UI
         protected override void OnMouseDown(object parameter)
         {
             if (!(parameter is MouseButtonEventArgs args)) return;
+            if (args.ChangedButton == MouseButton.Right) return;
+            args.Handled = true;
 
-            // TODO: delegate this code to the SyntaxTreeController !?
-            if (args.ChangedButton == MouseButton.Left || args.ChangedButton == MouseButton.Right)
-            {
-                args.Handled = true;
+            // get parent concept node
+            var ancestor = this.Ancestor<ConceptNodeViewModel>();
+            if (ancestor == null) return;
 
-                // get parent concept node
-                var ancestor = this.Ancestor<ConceptNodeViewModel>();
-                if (ancestor == null) return;
+            // get type constraints of the property
+            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(ancestor.Model, PropertyBinding);
 
-                // get type constraints of the property
-               
-                TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(ancestor.Model, PropertyBinding);
+            // build tree view
+            TreeNodeViewModel viewModel = SyntaxNodeSelector.BuildSelectorTree(constraints);
 
-                // build tree view
-                TreeNodeViewModel viewModel = SyntaxNodeSelector.BuildSelectorTree(constraints);
+            // open dialog window
+            Visual control = args.Source as Visual;
+            PopupWindow dialog = new PopupWindow(control, viewModel);
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) { return; }
 
-                // open dialog window
-                Visual control = args.Source as Visual;
-                PopupWindow dialog = new PopupWindow(control, viewModel);
-                _ = dialog.ShowDialog();
-                if (dialog.Result == null) { return; }
+            Type selectedType = dialog.Result.NodePayload as Type;
+            if (selectedType == null) { return; }
 
-                Type selectedType = dialog.Result.NodePayload as Type;
-                if (selectedType == null) { return; }
+            ISyntaxNode reference = SelectSyntaxNodeReference(selectedType, ancestor.Model, PropertyBinding, control);
+            if (reference == null) { return; }
 
-                ISyntaxNode reference = SelectSyntaxNodeReference(selectedType, ancestor.Model, PropertyBinding, control);
-                if (reference == null) { return; }
+            // set binded property of the model by selected reference
+            SyntaxTreeManager.SetConceptProperty(ancestor.Model, PropertyBinding, reference);
 
-                // set binded property of the model by selected reference
-                SyntaxTreeManager.SetConceptProperty(ancestor.Model, PropertyBinding, reference);
-
-                // reset view model's state
-                Model = reference;
-                OnPropertyChanged(nameof(Presentation));
-            }
+            // reset view model's state
+            Model = reference;
+            OnPropertyChanged(nameof(Presentation));
         }
         private ISyntaxNode SelectSyntaxNodeReference(Type childConcept, ISyntaxNode parentConcept, string propertyName, Visual control)
         {

@@ -47,16 +47,16 @@ namespace OneCSharp.AST.UI
             ConceptNodeViewModel node = layout.Layout(model) as ConceptNodeViewModel;
             node.Owner = parentNode;
 
-            if (node.Lines.Count > 0)
-            {
-                KeywordNodeViewModel keyword = (KeywordNodeViewModel)node.Lines[0].Nodes
-                    .Where(n => n.GetType() == typeof(KeywordNodeViewModel))
-                    .FirstOrDefault();
-                if (keyword != null)
-                {
-                    CreateContextMenu(keyword, model);
-                }
-            }
+            //if (node.Lines.Count > 0)
+            //{
+            //    KeywordNodeViewModel keyword = (KeywordNodeViewModel)node.Lines[0].Nodes
+            //        .Where(n => n.GetType() == typeof(KeywordNodeViewModel))
+            //        .FirstOrDefault();
+            //    if (keyword != null)
+            //    {
+            //        CreateContextMenu(keyword, model);
+            //    }
+            //}
 
             foreach (ICodeLineViewModel line in node.Lines)
             {
@@ -86,7 +86,10 @@ namespace OneCSharp.AST.UI
 
             return node;
         }
-        private void CreateContextMenu(KeywordNodeViewModel node, ISyntaxNode model)
+
+
+        
+        [Obsolete] private void CreateContextMenu(KeywordNodeViewModel node, ISyntaxNode model)
         {
             Type metadata = model.GetType();
 
@@ -121,7 +124,7 @@ namespace OneCSharp.AST.UI
             }
             node.IsContextMenuEnabled = (node.ContextMenu.Count > 0);
         }
-        private void ShowSyntaxNode(object parameter)
+        [Obsolete] private void ShowSyntaxNode(object parameter)
         {
             ValueTuple<ISyntaxNodeViewModel, string> tuple = (ValueTuple<ISyntaxNodeViewModel, string>)parameter;
             if (!(tuple.Item1 is ConceptNodeViewModel node)) return;

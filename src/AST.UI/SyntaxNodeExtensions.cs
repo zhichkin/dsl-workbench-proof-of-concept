@@ -7,6 +7,11 @@ using System.Reflection;
 
 namespace OneCSharp.AST.UI
 {
+    public sealed class NodePosition
+    {
+        public int Line { get; set; } = 0;
+        public int Position { get; set; } = 0;
+    }
     public static class SyntaxNodeExtensions
     {
         public static ISyntaxNodeViewModel Ancestor<T>(this ISyntaxNodeViewModel @this)
@@ -25,6 +30,26 @@ namespace OneCSharp.AST.UI
                 }
             }
             return ancestor;
+        }
+        public static NodePosition GetPosition(this ISyntaxNodeViewModel @this, ISyntaxNodeViewModel node)
+        {
+            if (node == null) throw new ArgumentNullException(nameof(node));
+
+            NodePosition position = new NodePosition();
+            for (int l = 0; l < @this.Lines.Count; l++)
+            {
+                var line = @this.Lines[l];
+                for (int p = 0; p < line.Nodes.Count; p++)
+                {
+                    if (line.Nodes[p] == node)
+                    {
+                        position.Line = l;
+                        position.Position = p;
+                        return position;
+                    }
+                }
+            }
+            return position;
         }
         public static ICodeLineViewModel BottomCodeLine(this ISyntaxNodeViewModel @this)
         {
@@ -92,10 +117,43 @@ namespace OneCSharp.AST.UI
                 node.IsVisible = isVisible;
             }
         }
+        public static ConceptNodeViewModel Concept(this ConceptNodeViewModel @this)
+        {
+            ICodeLineViewModel codeLine = @this.NewLine().BottomCodeLine();
+            codeLine.Nodes.Add(new ConceptNodeViewModel(@this, null));
+            return @this;
+        }
         public static ConceptNodeViewModel Identifier(this ConceptNodeViewModel @this)
         {
             ICodeLineViewModel codeLine = @this.BottomCodeLine();
             codeLine.Nodes.Add(new IdentifierNodeViewModel(@this, @this.Model));
+            return @this;
+        }
+        public static ConceptNodeViewModel Keyword(this ConceptNodeViewModel @this, string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword)) throw new ArgumentNullException(nameof(keyword));
+
+            //PropertyViewModel property = null;
+            //ICodeLineViewModel codeLine = @this.BottomCodeLine();
+            //ISyntaxNodeViewModel syntaxNode = @this.LastSyntaxNode();
+            //if (syntaxNode == null)
+            //{
+            //    property = new PropertyViewModel(@this);
+            //    codeLine.Nodes.Add(property);
+            //}
+            //else if (syntaxNode is PropertyViewModel)
+            //{
+            //    property = (PropertyViewModel)syntaxNode;
+            //}
+            //else
+            //{
+            //    property = new PropertyViewModel(@this);
+            //    codeLine.Nodes.Add(property);
+            //}
+            //property.Nodes.Add(new KeywordNodeViewModel(@this) { Keyword = keyword });
+
+            ICodeLineViewModel codeLine = @this.BottomCodeLine();
+            codeLine.Nodes.Add(new KeywordNodeViewModel(@this) { Keyword = keyword });
             return @this;
         }
         public static ConceptNodeViewModel Literal(this ConceptNodeViewModel @this, string literal)
@@ -104,14 +162,6 @@ namespace OneCSharp.AST.UI
 
             ICodeLineViewModel codeLine = @this.BottomCodeLine();
             codeLine.Nodes.Add(new LiteralNodeViewModel(@this) { Literal = literal });
-            return @this;
-        }
-        public static ConceptNodeViewModel Keyword(this ConceptNodeViewModel @this, string keyword)
-        {
-            if (string.IsNullOrWhiteSpace(keyword)) throw new ArgumentNullException(nameof(keyword));
-
-            ICodeLineViewModel codeLine = @this.BottomCodeLine();
-            codeLine.Nodes.Add(new KeywordNodeViewModel(@this) { Keyword = keyword });
             return @this;
         }
         public static ConceptNodeViewModel NewLine(this ConceptNodeViewModel @this)
@@ -123,6 +173,33 @@ namespace OneCSharp.AST.UI
         {
             ICodeLineViewModel codeLine = @this.BottomCodeLine();
             codeLine.Nodes.Add(new IndentNodeViewModel(@this));
+            return @this;
+        }
+        public static ConceptNodeViewModel Node(this ConceptNodeViewModel @this)
+        {
+            ICodeLineViewModel codeLine = @this.BottomCodeLine();
+            codeLine.Nodes.Add(new SelectorViewModel(@this));
+
+            //PropertyViewModel property = null;
+            //ICodeLineViewModel codeLine = @this.BottomCodeLine();
+            //ISyntaxNodeViewModel syntaxNode = @this.LastSyntaxNode();
+            //if (syntaxNode == null)
+            //{
+            //    property = new PropertyViewModel(@this);
+            //    codeLine.Nodes.Add(property);
+            //}
+            //else if (syntaxNode is PropertyViewModel)
+            //{
+            ////TODO: check PropertyBinding to be equal!
+            //    property = (PropertyViewModel)syntaxNode;
+            //}
+            //else
+            //{
+            //    property = new PropertyViewModel(@this);
+            //    codeLine.Nodes.Add(property);
+            //}
+            //property.Nodes.Add(new SelectorViewModel(@this));
+
             return @this;
         }
         public static ConceptNodeViewModel Repeatable(this ConceptNodeViewModel @this)
@@ -150,12 +227,6 @@ namespace OneCSharp.AST.UI
             if (!(syntaxNode is RepeatableViewModel repeatable)) return @this;
 
             repeatable.Delimiter = delimiterLiteral;
-            return @this;
-        }
-        public static ConceptNodeViewModel Reference(this ConceptNodeViewModel @this)
-        {
-            ICodeLineViewModel codeLine = @this.BottomCodeLine();
-            codeLine.Nodes.Add(new ReferenceViewModel(@this));
             return @this;
         }
         public static TreeNodeViewModel BuildReferenceSelectorTree(IEnumerable<ISyntaxNode> references)
@@ -214,18 +285,6 @@ namespace OneCSharp.AST.UI
             };
             root.TreeNodes.Add(child);
             return child;
-        }
-        public static ConceptNodeViewModel Concept(this ConceptNodeViewModel @this)
-        {
-            ICodeLineViewModel codeLine = @this.NewLine().BottomCodeLine();
-            codeLine.Nodes.Add(new ConceptNodeViewModel(@this, null));
-            return @this;
-        }
-        public static ConceptNodeViewModel Selector(this ConceptNodeViewModel @this)
-        {
-            ICodeLineViewModel codeLine = @this.BottomCodeLine();
-            codeLine.Nodes.Add(new SelectorViewModel(@this));
-            return @this;
         }
     }
 }

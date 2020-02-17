@@ -11,13 +11,11 @@
     </UserControl.Resources>
 
     <ItemsControl ItemsSource="{Binding Nodes}" ItemTemplateSelector="{StaticResource TemplateSelector}">
-
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal"/>
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
-
     </ItemsControl>
 
 </UserControl>

@@ -12,7 +12,7 @@ namespace OneCSharp.AST.UI
                 .Keyword("DISTINCT").Bind(nameof(concept.IsDistinct))
                 .Keyword("TOP").Bind(nameof(concept.TopExpression))
                 .Literal("(").Bind(nameof(concept.TopExpression))
-                .Selector().Bind(nameof(concept.TopExpression))
+                .Node().Bind(nameof(concept.TopExpression))
                 .Literal(")").Bind(nameof(concept.TopExpression))
                 .Repeatable().Bind(nameof(concept.Expressions))
                 .Concept().Bind(nameof(concept.From))
@@ -27,7 +27,7 @@ namespace OneCSharp.AST.UI
             return (new ConceptNodeViewModel(null, model))
                 .Identifier()
                 .Literal(" = ")
-                .Reference().Bind(nameof(concept.ColumnReference));
+                .Node().Bind(nameof(concept.ColumnReference));
         }
     }
     public sealed class FromConceptLayout : IConceptLayout

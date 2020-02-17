@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -139,6 +140,37 @@ namespace OneCSharp.AST.Model
             {
                 property.SetValue(concept, value);
             }
+        }
+        public static ISyntaxNode CreateRepeatableConcept(Type repeatable, ISyntaxNode parent, string propertyName)
+        {
+            ISyntaxNode concept = (ISyntaxNode)Activator.CreateInstance(repeatable);
+            concept.Parent = parent;
+
+            IList list;
+            PropertyInfo property = parent.GetPropertyInfo(propertyName);
+            if (property.IsOptional())
+            {
+                IOptional optional = (IOptional)property.GetValue(parent);
+                list = (IList)optional.Value;
+                if (list == null)
+                {
+                    Type listType = property.PropertyType.GetProperty("Value").PropertyType;
+                    list = (IList)Activator.CreateInstance(listType);
+                    optional.Value = list;
+                }
+            }
+            else
+            {
+                list = (IList)property.GetValue(parent);
+                if (list == null)
+                {
+                    Type listType = property.PropertyType;
+                    list = (IList)Activator.CreateInstance(listType);
+                    property.SetValue(parent, list);
+                }
+            }
+            list.Add(concept);
+            return concept;
         }
     }
 }

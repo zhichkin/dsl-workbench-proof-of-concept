@@ -12,6 +12,7 @@
 
         <Style x:Key="ConceptNodeBorderStyle" TargetType="Border">
             <Setter Property="BorderBrush" Value="White"/>
+            <Setter Property="BorderThickness" Value="1"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsMouseOver}" Value="True">
                     <Setter Property="BorderBrush" Value="LightGray"/>
@@ -21,7 +22,7 @@
 
     </UserControl.Resources>
 
-    <Border BorderThickness="1" Style="{StaticResource ConceptNodeBorderStyle}"
+    <Border Style="{StaticResource ConceptNodeBorderStyle}"
             Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
         <ItemsControl ItemsSource="{Binding Lines}">
             <ItemsControl.ItemTemplate>

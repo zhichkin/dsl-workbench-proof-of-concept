@@ -16,7 +16,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
-            <RowDefinition />
+            <RowDefinition Height="*"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -61,7 +61,9 @@
             <TabControl.ContentTemplate>
                 <!-- this is the body of the TabItem template-->
                 <DataTemplate>
-                    <ContentControl Content="{Binding Content}" Margin="5"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                        <ContentControl Content="{Binding Content}" Margin="5"/>
+                    </ScrollViewer>
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>

@@ -68,8 +68,7 @@
     </UserControl.Resources>
 
     <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Title}" Style="{StaticResource OptionStyle}"
-               Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
-               ui:SyntaxTreeOptionBehavior.IsTemporallyVisible="True">
+               Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
         
             <!--<behaviors:Interaction.Triggers>
                 <behaviors:EventTrigger EventName="KeyDown" SourceObject="{Binding ElementName=CONTROL_ROOT}">

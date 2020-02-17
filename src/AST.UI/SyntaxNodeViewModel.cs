@@ -86,12 +86,18 @@ namespace OneCSharp.AST.UI
             ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
             if (concept != null)
             {
+                concept.IsMouseOver = true;
                 concept.ShowOptions();
             }
         }
         protected virtual void OnMouseLeave(object parameter)
         {
             IsMouseOver = false;
+            ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
+            if (concept != null)
+            {
+                concept.IsMouseOver = false;
+            }
         }
         protected virtual void OnMouseDown(object parameter)
         {
@@ -217,6 +223,25 @@ namespace OneCSharp.AST.UI
                     }
                 }
             }
+        }
+
+
+
+        private void ShowBorder()
+        {
+            //if (string.IsNullOrEmpty(PropertyBinding)) return;
+            //ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
+            //if (concept == null) return;
+            //var nodes = concept.GetNodesByPropertyName(PropertyBinding);
+            //if (nodes.Count == 0) return;
+
+            //NodePosition position = concept.GetPosition(nodes[0]);
+            //BorderViewModel border = new BorderViewModel();
+            //foreach (var node in nodes)
+            //{
+            //    border.Nodes.Add(node);
+            //}
+            //concept.Lines[position.Line].Nodes.Insert(position.Position, border);
         }
     }
 }

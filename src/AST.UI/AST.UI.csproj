@@ -52,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="BasicControls\ConceptNodeView.xaml.cs">
+    <Compile Update="Concept\ConceptNodeView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Repeatable\RepeatableOptionView.xaml.cs">
@@ -67,7 +67,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="BasicControls\ConceptNodeView.xaml">
+    <Page Update="Concept\ConceptNodeView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Repeatable\RepeatableOptionView.xaml">
