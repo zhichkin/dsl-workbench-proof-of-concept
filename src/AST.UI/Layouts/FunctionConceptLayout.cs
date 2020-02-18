@@ -17,7 +17,7 @@ namespace OneCSharp.AST.UI
                 //.NewLine()
                 //.Indent()
                 .Keyword("RETURNS").Bind(nameof(concept.ReturnType))
-                .Node().Bind(nameof(concept.ReturnType))
+                .Selector().Bind(nameof(concept.ReturnType))
                 .Repeatable().Bind(nameof(concept.Parameters))
                 .Repeatable().Bind(nameof(concept.Variables))
                 .Repeatable().Bind(nameof(concept.Statements));
@@ -31,7 +31,7 @@ namespace OneCSharp.AST.UI
             return (new ConceptNodeViewModel(null, model))
                 .Keyword("@")
                 .Identifier()
-                .Node().Bind(nameof(concept.ParameterType))
+                .Selector().Bind(nameof(concept.ParameterType))
                 .Keyword("OUTPUT").Bind(nameof(concept.IsOutput));
         }
     }
@@ -43,7 +43,7 @@ namespace OneCSharp.AST.UI
             return (new ConceptNodeViewModel(null, model))
                 .Keyword("DECLARE")
                 .Identifier()
-                .Node().Bind(nameof(concept.VariableType));
+                .Selector().Bind(nameof(concept.VariableType));
         }
     }
 }

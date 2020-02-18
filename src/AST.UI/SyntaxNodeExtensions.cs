@@ -133,36 +133,46 @@ namespace OneCSharp.AST.UI
         {
             if (string.IsNullOrWhiteSpace(keyword)) throw new ArgumentNullException(nameof(keyword));
 
-            //PropertyViewModel property = null;
-            //ICodeLineViewModel codeLine = @this.BottomCodeLine();
-            //ISyntaxNodeViewModel syntaxNode = @this.LastSyntaxNode();
-            //if (syntaxNode == null)
-            //{
-            //    property = new PropertyViewModel(@this);
-            //    codeLine.Nodes.Add(property);
-            //}
-            //else if (syntaxNode is PropertyViewModel)
-            //{
-            //    property = (PropertyViewModel)syntaxNode;
-            //}
-            //else
-            //{
-            //    property = new PropertyViewModel(@this);
-            //    codeLine.Nodes.Add(property);
-            //}
-            //property.Nodes.Add(new KeywordNodeViewModel(@this) { Keyword = keyword });
-
-            ICodeLineViewModel codeLine = @this.BottomCodeLine();
-            codeLine.Nodes.Add(new KeywordNodeViewModel(@this) { Keyword = keyword });
+            ISyntaxNodeViewModel syntaxNode = @this.LastSyntaxNode();
+            if (syntaxNode is PropertyViewModel property)
+            {
+                property.Nodes.Add(new KeywordNodeViewModel(property)
+                {
+                    Keyword = keyword,
+                    PropertyBinding = property.PropertyBinding
+                });
+            }
+            else
+            {
+                ICodeLineViewModel codeLine = @this.BottomCodeLine();
+                codeLine.Nodes.Add(new KeywordNodeViewModel(@this) { Keyword = keyword });
+            }
             return @this;
+            //ICodeLineViewModel codeLine = @this.BottomCodeLine();
+            //codeLine.Nodes.Add(new KeywordNodeViewModel(@this) { Keyword = keyword });
         }
         public static ConceptNodeViewModel Literal(this ConceptNodeViewModel @this, string literal)
         {
             if (string.IsNullOrWhiteSpace(literal)) throw new ArgumentNullException(nameof(literal));
 
-            ICodeLineViewModel codeLine = @this.BottomCodeLine();
-            codeLine.Nodes.Add(new LiteralNodeViewModel(@this) { Literal = literal });
+            ISyntaxNodeViewModel syntaxNode = @this.LastSyntaxNode();
+            if (syntaxNode is PropertyViewModel property)
+            {
+                property.Nodes.Add(new LiteralNodeViewModel(property)
+                {
+                    Literal = literal,
+                    PropertyBinding = property.PropertyBinding
+                });
+            }
+            else
+            {
+                ICodeLineViewModel codeLine = @this.BottomCodeLine();
+                codeLine.Nodes.Add(new LiteralNodeViewModel(@this) { Literal = literal });
+            }
             return @this;
+
+            //ICodeLineViewModel codeLine = @this.BottomCodeLine();
+            //codeLine.Nodes.Add(new LiteralNodeViewModel(@this) { Literal = literal });
         }
         public static ConceptNodeViewModel NewLine(this ConceptNodeViewModel @this)
         {
@@ -175,31 +185,32 @@ namespace OneCSharp.AST.UI
             codeLine.Nodes.Add(new IndentNodeViewModel(@this));
             return @this;
         }
-        public static ConceptNodeViewModel Node(this ConceptNodeViewModel @this)
+        public static ConceptNodeViewModel Selector(this ConceptNodeViewModel @this)
         {
-            ICodeLineViewModel codeLine = @this.BottomCodeLine();
-            codeLine.Nodes.Add(new SelectorViewModel(@this));
+            ISyntaxNodeViewModel syntaxNode = @this.LastSyntaxNode();
+            if (syntaxNode is PropertyViewModel property)
+            {
+                property.Nodes.Add(new SelectorViewModel(property)
+                {
+                    PropertyBinding = property.PropertyBinding
+                });
+            }
+            else
+            {
+                ICodeLineViewModel codeLine = @this.BottomCodeLine();
+                codeLine.Nodes.Add(new SelectorViewModel(@this));
+            }
+            return @this;
 
-            //PropertyViewModel property = null;
             //ICodeLineViewModel codeLine = @this.BottomCodeLine();
-            //ISyntaxNodeViewModel syntaxNode = @this.LastSyntaxNode();
-            //if (syntaxNode == null)
-            //{
-            //    property = new PropertyViewModel(@this);
-            //    codeLine.Nodes.Add(property);
-            //}
-            //else if (syntaxNode is PropertyViewModel)
-            //{
-            ////TODO: check PropertyBinding to be equal!
-            //    property = (PropertyViewModel)syntaxNode;
-            //}
-            //else
-            //{
-            //    property = new PropertyViewModel(@this);
-            //    codeLine.Nodes.Add(property);
-            //}
-            //property.Nodes.Add(new SelectorViewModel(@this));
+            //codeLine.Nodes.Add(new SelectorViewModel(@this));
+        }
+        public static ConceptNodeViewModel Property(this ConceptNodeViewModel @this, string propertyName)
+        {
+            if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException(nameof(propertyName));
 
+            ICodeLineViewModel codeLine = @this.BottomCodeLine();
+            codeLine.Nodes.Add(new PropertyViewModel(@this) { PropertyBinding = propertyName });
             return @this;
         }
         public static ConceptNodeViewModel Repeatable(this ConceptNodeViewModel @this)

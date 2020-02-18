@@ -1,6 +1,5 @@
 ﻿using OneCSharp.AST.Model;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -29,20 +28,35 @@ namespace OneCSharp.AST.UI
                         node.ResetHideOptionAnimation();
                         continue;
                     }
-
                     if (node is RepeatableViewModel)
                     {
                         ShowRepeatableOption(node);
+                    }
+                    else if (node is PropertyViewModel)
+                    {
+                        ShowProperty(node);
                     }
                     else
                     {
                         // Selectors, Concepts, Keywords, Literals, Indents and Identifiers
                         node.StartHideOptionAnimation();
-                        
                     }
-                    if (node is SelectorViewModel) { /* TODO */ }
-                    if (node is ConceptNodeViewModel) { /* TODO */ }
+                    //if (node is SelectorViewModel) { /* TODO */ }
+                    //if (node is ConceptNodeViewModel) { /* TODO */ }
                 }
+            }
+        }
+        private void ShowProperty(ISyntaxNodeViewModel propertyNode)
+        {
+            if (!(propertyNode is PropertyViewModel property)) return;
+
+            if (property.IsTemporallyVisible)
+            {
+                property.ResetHideOptionAnimation();
+            }
+            else
+            {
+                property.StartHideOptionAnimation();
             }
         }
         private void ShowRepeatableOption(ISyntaxNodeViewModel repetableNode)

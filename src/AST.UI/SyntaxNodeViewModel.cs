@@ -178,17 +178,50 @@ namespace OneCSharp.AST.UI
         public bool IsVisible
         {
             get { return _isVisible; }
-            set { _isVisible = value; OnPropertyChanged(nameof(IsVisible)); }
+            set
+            {
+                _isVisible = value;
+                if (this is PropertyViewModel property)
+                {
+                    foreach(var node in property.Nodes)
+                    {
+                        node.IsVisible = _isVisible;
+                    }
+                }
+                OnPropertyChanged(nameof(IsVisible));
+            }
         }
         public bool IsTemporallyVisible
         {
             get { return _isTemporallyVisible; }
-            set { _isTemporallyVisible = value; OnPropertyChanged(nameof(IsTemporallyVisible)); }
+            set
+            {
+                _isTemporallyVisible = value;
+                if (this is PropertyViewModel property)
+                {
+                    foreach (var node in property.Nodes)
+                    {
+                        node.IsTemporallyVisible = _isTemporallyVisible;
+                    }
+                }
+                OnPropertyChanged(nameof(IsTemporallyVisible));
+            }
         }
         public bool ResetHideOptionFlag
         {
             get { return _resetHideOptionFlag; }
-            set { _resetHideOptionFlag = value; OnPropertyChanged(nameof(ResetHideOptionFlag)); }
+            set
+            {
+                _resetHideOptionFlag = value;
+                if (this is PropertyViewModel property)
+                {
+                    foreach (var node in property.Nodes)
+                    {
+                        node.ResetHideOptionFlag = _resetHideOptionFlag;
+                    }
+                }
+                OnPropertyChanged(nameof(ResetHideOptionFlag));
+            }
         }
         public void StartHideOptionAnimation()
         {
@@ -222,26 +255,11 @@ namespace OneCSharp.AST.UI
                         Owner.StopHideOptionAnimation();
                     }
                 }
+                else if (Owner is PropertyViewModel property)
+                {
+                    property.StopHideOptionAnimation();
+                }
             }
-        }
-
-
-
-        private void ShowBorder()
-        {
-            //if (string.IsNullOrEmpty(PropertyBinding)) return;
-            //ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
-            //if (concept == null) return;
-            //var nodes = concept.GetNodesByPropertyName(PropertyBinding);
-            //if (nodes.Count == 0) return;
-
-            //NodePosition position = concept.GetPosition(nodes[0]);
-            //BorderViewModel border = new BorderViewModel();
-            //foreach (var node in nodes)
-            //{
-            //    border.Nodes.Add(node);
-            //}
-            //concept.Lines[position.Line].Nodes.Insert(position.Position, border);
         }
     }
 }
