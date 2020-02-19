@@ -24,11 +24,12 @@
     </UserControl.Resources>
 
     <Border Style="{StaticResource BorderStyle}">
-        
-        <ItemsControl ItemsSource="{Binding Nodes}" ItemTemplateSelector="{StaticResource TemplateSelector}">
+
+        <ItemsControl x:Name="CONTROL_ROOT" ItemsSource="{Binding Nodes}"
+                      ItemTemplateSelector="{StaticResource TemplateSelector}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
+                    <StackPanel Orientation="Horizontal" Background="Transparent"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

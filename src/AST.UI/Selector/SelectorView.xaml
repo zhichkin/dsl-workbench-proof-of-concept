@@ -58,10 +58,10 @@
                 <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand}" PassEventArgsToCommand="True"/>
             </behaviors:EventTrigger>
             <behaviors:EventTrigger EventName="MouseEnter" SourceObject="{Binding ElementName=CONTROL_ROOT}">
-                <behaviors:InvokeCommandAction Command="{Binding MouseEnterCommand}"/>
+                <behaviors:InvokeCommandAction Command="{Binding MouseEnterCommand}" PassEventArgsToCommand="True"/>
             </behaviors:EventTrigger>
             <behaviors:EventTrigger EventName="MouseLeave" SourceObject="{Binding ElementName=CONTROL_ROOT}">
-                <behaviors:InvokeCommandAction Command="{Binding MouseLeaveCommand}"/>
+                <behaviors:InvokeCommandAction Command="{Binding MouseLeaveCommand}" PassEventArgsToCommand="True"/>
             </behaviors:EventTrigger>
         </behaviors:Interaction.Triggers>
 

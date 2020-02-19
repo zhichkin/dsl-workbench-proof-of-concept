@@ -1,6 +1,6 @@
 ﻿using OneCSharp.MVVM;
 using System.Collections.ObjectModel;
-using System.Windows.Media;
+using System.Windows.Input;
 
 namespace OneCSharp.AST.UI
 {
@@ -20,5 +20,12 @@ namespace OneCSharp.AST.UI
             set { _isContextMenuEnabled = value; OnPropertyChanged(nameof(IsContextMenuEnabled)); }
         }
         public ObservableCollection<MenuItemViewModel> ContextMenu { get; } = new ObservableCollection<MenuItemViewModel>();
+        protected override void OnMouseLeave(object parameter)
+        {
+            if (parameter == null) return;
+            MouseEventArgs args = (MouseEventArgs)parameter;
+            args.Handled = true;
+            IsMouseOver = false;
+        }
     }
 }

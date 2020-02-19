@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ast="clr-namespace:OneCSharp.AST.UI" Padding="2"
-             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
+             MouseLeave="UserControl_MouseLeave">
 
     <UserControl.Resources>
         <ast:SyntaxNodeTemplateSelector x:Key="TemplateSelector"/>
@@ -13,7 +14,7 @@
     <ItemsControl ItemsSource="{Binding Nodes}" ItemTemplateSelector="{StaticResource TemplateSelector}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal"/>
+                <StackPanel Orientation="Horizontal" Background="Transparent"/>
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
     </ItemsControl>

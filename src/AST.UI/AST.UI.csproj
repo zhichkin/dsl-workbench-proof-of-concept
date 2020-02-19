@@ -57,6 +57,9 @@
     <Compile Update="Concept\ConceptNodeView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Concept\RemoveConceptView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Repeatable\RepeatableOptionView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -70,6 +73,9 @@
 
   <ItemGroup>
     <Page Update="Concept\ConceptNodeView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Concept\RemoveConceptView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Repeatable\RepeatableOptionView.xaml">

@@ -1,4 +1,6 @@
-﻿namespace OneCSharp.AST.UI
+﻿using System.Windows.Input;
+
+namespace OneCSharp.AST.UI
 {
     public sealed class LiteralNodeViewModel : SyntaxNodeViewModel
     {
@@ -8,6 +10,12 @@
         {
             get { return _literal; }
             set { _literal = value; OnPropertyChanged(nameof(Literal)); }
+        }
+        protected override void OnMouseLeave(object parameter)
+        {
+            if (parameter == null) return;
+            MouseEventArgs args = (MouseEventArgs)parameter;
+            args.Handled = true;
         }
     }
 }

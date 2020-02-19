@@ -1,8 +1,10 @@
 ﻿using OneCSharp.AST.Model;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Input;
 
 namespace OneCSharp.AST.UI
 {
@@ -131,6 +133,81 @@ namespace OneCSharp.AST.UI
             foreach (var node in nodes)
             {
                 node.IsVisible = false;
+            }
+        }
+        protected override void OnMouseEnter(object parameter)
+        {
+            if (parameter == null) return;
+            MouseEventArgs args = (MouseEventArgs)parameter;
+            args.Handled = true;
+
+            IsMouseOver = true;
+            ShowOptions();
+            if (!(Owner is RepeatableViewModel repeatable)) { return; }
+            ShowCommands();
+        }
+        protected override void OnMouseLeave(object parameter)
+        {
+            if (parameter == null) return;
+            MouseEventArgs args = (MouseEventArgs)parameter;
+            args.Handled = true;
+
+            IsMouseOver = false;
+            if (!(Owner is RepeatableViewModel repeatable)) return;
+            HideCommands();
+        }
+        public void ShowCommands()
+        {
+            if (Lines.Count == 0) return;
+            foreach (var node in Lines[0].Nodes)
+            {
+                if (node is RemoveConceptViewModel) return;
+            }
+            Lines[0].Nodes.Insert(0, new RemoveConceptViewModel(this)
+            {
+                PropertyBinding = Owner.PropertyBinding
+            });
+        }
+        public void HideCommands()
+        {
+            if (Lines.Count == 0) return;
+            if (Lines[0].Nodes[0] is RemoveConceptViewModel)
+            {
+                Lines[0].Nodes.RemoveAt(0);
+            }
+        }
+        public void RemoveConcept(string propertyName)
+        {
+            if (string.IsNullOrWhiteSpace(propertyName)) return;
+            if (!(Owner is RepeatableViewModel repeatable)) return;
+
+            // TODO: move the code below to SyntaxTreeManager
+            PropertyInfo property = repeatable.Owner.Model.GetPropertyInfo(propertyName);
+            IList list;
+            if (property.IsOptional())
+            {
+                IOptional optional = (IOptional)property.GetValue(repeatable.Owner.Model);
+                if (!optional.HasValue) return;
+                list = (IList)optional.Value;
+            }
+            else
+            {
+                list = (IList)property.GetValue(repeatable.Owner.Model);
+            }
+            list.Remove(Model);
+
+            // TODO: move the code below to SyntaxNodeExtentions
+            for (int l = 0; l < repeatable.Lines.Count; l++)
+            {
+                var line = repeatable.Lines[l];
+                for (int i = 0; i < line.Nodes.Count; i++)
+                {
+                    if (line.Nodes[i] == this)
+                    {
+                        repeatable.Lines.RemoveAt(l);
+                        return;
+                    }
+                }
             }
         }
     }

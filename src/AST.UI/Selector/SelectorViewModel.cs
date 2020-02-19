@@ -19,11 +19,22 @@ namespace OneCSharp.AST.UI
         {
             get { return (Model == null ? $"{{{PropertyBinding}}}" : Model.ToString()); }
         }
+        protected override void OnMouseLeave(object parameter)
+        {
+            if (parameter == null) return;
+            MouseEventArgs args = (MouseEventArgs)parameter;
+            args.Handled = true;
+        }
         protected override void OnMouseDown(object parameter)
         {
             if (!(parameter is MouseButtonEventArgs args)) return;
             if (args.ChangedButton == MouseButton.Right) return;
             args.Handled = true;
+            if (IsTemporallyVisible)
+            {
+                base.OnMouseDown(parameter);
+                return;
+            }
 
             // get parent concept node
             var ancestor = this.Ancestor<ConceptNodeViewModel>();
