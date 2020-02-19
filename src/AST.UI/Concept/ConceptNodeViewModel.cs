@@ -16,33 +16,33 @@ namespace OneCSharp.AST.UI
                 .GetProperties().Where(p => p.IsOptional()))
             {
                 IOptional optional = (IOptional)property.GetValue(Model);
-                if (!property.IsRepeatable() && optional.HasValue) { continue; }
+                if (!property.IsRepeatable() && optional.HasValue)
+                {
+                    continue;
+                }
 
                 List<ISyntaxNodeViewModel> nodes = this.GetNodesByPropertyName(property.Name);
                 if (nodes.Count == 0) return;
 
                 foreach (var node in nodes)
                 {
-                    if (node.IsTemporallyVisible)
-                    {
-                        node.ResetHideOptionAnimation();
-                        continue;
-                    }
-                    if (node is RepeatableViewModel)
-                    {
-                        ShowRepeatableOption(node);
-                    }
-                    else if (node is PropertyViewModel)
+                    if (node is PropertyViewModel)
                     {
                         ShowProperty(node);
                     }
-                    else
+                    else if (node is RepeatableViewModel)
                     {
-                        // Selectors, Concepts, Keywords, Literals, Indents and Identifiers
+                        ShowRepeatableOption(node);
+                    }
+                    // Selectors, Concepts, Keywords, Literals, Indents and Identifiers
+                    else if (node.IsTemporallyVisible)
+                    {
+                        node.ResetHideOptionAnimation();
+                    }
+                    else
+                    {   
                         node.StartHideOptionAnimation();
                     }
-                    //if (node is SelectorViewModel) { /* TODO */ }
-                    //if (node is ConceptNodeViewModel) { /* TODO */ }
                 }
             }
         }
@@ -115,6 +115,22 @@ namespace OneCSharp.AST.UI
             foreach (var node in nodes)
             {
                 node.IsVisible = true;
+            }
+        }
+        public void RemoveOption(string propertyName)
+        {
+            if (string.IsNullOrWhiteSpace(propertyName)) return;
+            
+            PropertyInfo property = Model.GetPropertyInfo(propertyName);
+            if (!property.IsOptional()) return;
+            IOptional optional = (IOptional)property.GetValue(Model);
+            if (!optional.HasValue) return;
+
+            optional.HasValue = false;
+            var nodes = this.GetNodesByPropertyName(propertyName);
+            foreach (var node in nodes)
+            {
+                node.IsVisible = false;
             }
         }
     }

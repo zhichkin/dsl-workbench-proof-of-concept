@@ -16,8 +16,9 @@ namespace OneCSharp.AST.UI
                 .Identifier()
                 //.NewLine()
                 //.Indent()
-                .Keyword("RETURNS").Bind(nameof(concept.ReturnType))
-                .Selector().Bind(nameof(concept.ReturnType))
+                .Property(nameof(concept.ReturnType))
+                    .Keyword("RETURNS")
+                    .Selector()
                 .Repeatable().Bind(nameof(concept.Parameters))
                 .Repeatable().Bind(nameof(concept.Variables))
                 .Repeatable().Bind(nameof(concept.Statements));
@@ -32,7 +33,8 @@ namespace OneCSharp.AST.UI
                 .Keyword("@")
                 .Identifier()
                 .Selector().Bind(nameof(concept.ParameterType))
-                .Keyword("OUTPUT").Bind(nameof(concept.IsOutput));
+                .Property(nameof(concept.IsOutput))
+                    .Keyword("OUTPUT").Bind(nameof(concept.IsOutput));
         }
     }
     public sealed class VariableConceptLayout : IConceptLayout

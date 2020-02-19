@@ -13,6 +13,7 @@
     <None Remove="images\AddProperty.png" />
     <None Remove="images\AddVariable.png" />
     <None Remove="images\CSFileNode.png" />
+    <None Remove="images\Delete.png" />
     <None Remove="images\DeleteProperty.png" />
     <None Remove="images\EditWindow.png" />
     <None Remove="images\ModifyProperty.png" />
@@ -43,6 +44,7 @@
     <Resource Include="images\AddProperty.png" />
     <Resource Include="images\AddVariable.png" />
     <Resource Include="images\CSFileNode.png" />
+    <Resource Include="images\Delete.png" />
     <Resource Include="images\DeleteProperty.png" />
     <Resource Include="images\EditWindow.png" />
     <Resource Include="images\ModifyProperty.png" />
