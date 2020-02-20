@@ -2,7 +2,6 @@
 using OneCSharp.MVVM;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 
@@ -65,25 +64,35 @@ namespace OneCSharp.AST.UI
                     if (line.Nodes[i] is ConceptNodeViewModel)
                     {
                         string propertyBinding = line.Nodes[i].PropertyBinding;
-                        PropertyInfo property = node.Model.GetPropertyInfo(propertyBinding);
+                        PropertyInfo property = node.SyntaxNode.GetPropertyInfo(propertyBinding);
                         if (property.IsOptional())
                         {
-                            continue;
+                            // TODO: WHERE optional concept node !!!
+                            // should be moved to ShowOptions method of ConceptNodeViewModel !
+
+                            //Type conceptType = SyntaxTreeManager.GetPropertyType(property);
+                            //ISyntaxNode concept = (ISyntaxNode)Activator.CreateInstance(conceptType);
+                            //concept.Parent = model;
+                            //ConceptNodeViewModel conceptNode = CreateSyntaxNode(node, concept);
+                            //if (conceptNode != null)
+                            //{
+                            //    line.Nodes[i] = conceptNode;
+                            //    conceptNode.PropertyBinding = propertyBinding;
+                            //}
                         }
                         else
                         {
-                            ISyntaxNode concept = (ISyntaxNode)property.GetValue(node.Model);
+                            ISyntaxNode concept = (ISyntaxNode)property.GetValue(node.SyntaxNode);
                             ConceptNodeViewModel conceptNode = CreateSyntaxNode(node, concept);
                             if (conceptNode != null)
                             {
                                 line.Nodes[i] = conceptNode;
-                                conceptNode.Bind(propertyBinding);
+                                conceptNode.PropertyBinding = propertyBinding;
                             }
                         }
                     }
                 }
             }
-
             return node;
         }
 
@@ -130,7 +139,7 @@ namespace OneCSharp.AST.UI
             if (!(tuple.Item1 is ConceptNodeViewModel node)) return;
             node.ShowSyntaxNodes(tuple.Item2);
 
-            PropertyInfo property = node.Model.GetPropertyInfo(tuple.Item2);
+            PropertyInfo property = node.SyntaxNode.GetPropertyInfo(tuple.Item2);
             if (property == null) return;
             if (property.IsRepeatable())
             {
@@ -138,7 +147,7 @@ namespace OneCSharp.AST.UI
                 if (types.Count == 1)
                 {
                     CreateConceptCommand command = new CreateConceptCommand();
-                    ISyntaxNode model = command.Create(node.Model, property.Name, types[0]);
+                    ISyntaxNode model = command.Create(node.SyntaxNode, property.Name, types[0]);
                     ConceptNodeViewModel child = CreateSyntaxNode(node, model);
                     List<ISyntaxNodeViewModel> list = node.GetNodesByPropertyName(property.Name);
                     if (list != null && list.Count == 1)

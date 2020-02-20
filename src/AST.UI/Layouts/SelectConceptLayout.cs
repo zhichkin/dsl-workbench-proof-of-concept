@@ -57,9 +57,10 @@ namespace OneCSharp.AST.UI
     {
         public ISyntaxNodeViewModel Layout(ISyntaxNode model)
         {
-            //TableConcept concept;
+            TableConcept concept;
             return (new ConceptNodeViewModel(null, model))
-                .Identifier();
+                .Identifier()
+                .Selector().Bind(nameof(concept.TableDefinition));
         }
     }
 }

@@ -3,6 +3,7 @@ using OneCSharp.MVVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -17,7 +18,21 @@ namespace OneCSharp.AST.UI
         public SelectorViewModel(ISyntaxNodeViewModel owner) : base(owner) { }
         public string Presentation
         {
-            get { return (Model == null ? $"{{{PropertyBinding}}}" : Model.ToString()); }
+            get
+            {
+                if (SyntaxNode == null)
+                {
+                    if (SyntaxNodeType == null)
+                    {
+                        return $"{{{PropertyBinding}}}";
+                    }
+                    else
+                    {
+                        return SyntaxNodeType.ToString();
+                    }
+                }
+                return SyntaxNode.ToString();
+            }
         }
         protected override void OnMouseLeave(object parameter)
         {
@@ -30,6 +45,7 @@ namespace OneCSharp.AST.UI
             if (!(parameter is MouseButtonEventArgs args)) return;
             if (args.ChangedButton == MouseButton.Right) return;
             args.Handled = true;
+
             if (IsTemporallyVisible)
             {
                 base.OnMouseDown(parameter);
@@ -41,7 +57,7 @@ namespace OneCSharp.AST.UI
             if (ancestor == null) return;
 
             // get type constraints of the property
-            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(ancestor.Model, PropertyBinding);
+            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(ancestor.SyntaxNode, PropertyBinding);
 
             // build tree view
             TreeNodeViewModel viewModel = SyntaxNodeSelector.BuildSelectorTree(constraints);
@@ -55,14 +71,31 @@ namespace OneCSharp.AST.UI
             Type selectedType = dialog.Result.NodePayload as Type;
             if (selectedType == null) { return; }
 
-            ISyntaxNode reference = SelectSyntaxNodeReference(selectedType, ancestor.Model, PropertyBinding, control);
-            if (reference == null) { return; }
-
             // set binded property of the model by selected reference
-            SyntaxTreeManager.SetConceptProperty(ancestor.Model, PropertyBinding, reference);
+            PropertyInfo property = ancestor.SyntaxNode.GetPropertyInfo(PropertyBinding);
+            if (SyntaxTreeManager.GetPropertyType(property) == typeof(Type))
+            {
+                SyntaxTreeManager.SetConceptProperty(ancestor.SyntaxNode, PropertyBinding, selectedType);
+                SyntaxNodeType = selectedType;
+            }
+            else
+            {
+                ISyntaxNode reference;
+                if (selectedType.IsSubclassOf(typeof(DataType)))
+                {
+                    reference = (ISyntaxNode)Activator.CreateInstance(selectedType);
+                }
+                else
+                {
+                    // use dialog and scope provider to find reference to the node in the syntax tree
+                    reference = SelectSyntaxNodeReference(selectedType, ancestor.SyntaxNode, PropertyBinding, control);
+                    if (reference == null) { return; }
+                }
+                SyntaxTreeManager.SetConceptProperty(ancestor.SyntaxNode, PropertyBinding, reference);
+                SyntaxNode = reference;
+            }
 
             // reset view model's state
-            Model = reference;
             OnPropertyChanged(nameof(Presentation));
         }
         private ISyntaxNode SelectSyntaxNodeReference(Type childConcept, ISyntaxNode parentConcept, string propertyName, Visual control)
@@ -72,7 +105,7 @@ namespace OneCSharp.AST.UI
             if (scopeProvider == null) { return null; }
 
             // get references in the scope
-            IEnumerable<ISyntaxNode> scope = scopeProvider.Scope(parentConcept, PropertyBinding);
+            IEnumerable<ISyntaxNode> scope = scopeProvider.Scope(parentConcept, propertyName);
             if (scope == null || scope.Count() == 0) { return null; }
 
             // build tree view

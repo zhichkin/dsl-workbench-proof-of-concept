@@ -5,7 +5,10 @@
          xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
          mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
-         x:Name="CONTROL_ROOT" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" MinWidth="75">
+         x:Name="CONTROL_ROOT"
+         Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+         IsReadOnly="{Binding IsReadOnly}"
+         MinWidth="75">
 
     <TextBox.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>

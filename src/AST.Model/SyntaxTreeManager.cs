@@ -96,11 +96,30 @@ namespace OneCSharp.AST.Model
             PropertyInfo property = metadata.GetProperty(propertyName);
             if (property == null) throw new ArgumentOutOfRangeException(nameof(property));
 
+            return GetTypeConstraints(property);
+        }
+        public static TypeConstraint GetTypeConstraints(PropertyInfo property)
+        {
+            if (property == null) throw new ArgumentNullException(nameof(property));
+
             TypeConstraint constraints = new TypeConstraint();
             ProcessTypeConstraintAttribute(constraints, property);
             Type propertyType = GetPropertyType(property);
             ClassifyTypeConstraints(constraints, propertyType);
+            ProcessSimpleTypeConstraintAttribute(constraints, property);
             return constraints;
+        }
+        private static void ProcessSimpleTypeConstraintAttribute(TypeConstraint constraints, PropertyInfo property)
+        {
+            SimpleTypeConstraintAttribute typeConstraint = property.GetCustomAttribute<SimpleTypeConstraintAttribute>();
+            if (typeConstraint == null) return;
+            foreach (Type type in SimpleTypes.DotNetTypes)
+            {
+                if (!constraints.DotNetTypes.Contains(type))
+                {
+                    constraints.DotNetTypes.Add(type);
+                }
+            }
         }
         private static void ProcessTypeConstraintAttribute(TypeConstraint constraints, PropertyInfo property)
         {

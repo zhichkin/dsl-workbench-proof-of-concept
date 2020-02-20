@@ -1,8 +1,8 @@
 ﻿using OneCSharp.AST.Model;
+using OneCSharp.MVVM;
 using System;
-using System.Collections;
-using System.Reflection;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace OneCSharp.AST.UI
 {
@@ -27,18 +27,46 @@ namespace OneCSharp.AST.UI
 
             var concept = this.Ancestor<ConceptNodeViewModel>();
             if (concept == null) return;
-            if (concept.Model == null) return;
+            if (concept.SyntaxNode == null) return;
 
             string propertyName = Owner.PropertyBinding;
-            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(concept.Model, propertyName);
-            // TODO: use selector to choose type of node
-            if (constraints.Concepts.Count == 1)
+            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(concept.SyntaxNode, propertyName);
+
+            // if selection is obvious then just create the node ...
+            if (constraints.Concepts.Count == 1 && constraints.DataTypes.Count == 0)
             {
-                ISyntaxNode model = SyntaxTreeManager.CreateRepeatableConcept(constraints.Concepts[0], concept.Model, propertyName);
-                SyntaxTreeController controller = new SyntaxTreeController();
-                ConceptNodeViewModel node = controller.CreateSyntaxNode(Owner, model);
-                Owner.Add(node);
+                CreateRepetableOption(constraints.Concepts[0], concept.SyntaxNode, propertyName);
+                return;
             }
+            if (constraints.DataTypes.Count == 1 && constraints.Concepts.Count == 0)
+            {
+                CreateRepetableOption(constraints.DataTypes[0], concept.SyntaxNode, propertyName);
+                return;
+            }
+
+            // build tree view
+            TreeNodeViewModel viewModel = SyntaxNodeSelector.BuildSelectorTree(constraints);
+
+            // open dialog window
+            Visual control = args.Source as Visual;
+            PopupWindow dialog = new PopupWindow(control, viewModel);
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) { return; }
+
+            // get result
+            Type selectedType = dialog.Result.NodePayload as Type;
+            if (selectedType == null) { return; }
+
+            // create concept option, its view model and add it to syntax tree
+            CreateRepetableOption(selectedType, concept.SyntaxNode, propertyName);
+        }
+        private void CreateRepetableOption(Type optionType, ISyntaxNode parent, string propertyName)
+        {
+            // TODO: move this code to SyntaxTreeManager
+            ISyntaxNode model = SyntaxTreeManager.CreateRepeatableConcept(optionType, parent, propertyName);
+            SyntaxTreeController controller = new SyntaxTreeController();
+            ConceptNodeViewModel node = controller.CreateSyntaxNode(Owner, model);
+            Owner.Add(node);
         }
     }
 }

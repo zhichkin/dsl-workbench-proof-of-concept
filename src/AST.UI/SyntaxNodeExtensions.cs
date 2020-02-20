@@ -126,7 +126,7 @@ namespace OneCSharp.AST.UI
         public static ConceptNodeViewModel Identifier(this ConceptNodeViewModel @this)
         {
             ICodeLineViewModel codeLine = @this.BottomCodeLine();
-            codeLine.Nodes.Add(new IdentifierNodeViewModel(@this, @this.Model));
+            codeLine.Nodes.Add(new IdentifierNodeViewModel(@this, @this.SyntaxNode));
             return @this;
         }
         public static ConceptNodeViewModel Keyword(this ConceptNodeViewModel @this, string keyword)

@@ -7,7 +7,7 @@ namespace OneCSharp.AST.UI
 {
     public sealed class PropertyViewModel : SyntaxNodeViewModel
     {
-        public PropertyViewModel(ConceptNodeViewModel owner) : base(owner, owner.Model)
+        public PropertyViewModel(ConceptNodeViewModel owner) : base(owner, owner.SyntaxNode)
         {
             if (owner == null) throw new ArgumentNullException(nameof(owner));
         }
@@ -16,10 +16,10 @@ namespace OneCSharp.AST.UI
         {
             base.OnMouseEnter(parameter);
 
-            PropertyInfo property = Model.GetPropertyInfo(PropertyBinding);
+            PropertyInfo property = SyntaxNode.GetPropertyInfo(PropertyBinding);
             if (property.IsOptional())
             {
-                IOptional optional = (IOptional)property.GetValue(Model);
+                IOptional optional = (IOptional)property.GetValue(SyntaxNode);
                 if (!optional.HasValue)
                 {
                     return;
@@ -31,10 +31,10 @@ namespace OneCSharp.AST.UI
         {
             base.OnMouseLeave(parameter);
 
-            PropertyInfo property = Model.GetPropertyInfo(PropertyBinding);
+            PropertyInfo property = SyntaxNode.GetPropertyInfo(PropertyBinding);
             if (property.IsOptional())
             {
-                IOptional optional = (IOptional)property.GetValue(Model);
+                IOptional optional = (IOptional)property.GetValue(SyntaxNode);
                 if (!optional.HasValue)
                 {
                     return;

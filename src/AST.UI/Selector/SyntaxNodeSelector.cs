@@ -27,6 +27,8 @@ namespace OneCSharp.AST.UI
         }
         private static void BuildConstantSelectorTree(TreeNodeViewModel root, List<Type> types)
         {
+            if (types.Count == 0) return;
+
             TreeNodeViewModel groupingNode = new TreeNodeViewModel()
             {
                 NodeText = "Constants"
@@ -45,6 +47,8 @@ namespace OneCSharp.AST.UI
         }
         private static void BuildConceptSelectorTree(TreeNodeViewModel root, List<Type> types, Type rootType)
         {
+            if (types.Count == 0) return;
+
             Type baseType;
             TreeNodeViewModel currentNode;
             Stack<Type> stack = new Stack<Type>();

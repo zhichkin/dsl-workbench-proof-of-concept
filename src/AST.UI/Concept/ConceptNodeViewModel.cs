@@ -13,11 +13,14 @@ namespace OneCSharp.AST.UI
         public ConceptNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : base(owner, model) { }
         public void ShowOptions()
         {
-            Type metadata = Model.GetType();
+            // TODO: add concept node option !!! WHERE does not become visible !!!
+
+            Type metadata = SyntaxNode.GetType();
+            
             foreach (PropertyInfo property in metadata
                 .GetProperties().Where(p => p.IsOptional()))
             {
-                IOptional optional = (IOptional)property.GetValue(Model);
+                IOptional optional = (IOptional)property.GetValue(SyntaxNode);
                 if (!property.IsRepeatable() && optional.HasValue)
                 {
                     continue;
@@ -44,6 +47,20 @@ namespace OneCSharp.AST.UI
                     else
                     {   
                         node.StartHideOptionAnimation();
+                    }
+                }
+            }
+
+            foreach (PropertyInfo property in metadata
+                .GetProperties().Where(p => !p.IsOptional() && p.IsRepeatable()))
+            {
+                List<ISyntaxNodeViewModel> nodes = this.GetNodesByPropertyName(property.Name);
+                if (nodes.Count == 0) return;
+                foreach (var node in nodes)
+                {
+                    if (node is RepeatableViewModel)
+                    {
+                        ShowRepeatableOption(node);
                     }
                 }
             }
@@ -103,9 +120,9 @@ namespace OneCSharp.AST.UI
                 }
             }
 
-            PropertyInfo property = Model.GetPropertyInfo(propertyName);
+            PropertyInfo property = SyntaxNode.GetPropertyInfo(propertyName);
             if (!property.IsOptional()) return;
-            IOptional optional = (IOptional)property.GetValue(Model);
+            IOptional optional = (IOptional)property.GetValue(SyntaxNode);
             if (optional.HasValue) return;
 
             optional.HasValue = true;
@@ -123,9 +140,9 @@ namespace OneCSharp.AST.UI
         {
             if (string.IsNullOrWhiteSpace(propertyName)) return;
             
-            PropertyInfo property = Model.GetPropertyInfo(propertyName);
+            PropertyInfo property = SyntaxNode.GetPropertyInfo(propertyName);
             if (!property.IsOptional()) return;
-            IOptional optional = (IOptional)property.GetValue(Model);
+            IOptional optional = (IOptional)property.GetValue(SyntaxNode);
             if (!optional.HasValue) return;
 
             optional.HasValue = false;
@@ -142,9 +159,9 @@ namespace OneCSharp.AST.UI
             args.Handled = true;
 
             IsMouseOver = true;
-            ShowOptions();
-            if (!(Owner is RepeatableViewModel repeatable)) { return; }
-            ShowCommands();
+            //ShowOptions();
+            //if (!(Owner is RepeatableViewModel repeatable)) { return; }
+            //ShowCommands();
         }
         protected override void OnMouseLeave(object parameter)
         {
@@ -182,19 +199,19 @@ namespace OneCSharp.AST.UI
             if (!(Owner is RepeatableViewModel repeatable)) return;
 
             // TODO: move the code below to SyntaxTreeManager
-            PropertyInfo property = repeatable.Owner.Model.GetPropertyInfo(propertyName);
+            PropertyInfo property = repeatable.Owner.SyntaxNode.GetPropertyInfo(propertyName);
             IList list;
             if (property.IsOptional())
             {
-                IOptional optional = (IOptional)property.GetValue(repeatable.Owner.Model);
+                IOptional optional = (IOptional)property.GetValue(repeatable.Owner.SyntaxNode);
                 if (!optional.HasValue) return;
                 list = (IList)optional.Value;
             }
             else
             {
-                list = (IList)property.GetValue(repeatable.Owner.Model);
+                list = (IList)property.GetValue(repeatable.Owner.SyntaxNode);
             }
-            list.Remove(Model);
+            list.Remove(SyntaxNode);
 
             // TODO: move the code below to SyntaxNodeExtentions
             for (int l = 0; l < repeatable.Lines.Count; l++)

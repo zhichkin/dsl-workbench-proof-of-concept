@@ -1,6 +1,7 @@
 ﻿using OneCSharp.AST.Model;
 using System;
 using System.Linq;
+using System.Windows.Input;
 
 namespace OneCSharp.AST.UI
 {
@@ -33,6 +34,13 @@ namespace OneCSharp.AST.UI
         {
             get { return _isReadOnly; }
             set { _isReadOnly = value; OnPropertyChanged(nameof(IsReadOnly)); }
+        }
+        protected override void OnMouseLeave(object parameter)
+        {
+            if (parameter == null) return;
+            MouseEventArgs args = (MouseEventArgs)parameter;
+            args.Handled = true;
+            IsMouseOver = false;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace OneCSharp.AST.Model
 {
@@ -6,7 +7,7 @@ namespace OneCSharp.AST.Model
     {
         private const string PLACEHOLDER = "<function name>";
         public string Identifier { get; set; } = PLACEHOLDER;
-        public Optional<SimpleDataType> ReturnType { get; } = new Optional<SimpleDataType>();
+        [TypeConstraint(typeof(int))] public Optional<Type> ReturnType { get; } = new Optional<Type>();
         public Optional<List<ParameterConcept>> Parameters { get; } = new Optional<List<ParameterConcept>>();
         public Optional<List<VariableConcept>> Variables { get; } = new Optional<List<VariableConcept>>();
         public Optional<List<SelectConcept>> Statements { get; } = new Optional<List<SelectConcept>>();

@@ -16,7 +16,8 @@ namespace OneCSharp.AST.UI
         void StartHideOptionAnimation();
         void StopHideOptionAnimation();
         void ResetHideOptionAnimation();
-        ISyntaxNode Model { get; set; }
+        Type SyntaxNodeType { get; set; }
+        ISyntaxNode SyntaxNode { get; set; }
         string PropertyBinding { get; set; }
         void Add(ISyntaxNodeViewModel child);
         void Remove(ISyntaxNodeViewModel child);
@@ -35,6 +36,7 @@ namespace OneCSharp.AST.UI
     {
         private bool _isFocused = false;
         private bool _isMouseOver = false;
+        private Type _syntaxNodeType = null;
         private string _propertyBinding = null;
         public event PropertyChangedEventHandler PropertyChanged;
         public SyntaxNodeViewModel()
@@ -47,12 +49,24 @@ namespace OneCSharp.AST.UI
             CtrlVCommand = new RelayCommand(OnCtrlV);
         }
         public SyntaxNodeViewModel(ISyntaxNodeViewModel owner) : this() { Owner = owner; }
-        public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : this(owner) { Model = model; }
+        public SyntaxNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : this(owner) { SyntaxNode = model; }
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public ISyntaxNode Model { get; set; }
+        public ISyntaxNode SyntaxNode { get; set; }
+        public Type SyntaxNodeType
+        {
+            set { _syntaxNodeType = value; }
+            get
+            {
+                if (_syntaxNodeType == null)
+                {
+                    return SyntaxNode?.GetType();
+                }
+                return _syntaxNodeType;
+            }
+        }
         public string PropertyBinding
         {
             get { return _propertyBinding; }
@@ -86,8 +100,27 @@ namespace OneCSharp.AST.UI
             ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
             if (concept != null)
             {
-                concept.IsMouseOver = true;
-                concept.ShowOptions();
+                // show options only if first line is entered ...
+                if (concept.Lines.Count > 0)
+                {
+                    if (concept.Lines[0].Nodes.Count > 0)
+                    {
+                        for (int i = 0; i < concept.Lines[0].Nodes.Count; i++)
+                        {
+                            var node = concept.Lines[0].Nodes[i];
+                            if (node is IndentNodeViewModel) continue;
+                            if (node == this)
+                            {
+                                concept.ShowOptions();
+                                if (concept.Owner is RepeatableViewModel)
+                                {
+                                    concept.ShowCommands();
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
         protected virtual void OnMouseLeave(object parameter)
@@ -96,7 +129,10 @@ namespace OneCSharp.AST.UI
             ConceptNodeViewModel concept = this.Ancestor<ConceptNodeViewModel>() as ConceptNodeViewModel;
             if (concept != null)
             {
-                concept.IsMouseOver = false;
+                if (concept.Owner is RepeatableViewModel)
+                {
+                    concept.HideCommands();
+                }
             }
         }
         protected virtual void OnMouseDown(object parameter)
@@ -154,13 +190,13 @@ namespace OneCSharp.AST.UI
         {
             if (string.IsNullOrWhiteSpace(PropertyBinding)) return;
 
-            Type metadata = Owner.Model.GetType();
+            Type metadata = Owner.SyntaxNode.GetType();
             PropertyInfo property = metadata.GetProperty(PropertyBinding);
             if (property == null) return;
 
             if (property.IsOptional())
             {
-                IOptional optional = (IOptional)property.GetValue(Owner.Model);
+                IOptional optional = (IOptional)property.GetValue(Owner.SyntaxNode);
                 IsVisible = optional.HasValue;
                 IsTemporallyVisible = false;
                 ResetHideOptionFlag = false;
