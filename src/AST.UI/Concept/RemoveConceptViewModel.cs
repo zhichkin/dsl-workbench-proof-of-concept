@@ -1,5 +1,7 @@
-﻿using OneCSharp.MVVM;
+﻿using OneCSharp.AST.Model;
+using OneCSharp.MVVM;
 using System;
+using System.Reflection;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -24,7 +26,31 @@ namespace OneCSharp.AST.UI
         {
             if (!(this.Ancestor<ConceptNodeViewModel>() is ConceptNodeViewModel concept)) return;
             ((ConceptNodeViewModel)Owner).HideCommands();
-            if (Owner.Owner is RepeatableViewModel repeatable)
+            if (Owner.Owner is ConceptNodeViewModel owner)
+            {
+                PropertyInfo property = owner.SyntaxNode.GetPropertyInfo(concept.PropertyBinding);
+                if (property.IsOptional())
+                {
+                    owner.RemoveConcept(concept.PropertyBinding);
+                    // reset visibility
+                    concept.PropertyBinding = concept.PropertyBinding;
+                    // TODO: move the below code to SyntaxNodeExtentions
+                    for (int l = 0; l < concept.Lines.Count; l++)
+                    {
+                        var line = concept.Lines[l];
+                        for (int i = 0; i < line.Nodes.Count; i++)
+                        {
+                            if (line.Nodes[i] == this)
+                            {
+                                // remove this remove command from UI
+                                concept.Lines.RemoveAt(l);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (Owner.Owner is RepeatableViewModel repeatable)
             {
                 concept.RemoveConcept(repeatable.PropertyBinding);
             }

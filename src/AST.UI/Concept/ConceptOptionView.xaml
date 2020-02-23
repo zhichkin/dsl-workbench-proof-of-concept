@@ -1,27 +1,27 @@
-﻿<TextBlock x:Class="OneCSharp.AST.UI.RepeatableOptionView"
-           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-           xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-           mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl x:Class="OneCSharp.AST.UI.ConceptOptionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
 
-    <TextBlock.Resources>
+    <UserControl.Resources>
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        
+
         <Storyboard x:Key="HideOptionAnimation" x:Shared="False" Completed="HideOptionAnimation_Completed">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:5"/>
         </Storyboard>
 
-        <Style x:Key="RepeatableOptionStyle" TargetType="TextBlock">
+        <Style x:Key="ConceptOptionStyle" TargetType="TextBlock">
             <Setter Property="Margin" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Foreground" Value="Gray"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Style.Triggers>
-                
+
                 <DataTrigger Binding="{Binding IsTemporallyVisible}" Value="True">
                     <DataTrigger.EnterActions>
                         <BeginStoryboard x:Name="HideOptionStoryboard" Storyboard="{StaticResource HideOptionAnimation}"/>
@@ -36,13 +36,13 @@
                         <SeekStoryboard BeginStoryboardName="HideOptionStoryboard" Origin="BeginTime" Offset="0:0:0"/>
                     </DataTrigger.EnterActions>
                 </DataTrigger>
-                
+
             </Style.Triggers>
         </Style>
-        
-    </TextBlock.Resources>
 
-    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Presentation}" Style="{StaticResource RepeatableOptionStyle}"
+    </UserControl.Resources>
+
+    <TextBlock x:Name="CONTROL_ROOT" Text="{Binding Presentation}" Style="{StaticResource ConceptOptionStyle}"
                Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
         
         <behaviors:Interaction.Triggers>
@@ -59,7 +59,7 @@
                 <behaviors:InvokeCommandAction Command="{Binding MouseLeaveCommand}" PassEventArgsToCommand="True"/>
             </behaviors:EventTrigger>
         </behaviors:Interaction.Triggers>
-    
+
     </TextBlock>
-    
-</TextBlock>
+
+</UserControl>

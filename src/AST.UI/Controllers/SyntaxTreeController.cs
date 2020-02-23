@@ -46,17 +46,6 @@ namespace OneCSharp.AST.UI
             ConceptNodeViewModel node = layout.Layout(model) as ConceptNodeViewModel;
             node.Owner = parentNode;
 
-            //if (node.Lines.Count > 0)
-            //{
-            //    KeywordNodeViewModel keyword = (KeywordNodeViewModel)node.Lines[0].Nodes
-            //        .Where(n => n.GetType() == typeof(KeywordNodeViewModel))
-            //        .FirstOrDefault();
-            //    if (keyword != null)
-            //    {
-            //        CreateContextMenu(keyword, model);
-            //    }
-            //}
-
             foreach (ICodeLineViewModel line in node.Lines)
             {
                 for (int i = 0; i < line.Nodes.Count; i++)
@@ -65,24 +54,22 @@ namespace OneCSharp.AST.UI
                     {
                         string propertyBinding = line.Nodes[i].PropertyBinding;
                         PropertyInfo property = node.SyntaxNode.GetPropertyInfo(propertyBinding);
+                        IOptional optional = null;
                         if (property.IsOptional())
                         {
-                            // TODO: WHERE optional concept node !!!
-                            // should be moved to ShowOptions method of ConceptNodeViewModel !
-
-                            //Type conceptType = SyntaxTreeManager.GetPropertyType(property);
-                            //ISyntaxNode concept = (ISyntaxNode)Activator.CreateInstance(conceptType);
-                            //concept.Parent = model;
-                            //ConceptNodeViewModel conceptNode = CreateSyntaxNode(node, concept);
-                            //if (conceptNode != null)
-                            //{
-                            //    line.Nodes[i] = conceptNode;
-                            //    conceptNode.PropertyBinding = propertyBinding;
-                            //}
+                            optional = (IOptional)property.GetValue(node.SyntaxNode);
                         }
-                        else
+                        ISyntaxNode concept = null;
+                        if (optional == null)
                         {
-                            ISyntaxNode concept = (ISyntaxNode)property.GetValue(node.SyntaxNode);
+                            concept = (ISyntaxNode)property.GetValue(node.SyntaxNode);
+                        }
+                        else if (optional.HasValue)
+                        {
+                            concept = (ISyntaxNode)optional.Value;
+                        }
+                        if (concept != null)
+                        {
                             ConceptNodeViewModel conceptNode = CreateSyntaxNode(node, concept);
                             if (conceptNode != null)
                             {

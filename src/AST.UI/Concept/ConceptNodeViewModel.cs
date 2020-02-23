@@ -13,8 +13,6 @@ namespace OneCSharp.AST.UI
         public ConceptNodeViewModel(ISyntaxNodeViewModel owner, ISyntaxNode model) : base(owner, model) { }
         public void ShowOptions()
         {
-            // TODO: add concept node option !!! WHERE does not become visible !!!
-
             Type metadata = SyntaxNode.GetType();
             
             foreach (PropertyInfo property in metadata
@@ -39,13 +37,17 @@ namespace OneCSharp.AST.UI
                     {
                         ShowRepeatableOption(node);
                     }
-                    // Selectors, Concepts, Keywords, Literals, Indents and Identifiers
+                    else if (node is ConceptNodeViewModel)
+                    {
+                        ShowConceptOption(node);
+                    }
+                    // Indents, Identifiers, Keywords, Literals and Selectors
                     else if (node.IsTemporallyVisible)
                     {
                         node.ResetHideOptionAnimation();
                     }
                     else
-                    {   
+                    {
                         node.StartHideOptionAnimation();
                     }
                 }
@@ -106,6 +108,47 @@ namespace OneCSharp.AST.UI
             repetableNode.Add(option);
             option.StartHideOptionAnimation();
         }
+        private void ShowConceptOption(ISyntaxNodeViewModel conceptNode)
+        {
+            int lineIndex = 0;
+            int nodeIndex = 0;
+            ConceptOptionViewModel option = null;
+            for (int l = 0; l < conceptNode.Owner.Lines.Count; l++)
+            {
+                var line = conceptNode.Owner.Lines[l];
+                for (int n = 0; n < line.Nodes.Count; n++)
+                {
+                    var node = line.Nodes[n];
+                    if (node == conceptNode)
+                    {
+                        if (n > 0)
+                        {
+                            if (line.Nodes[n - 1] is ConceptOptionViewModel)
+                            {
+                                option = (ConceptOptionViewModel)line.Nodes[n - 1];
+                                option.ResetHideOptionAnimation();
+                            }
+                        }
+                        else
+                        {
+                            lineIndex = l;
+                            nodeIndex = n;
+                        }
+                    }
+                }
+            }
+            if (option != null) { return; }
+
+            option = new ConceptOptionViewModel((ConceptNodeViewModel)conceptNode.Owner)
+            {
+                PropertyBinding = conceptNode.PropertyBinding
+            };
+            conceptNode.Owner.Lines[lineIndex].Nodes.Insert(nodeIndex, option);
+            option.StartHideOptionAnimation();
+        }
+
+
+
         public void ProcessOptionSelection(string propertyName)
         {
             if (string.IsNullOrWhiteSpace(propertyName)) return;
@@ -159,9 +202,6 @@ namespace OneCSharp.AST.UI
             args.Handled = true;
 
             IsMouseOver = true;
-            //ShowOptions();
-            //if (!(Owner is RepeatableViewModel repeatable)) { return; }
-            //ShowCommands();
         }
         protected override void OnMouseLeave(object parameter)
         {
@@ -170,6 +210,14 @@ namespace OneCSharp.AST.UI
             args.Handled = true;
 
             IsMouseOver = false;
+            if (Owner is ConceptNodeViewModel)
+            {
+                PropertyInfo property = Owner.SyntaxNode.GetPropertyInfo(PropertyBinding);
+                if (property.IsOptional())
+                {
+                    HideCommands();
+                }
+            }
             if (!(Owner is RepeatableViewModel repeatable)) return;
             HideCommands();
         }
@@ -196,6 +244,25 @@ namespace OneCSharp.AST.UI
         public void RemoveConcept(string propertyName)
         {
             if (string.IsNullOrWhiteSpace(propertyName)) return;
+
+            // first check if own property reset to null action is requested ...
+            PropertyInfo p = SyntaxNode.GetPropertyInfo(propertyName);
+            if (p != null)
+            {
+                if (p.IsOptional())
+                {
+                    IOptional o = (IOptional)p.GetValue(SyntaxNode);
+                    o.HasValue = false;
+                }
+                else
+                {
+                    p.SetValue(SyntaxNode, null);
+                }
+                // 
+                return;
+            }
+
+            // second check if remove repeatable concept command is requested
             if (!(Owner is RepeatableViewModel repeatable)) return;
 
             // TODO: move the code below to SyntaxTreeManager

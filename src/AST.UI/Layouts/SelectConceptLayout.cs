@@ -18,8 +18,8 @@ namespace OneCSharp.AST.UI
                     .Selector()
                     .Literal(")")
                 .Repeatable().Bind(nameof(concept.Expressions))
-                .Concept().Bind(nameof(concept.From))
-                .Concept().Bind(nameof(concept.Where));
+                .Concept().Bind(nameof(concept.FROM))
+                .Concept().Bind(nameof(concept.WHERE));
         }
     }
     public sealed class SelectExpressionLayout : IConceptLayout

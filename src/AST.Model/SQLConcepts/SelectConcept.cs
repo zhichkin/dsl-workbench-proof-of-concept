@@ -7,14 +7,14 @@ namespace OneCSharp.AST.Model
     {
         public SelectConcept()
         {
-            From = new FromConcept() { Parent = this };
+            FROM = new FromConcept() { Parent = this };
         }
         public Optional<bool> IsDistinct { get; } = new Optional<bool>();
         [TypeConstraint(typeof(int), typeof(ParameterConcept), typeof(VariableConcept))]
         public Optional<object> TopExpression { get; } = new Optional<object>();
         public Optional<List<SelectExpression>> Expressions { get; } = new Optional<List<SelectExpression>>();
-        public FromConcept From { get; private set; }
-        public Optional<WhereConcept> Where { get; } = new Optional<WhereConcept>();
+        public FromConcept FROM { get; private set; }
+        public Optional<WhereConcept> WHERE { get; } = new Optional<WhereConcept>();
     }
     public sealed class SelectExpression : SyntaxNode, IIdentifiable
     {

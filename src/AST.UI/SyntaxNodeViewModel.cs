@@ -116,6 +116,14 @@ namespace OneCSharp.AST.UI
                                 {
                                     concept.ShowCommands();
                                 }
+                                else if (concept.Owner is ConceptNodeViewModel)
+                                {
+                                    PropertyInfo property = concept.Owner.SyntaxNode.GetPropertyInfo(concept.PropertyBinding);
+                                    if (property.IsOptional())
+                                    {
+                                        concept.ShowCommands();
+                                    }
+                                }
                                 break;
                             }
                         }

@@ -191,5 +191,22 @@ namespace OneCSharp.AST.Model
             list.Add(concept);
             return concept;
         }
+        public static ISyntaxNode CreateConcept(Type conceptType, ISyntaxNode parent, string propertyName)
+        {
+            ISyntaxNode concept = (ISyntaxNode)Activator.CreateInstance(conceptType);
+            concept.Parent = parent;
+
+            PropertyInfo property = parent.GetPropertyInfo(propertyName);
+            if (property.IsOptional())
+            {
+                IOptional optional = (IOptional)property.GetValue(parent);
+                optional.Value = concept;
+            }
+            else
+            {
+                property.SetValue(parent, concept);
+            }
+            return concept;
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace OneCSharp.AST.UI
             { typeof(KeywordNodeViewModel), typeof(KeywordNodeView) },
             { typeof(LiteralNodeViewModel), typeof(LiteralNodeView) },
             { typeof(ConceptNodeViewModel), typeof(ConceptNodeView) },
+            { typeof(ConceptOptionViewModel), typeof(ConceptOptionView) },
             { typeof(RemoveConceptViewModel), typeof(RemoveConceptView) },
             { typeof(RepeatableViewModel), typeof(RepeatableView) },
             { typeof(RepeatableOptionViewModel), typeof(RepeatableOptionView) },
