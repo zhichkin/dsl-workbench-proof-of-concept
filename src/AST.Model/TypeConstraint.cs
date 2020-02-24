@@ -95,4 +95,10 @@ namespace OneCSharp.AST.Model
             return constraints;
         }
     }
+    public sealed class TypeConstraint
+    {
+        public readonly List<Type> Concepts = new List<Type>();
+        public readonly List<Type> DataTypes = new List<Type>();
+        public readonly List<Type> DotNetTypes = new List<Type>();
+    }
 }

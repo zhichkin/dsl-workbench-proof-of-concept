@@ -6,8 +6,4 @@
     <RootNamespace>OneCSharp.AST.Model</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Core.Model\Core.Model.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -2,12 +2,11 @@
 
 namespace OneCSharp.AST.UI
 {
-    public sealed class SelectConceptLayout : IConceptLayout
+    public sealed class SelectConceptLayout : ConceptLayout<SelectConcept>
     {
-        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        public override ISyntaxNodeViewModel Layout(SelectConcept concept)
         {
-            SelectConcept concept;
-            return (new ConceptNodeViewModel(null, model))
+            return (new ConceptNodeViewModel(null, concept))
                 .Keyword("SELECT")
                 //.Keyword("DISTINCT").Bind(nameof(concept.IsDistinct))
                 .Property(nameof(concept.IsDistinct))
@@ -22,43 +21,39 @@ namespace OneCSharp.AST.UI
                 .Concept().Bind(nameof(concept.WHERE));
         }
     }
-    public sealed class SelectExpressionLayout : IConceptLayout
+    public sealed class SelectExpressionLayout : ConceptLayout<SelectExpression>
     {
-        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        public override ISyntaxNodeViewModel Layout(SelectExpression concept)
         {
-            SelectExpression concept;
-            return (new ConceptNodeViewModel(null, model))
+            return (new ConceptNodeViewModel(null, concept))
                 .Identifier()
                 .Literal(" = ")
                 .Selector().Bind(nameof(concept.ColumnReference));
         }
     }
-    public sealed class FromConceptLayout : IConceptLayout
+    public sealed class FromConceptLayout : ConceptLayout<FromConcept>
     {
-        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        public override ISyntaxNodeViewModel Layout(FromConcept concept)
         {
-            FromConcept concept;
-            return (new ConceptNodeViewModel(null, model))
+            return (new ConceptNodeViewModel(null, concept))
                 .Keyword("FROM")
                 .Repeatable().Bind(nameof(concept.Expressions));
         }
     }
-    public sealed class WhereConceptLayout : IConceptLayout
+    public sealed class WhereConceptLayout : ConceptLayout<WhereConcept>
     {
-        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        public override ISyntaxNodeViewModel Layout(WhereConcept concept)
         {
-            WhereConcept concept;
-            return (new ConceptNodeViewModel(null, model))
+            return (new ConceptNodeViewModel(null, concept))
                 .Keyword("WHERE")
                 .Repeatable().Bind(nameof(concept.Expressions));
         }
     }
-    public sealed class TableConceptLayout : IConceptLayout
+    public sealed class TableConceptLayout : ConceptLayout<TableConcept>
     {
-        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        public override ISyntaxNodeViewModel Layout(TableConcept concept)
         {
-            TableConcept concept;
-            return (new ConceptNodeViewModel(null, model))
+            return (new ConceptNodeViewModel(null, concept))
                 .Identifier()
                 .Selector().Bind(nameof(concept.TableDefinition));
         }

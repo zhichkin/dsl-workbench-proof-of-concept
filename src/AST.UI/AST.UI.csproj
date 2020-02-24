@@ -32,9 +32,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AST.Model\AST.Model.csproj" />
-    <ProjectReference Include="..\Core.Model\Core.Model.csproj" />
-    <ProjectReference Include="..\Core.Services\Core.Services.csproj" />
-    <ProjectReference Include="..\Metadata.Services\Metadata.Services.csproj" />
     <ProjectReference Include="..\MVVM\MVVM.csproj" />
   </ItemGroup>
 

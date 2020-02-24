@@ -26,8 +26,7 @@ namespace OneCSharp.AST.UI
             PropertyInfo property = Owner.SyntaxNode.GetPropertyInfo(PropertyBinding);
             Type optionType = SyntaxTreeManager.GetPropertyType(property);
             ISyntaxNode concept = SyntaxTreeManager.CreateConcept(optionType, Owner.SyntaxNode, PropertyBinding);
-            SyntaxTreeController controller = new SyntaxTreeController();
-            ConceptNodeViewModel node = controller.CreateSyntaxNode(Owner, concept);
+            ConceptNodeViewModel node = SyntaxTreeController.Current.CreateSyntaxNode(Owner, concept);
             node.PropertyBinding = PropertyBinding;
 
             NodePosition position = Owner.GetPosition(this);

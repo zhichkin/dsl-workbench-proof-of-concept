@@ -17,7 +17,7 @@ namespace OneCSharp.SQL.UI
         {
             _module = module;
         }
-        public void BuildTreeNode(Entity model, out TreeNodeViewModel treeNode)
+        public void BuildTreeNode(object model, out TreeNodeViewModel treeNode)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
             if (!(model is Database database)) throw new ArgumentOutOfRangeException(nameof(model));

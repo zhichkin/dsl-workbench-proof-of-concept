@@ -1,9 +1,7 @@
-﻿using OneCSharp.Core.Model;
-
-namespace OneCSharp.MVVM
+﻿namespace OneCSharp.MVVM
 {
     public interface IController
     {
-        void BuildTreeNode(Entity model, out TreeNodeViewModel treeNode);
+        void BuildTreeNode(object model, out TreeNodeViewModel treeNode);
     }
 }

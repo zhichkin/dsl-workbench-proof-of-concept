@@ -64,8 +64,7 @@ namespace OneCSharp.AST.UI
         {
             // TODO: move this code to SyntaxTreeManager
             ISyntaxNode model = SyntaxTreeManager.CreateRepeatableConcept(optionType, parent, propertyName);
-            SyntaxTreeController controller = new SyntaxTreeController();
-            ConceptNodeViewModel node = controller.CreateSyntaxNode(Owner, model);
+            ConceptNodeViewModel node = SyntaxTreeController.Current.CreateSyntaxNode(Owner, model);
             Owner.Add(node);
         }
     }

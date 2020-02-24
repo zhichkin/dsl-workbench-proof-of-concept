@@ -20,11 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AST.Module\AST.Module.csproj" />
     <ProjectReference Include="..\MVVM\MVVM.csproj" />
     <ProjectReference Include="..\SQL.Model\SQL.Model.csproj" />
     <ProjectReference Include="..\SQL.Services\SQL.Services.csproj" />
     <ProjectReference Include="..\SQL.UI\SQL.UI.csproj" />
-    <ProjectReference Include="..\WEB.Module\WEB.Module.csproj" />
   </ItemGroup>
 
   <ItemGroup>

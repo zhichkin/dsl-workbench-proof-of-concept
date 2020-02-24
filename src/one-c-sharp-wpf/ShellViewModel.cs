@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace OneCSharp.Shell
@@ -66,13 +67,11 @@ namespace OneCSharp.Shell
             IModule module1 = new OneCSharp.SQL.UI.Module();
             module1.Initialize(this);
 
-            // Plug in WEB module
-            IModule module2 = new OneCSharp.WEB.Module.Module();
+            // Plug in AST module
+            IModule module2 = new OneCSharp.AST.Module.Module();
             module2.Initialize(this);
 
-            // Plug in AST module
-            //IModule module2 = new OneCSharp.AST.UI.Module();
-            //module2.Initialize(this);
+            InitializeExtensionModules();
         }
         private TabViewModel _selectedTab;
         public TabViewModel SelectedTab
@@ -117,6 +116,32 @@ namespace OneCSharp.Shell
         {
             StatusBarRegion = message;
             //App.Current.MainWindow.Dispatcher.Invoke(() => { StatusBarRegion = message; });
+        }
+    
+
+
+        private void InitializeExtensionModules()
+        {
+            string moduleCatalog = Path.Combine(AppCatalogPath, "Modules");
+            if (!Directory.Exists(moduleCatalog))
+            {
+                Directory.CreateDirectory(moduleCatalog);
+            }
+            foreach (string directory in Directory.GetDirectories(moduleCatalog))
+            {
+                foreach (string file in Directory.GetFiles(directory, "*.dll"))
+                {
+                    Assembly assembly = Assembly.LoadFrom(file);
+                    foreach (Type type in assembly.GetTypes())
+                    {
+                        if (type.GetInterfaces().Where(i => i == typeof(IModule)).Count() > 0)
+                        {
+                            IModule module = (IModule)Activator.CreateInstance(type);
+                            module.Initialize(this);
+                        }
+                    }
+                }
+            }
         }
     }
 }

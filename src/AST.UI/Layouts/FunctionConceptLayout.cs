@@ -2,16 +2,11 @@
 
 namespace OneCSharp.AST.UI
 {
-    public interface IConceptLayout
+    public sealed class FunctionConceptLayout : ConceptLayout<FunctionConcept>
     {
-        ISyntaxNodeViewModel Layout(ISyntaxNode model);
-    }
-    public sealed class FunctionConceptLayout : IConceptLayout
-    {
-        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        public override ISyntaxNodeViewModel Layout(FunctionConcept concept)
         {
-            FunctionConcept concept;
-            return (new ConceptNodeViewModel(null, model))
+            return (new ConceptNodeViewModel(null, concept))
                 .Keyword("FUNCTION")
                 .Identifier()
                 //.NewLine()
@@ -24,12 +19,11 @@ namespace OneCSharp.AST.UI
                 .Repeatable().Bind(nameof(concept.Statements));
         }
     }
-    public sealed class ParameterConceptLayout : IConceptLayout
+    public sealed class ParameterConceptLayout : ConceptLayout<ParameterConcept>
     {
-        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        public override ISyntaxNodeViewModel Layout(ParameterConcept concept)
         {
-            ParameterConcept concept;
-            return (new ConceptNodeViewModel(null, model))
+            return (new ConceptNodeViewModel(null, concept))
                 .Keyword("@")
                 .Identifier()
                 .Selector().Bind(nameof(concept.ParameterType))
@@ -37,12 +31,11 @@ namespace OneCSharp.AST.UI
                     .Keyword("OUTPUT").Bind(nameof(concept.IsOutput));
         }
     }
-    public sealed class VariableConceptLayout : IConceptLayout
+    public sealed class VariableConceptLayout : ConceptLayout<VariableConcept>
     {
-        public ISyntaxNodeViewModel Layout(ISyntaxNode model)
+        public override ISyntaxNodeViewModel Layout(VariableConcept concept)
         {
-            VariableConcept concept;
-            return (new ConceptNodeViewModel(null, model))
+            return (new ConceptNodeViewModel(null, concept))
                 .Keyword("DECLARE")
                 .Identifier()
                 .Selector().Bind(nameof(concept.VariableType));

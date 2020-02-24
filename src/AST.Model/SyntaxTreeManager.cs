@@ -6,12 +6,6 @@ using System.Reflection;
 
 namespace OneCSharp.AST.Model
 {
-    public sealed class TypeConstraint
-    {
-        public readonly List<Type> Concepts = new List<Type>();
-        public readonly List<Type> DataTypes = new List<Type>();
-        public readonly List<Type> DotNetTypes = new List<Type>();
-    }
     public static class SyntaxTreeManager
     {
         private const string OPTIONAL_VALUE = "Value";

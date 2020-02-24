@@ -17,11 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core.Model\Core.Model.csproj" />
-    <ProjectReference Include="..\Core.Services\Core.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="images\AddNamespace.png" />
     <Resource Include="images\Namespace.png" />
   </ItemGroup>
