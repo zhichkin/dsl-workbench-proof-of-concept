@@ -22,13 +22,13 @@ namespace OneCSharp.AST.Model
             return (@this.PropertyType.IsGenericType
                 && @this.PropertyType.GetGenericTypeDefinition() == typeof(Optional<>));
         }
-        public static bool IsSelector(this PropertyInfo @this)
-        {
-            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(@this);
-            return (constraints.Concepts.Count
-                + constraints.DataTypes.Count
-                + constraints.DotNetTypes.Count) > 1;
-        }
+        //public static bool IsSelector(this PropertyInfo @this)
+        //{
+        //    TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(@this);
+        //    return (constraints.Concepts.Count
+        //        + constraints.DataTypes.Count
+        //        + constraints.DotNetTypes.Count) > 1;
+        //}
         public static bool IsRepeatable(this PropertyInfo @this)
         {
             Type valueType = null;
@@ -82,7 +82,13 @@ namespace OneCSharp.AST.Model
             }
             return repeatableTypes;
         }
-
+        public static bool IsAssemblyReference(this ISyntaxNode @this, string propertyName)
+        {
+            if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException(propertyName);
+            PropertyInfo property = @this.GetPropertyInfo(propertyName);
+            if (property == null) throw new ArgumentOutOfRangeException(propertyName);
+            return (property.PropertyType == typeof(Assembly));
+        }
         public static void SetConceptReferenceProperty(this ISyntaxNode concept, string propertyName, object value)
         {
             PropertyInfo property = concept.GetPropertyInfo(propertyName);

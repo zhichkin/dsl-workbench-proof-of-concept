@@ -46,6 +46,8 @@ namespace OneCSharp.AST.UI
             if (args.ChangedButton == MouseButton.Right) return;
             args.Handled = true;
 
+            Visual control = args.Source as Visual;
+
             if (IsTemporallyVisible)
             {
                 base.OnMouseDown(parameter);
@@ -56,14 +58,35 @@ namespace OneCSharp.AST.UI
             var ancestor = this.Ancestor<ConceptNodeViewModel>();
             if (ancestor == null) return;
 
+            // check if property is referencing language assembly - special case !
+            if (ancestor.SyntaxNode.IsAssemblyReference(PropertyBinding))
+            {
+                LanguageConcept language = SelectLanguageReference(ancestor.SyntaxNode, PropertyBinding, control);
+                if (language == null) { return; }
+                SyntaxTreeManager.SetConceptProperty(ancestor.SyntaxNode, PropertyBinding, language.Assembly);
+                SyntaxNode = language;
+                OnPropertyChanged(nameof(Presentation));
+                return;
+            }
+
+            // get hosting script concept
+            ScriptConcept script;
+            if (ancestor.SyntaxNode is ScriptConcept)
+            {
+                script = (ScriptConcept)ancestor.SyntaxNode;
+            }
+            else
+            {
+                script = ancestor.SyntaxNode.Ancestor<ScriptConcept>() as ScriptConcept;
+            }
+
             // get type constraints of the property
-            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(ancestor.SyntaxNode, PropertyBinding);
+            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(script?.Languages, ancestor.SyntaxNode, PropertyBinding);
 
             // build tree view
             TreeNodeViewModel viewModel = SyntaxNodeSelector.BuildSelectorTree(constraints);
 
             // open dialog window
-            Visual control = args.Source as Visual;
             PopupWindow dialog = new PopupWindow(control, viewModel);
             _ = dialog.ShowDialog();
             if (dialog.Result == null) { return; }
@@ -118,6 +141,26 @@ namespace OneCSharp.AST.UI
 
             // return selected reference
             return (dialog.Result.NodePayload as ISyntaxNode);
+        }
+        private LanguageConcept SelectLanguageReference(ISyntaxNode concept, string propertyName, Visual control)
+        {
+            // get scope provider
+            IScopeProvider scopeProvider = new AssemblyScopeProvider();
+
+            // get references in the scope
+            IEnumerable<ISyntaxNode> scope = scopeProvider.Scope(concept, propertyName);
+            if (scope == null || scope.Count() == 0) { return null; }
+
+            // build tree view
+            TreeNodeViewModel viewModel = SyntaxNodeExtensions.BuildLanguageSelectorTree(scope);
+
+            // open dialog window
+            PopupWindow dialog = new PopupWindow(control, viewModel);
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) { return null; }
+
+            // return selected reference
+            return (dialog.Result.NodePayload as LanguageConcept);
         }
     }
 }

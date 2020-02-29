@@ -1,6 +1,6 @@
 ﻿using OneCSharp.AST.Model;
 using OneCSharp.AST.UI;
-using OneCSharp.DDL.Model;
+using OneCSharp.DML.Model;
 using OneCSharp.MVVM;
 using System;
 using System.IO;
@@ -8,13 +8,12 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 
-namespace OneCSharp.DDL.Module
+namespace OneCSharp.DML.Module
 {
     public sealed class Module : IModule
     {
         #region " String resources "
         public const string ONE_C_SHARP = "ONE-C-SHARP";
-        public const string EDIT_WINDOW = "pack://application:,,,/OneCSharp.AST.Module;component/images/EditWindow.png";
         #endregion
 
         public Module() { }
@@ -26,10 +25,16 @@ namespace OneCSharp.DDL.Module
         {
             throw new NotImplementedException();
         }
+        public void Persist(object entity)
+        {
+            throw new NotImplementedException();
+        }
         public IShell Shell { get; private set; }
         public void Initialize(IShell shell)
         {
             Shell = shell ?? throw new ArgumentNullException(nameof(shell));
+            
+            RegisterScopeProviders();
 
             try
             {
@@ -39,7 +44,7 @@ namespace OneCSharp.DDL.Module
             catch (Exception ex)
             {
                 // TODO: log error !!!
-                MessageBox.Show("Failed to load DDL module:"
+                MessageBox.Show("Failed to load DML module:"
                     + Environment.NewLine
                     + Environment.NewLine
                     + ex.Message,
@@ -55,23 +60,7 @@ namespace OneCSharp.DDL.Module
             string conceptsPath = moduleName.Replace("Module", "Model");
             layoutsPath = Path.Combine(modulePath, layoutsPath);
             conceptsPath = Path.Combine(modulePath, conceptsPath);
-            // if (File.Exists(layoutsPath) && File.Exists(conceptsPath)) - not working sometimes ...
-            //Assembly layouts;
-            //Assembly concepts;
-            //try
-            //{
-            //    // TODO: load assembly from binary image so as not to block the dll file !!!
-            //    FileStream stream = File.OpenRead(layoutsPath);
-            //    byte[] buffer = new byte[stream.Length];
-            //    stream.Read(buffer, 0, (int)stream.Length);
-            //    layouts = Assembly.Load(buffer);
-            //    concepts = Assembly.LoadFrom(conceptsPath);
-            //}
-            //catch (Exception ex)
-            //{
-            //    //TODO: log error
-            //    return;
-            //}
+
             if (File.Exists(layoutsPath) && File.Exists(conceptsPath))
             {
                 Assembly layouts = Assembly.LoadFrom(layoutsPath);
@@ -97,21 +86,12 @@ namespace OneCSharp.DDL.Module
             }
             else
             {
-                throw new FileNotFoundException("DDL module files not found!");
+                throw new FileNotFoundException("DML module files not found!");
             }
         }
-        public void Persist(object entity)
+        private void RegisterScopeProviders()
         {
-            throw new NotImplementedException();
-        }
-        private void CreateTestCodeEditor(object parameter)
-        {
-            DomainConcept concept = new DomainConcept();
-            CodeEditor editor = new CodeEditor()
-            {
-                DataContext = SyntaxTreeController.Current.CreateSyntaxNode(null, concept)
-            };
-            Shell.AddTabItem("DDL SCRIPT", editor);
+            SyntaxTreeManager.RegisterScopeProvider(typeof(VariableConcept), new VariableScopeProvider());
         }
     }
 }

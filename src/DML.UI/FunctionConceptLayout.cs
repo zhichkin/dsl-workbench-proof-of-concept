@@ -1,6 +1,7 @@
-﻿using OneCSharp.AST.Model;
+﻿using OneCSharp.AST.UI;
+using OneCSharp.DML.Model;
 
-namespace OneCSharp.AST.UI
+namespace OneCSharp.DML.UI
 {
     public sealed class FunctionConceptLayout : ConceptLayout<FunctionConcept>
     {

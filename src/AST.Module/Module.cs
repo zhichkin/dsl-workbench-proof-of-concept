@@ -3,6 +3,8 @@ using OneCSharp.AST.UI;
 using OneCSharp.MVVM;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Windows.Media.Imaging;
 
 namespace OneCSharp.AST.Module
@@ -29,11 +31,14 @@ namespace OneCSharp.AST.Module
         {
             Shell = shell ?? throw new ArgumentNullException(nameof(shell));
 
+            SyntaxTreeController.Current.RegisterConceptLayout(typeof(ScriptConcept), new ScriptConceptLayout());
+            SyntaxTreeController.Current.RegisterConceptLayout(typeof(LanguageConcept), new LanguageConceptLayout());
+
             Shell.AddMenuItem(new MenuItemViewModel()
             {
                 MenuItemIcon = new BitmapImage(new Uri(EDIT_WINDOW)),
                 MenuItemHeader = "Add test script",
-                MenuItemCommand = new RelayCommand(CreateTestCodeEditor),
+                MenuItemCommand = new RelayCommand(CreateCodeEditor),
                 MenuItemPayload = this
             });
         }
@@ -41,14 +46,15 @@ namespace OneCSharp.AST.Module
         {
             throw new NotImplementedException();
         }
-        private void CreateTestCodeEditor(object parameter)
+        private void CreateCodeEditor(object parameter)
         {
-            FunctionConcept concept = new FunctionConcept();
+            //FunctionConcept concept = new FunctionConcept();
+            ScriptConcept script = new ScriptConcept();
             CodeEditor editor = new CodeEditor()
             {
-                DataContext = SyntaxTreeController.Current.CreateSyntaxNode(null, concept)
+                DataContext = SyntaxTreeController.Current.CreateSyntaxNode(null, script)
             };
-            Shell.AddTabItem("TEST", editor);
+            Shell.AddTabItem("SCRIPT", editor);
         }
     }
 }

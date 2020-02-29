@@ -10,9 +10,10 @@ namespace OneCSharp.AST.Model
     {
         private const string OPTIONAL_VALUE = "Value";
         private static readonly Dictionary<Type, IScopeProvider> _scopeProviders = new Dictionary<Type, IScopeProvider>();
-        static SyntaxTreeManager()
+        static SyntaxTreeManager() { }
+        public static void RegisterScopeProvider(Type scopeConcept, IScopeProvider provider)
         {
-            _scopeProviders.Add(typeof(VariableConcept), new VariableScopeProvider());
+            _scopeProviders.Add(scopeConcept, provider);
         }
         public static IScopeProvider GetScopeProvider(Type concept)
         {
@@ -76,12 +77,27 @@ namespace OneCSharp.AST.Model
                 constraints.Concepts.Add(type);
             }
         }
-        public static IEnumerable<Type> GetSubclassesOfType(Type baseType)
+        public static IEnumerable<Type> GetSubclassesOfType(IEnumerable<LanguageConcept> languages, Type baseType)
         {
-            return Assembly.GetAssembly(baseType).GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(baseType));
+            if (languages == null)
+            {
+                return Assembly.GetAssembly(baseType).GetTypes()
+                    .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(baseType));
+            }
+
+            List<Type> subclasses = new List<Type>();
+            foreach (LanguageConcept language in languages)
+            {
+                if (language.Assembly == null) continue;
+                foreach (Type subclass in language.Assembly.GetTypes()
+                    .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(baseType)))
+                {
+                    subclasses.Add(subclass);
+                }
+            }
+            return subclasses;
         }
-        public static TypeConstraint GetTypeConstraints(ISyntaxNode concept, string propertyName)
+        public static TypeConstraint GetTypeConstraints(IEnumerable<LanguageConcept> languages, ISyntaxNode concept, string propertyName)
         {
             if (concept == null) throw new ArgumentNullException(nameof(concept));
             if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException(nameof(propertyName));
@@ -90,16 +106,16 @@ namespace OneCSharp.AST.Model
             PropertyInfo property = metadata.GetProperty(propertyName);
             if (property == null) throw new ArgumentOutOfRangeException(nameof(property));
 
-            return GetTypeConstraints(property);
+            return GetTypeConstraints(languages, property);
         }
-        public static TypeConstraint GetTypeConstraints(PropertyInfo property)
+        public static TypeConstraint GetTypeConstraints(IEnumerable<LanguageConcept> languages, PropertyInfo property)
         {
             if (property == null) throw new ArgumentNullException(nameof(property));
 
             TypeConstraint constraints = new TypeConstraint();
-            ProcessTypeConstraintAttribute(constraints, property);
+            ProcessTypeConstraintAttribute(constraints, languages, property);
             Type propertyType = GetPropertyType(property);
-            ClassifyTypeConstraints(constraints, propertyType);
+            ClassifyTypeConstraints(constraints, languages, propertyType);
             ProcessSimpleTypeConstraintAttribute(constraints, property);
             return constraints;
         }
@@ -115,19 +131,19 @@ namespace OneCSharp.AST.Model
                 }
             }
         }
-        private static void ProcessTypeConstraintAttribute(TypeConstraint constraints, PropertyInfo property)
+        private static void ProcessTypeConstraintAttribute(TypeConstraint constraints, IEnumerable<LanguageConcept> languages, PropertyInfo property)
         {
             TypeConstraintAttribute typeConstraint = property.GetCustomAttribute<TypeConstraintAttribute>();
             if (typeConstraint == null) return;
-            ClassifyTypeConstraints(constraints, typeConstraint.Types);
+            ClassifyTypeConstraints(constraints, languages, typeConstraint.Types);
         }
-        private static void ClassifyTypeConstraints(TypeConstraint constraints, params Type[] types)
+        private static void ClassifyTypeConstraints(TypeConstraint constraints, IEnumerable<LanguageConcept> languages, params Type[] types)
         {
             foreach (Type type in types)
             {
                 if (type.IsAbstract)
                 {
-                    foreach (Type subclass in GetSubclassesOfType(type))
+                    foreach (Type subclass in GetSubclassesOfType(languages, type))
                     {
                         ClassifyTypeConstraint(constraints, subclass);
                     }

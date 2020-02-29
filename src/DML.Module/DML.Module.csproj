@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>OneCSharp.DML.Module</AssemblyName>
+    <RootNamespace>OneCSharp.DML.Module</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AST.UI\AST.UI.csproj" />
+    <ProjectReference Include="..\DML.Model\DML.Model.csproj" />
+    <ProjectReference Include="..\MVVM\MVVM.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)OneCSharp.DML.Module.dll&quot; &quot;$(SolutionDir)one-c-sharp-wpf\bin\$(ConfigurationName)\netcoreapp3.1\Modules\DML\&quot; /Y" />
+  </Target>
+
+</Project>

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using OneCSharp.AST.Model;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace OneCSharp.AST.Model
+namespace OneCSharp.DML.Model
 {
     public sealed class VariableScopeProvider : IScopeProvider
     {

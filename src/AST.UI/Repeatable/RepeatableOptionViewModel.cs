@@ -29,8 +29,17 @@ namespace OneCSharp.AST.UI
             if (concept == null) return;
             if (concept.SyntaxNode == null) return;
 
+            ScriptConcept script;
+            if (concept.SyntaxNode is ScriptConcept)
+            {
+                script = (ScriptConcept)concept.SyntaxNode;
+            }
+            else
+            {
+                script = concept.SyntaxNode.Ancestor<ScriptConcept>() as ScriptConcept;
+            }
             string propertyName = Owner.PropertyBinding;
-            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(concept.SyntaxNode, propertyName);
+            TypeConstraint constraints = SyntaxTreeManager.GetTypeConstraints(script?.Languages, concept.SyntaxNode, propertyName);
 
             // if selection is obvious then just create the node ...
             if (constraints.Concepts.Count == 1 && constraints.DataTypes.Count == 0)

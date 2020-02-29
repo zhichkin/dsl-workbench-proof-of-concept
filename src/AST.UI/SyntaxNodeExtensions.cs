@@ -297,5 +297,19 @@ namespace OneCSharp.AST.UI
             root.TreeNodes.Add(child);
             return child;
         }
+        public static TreeNodeViewModel BuildLanguageSelectorTree(IEnumerable<ISyntaxNode> references)
+        {
+            TreeNodeViewModel tree = new TreeNodeViewModel();
+            foreach (ISyntaxNode node in references)
+            {
+                tree.TreeNodes.Add(new TreeNodeViewModel()
+                {
+                    IsExpanded = true,
+                    NodePayload = node,
+                    NodeText = node.ToString()
+                });
+            }
+            return tree;
+        }
     }
 }

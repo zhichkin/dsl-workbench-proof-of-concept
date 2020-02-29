@@ -20,14 +20,14 @@ namespace OneCSharp.AST.UI
         public static SyntaxTreeController Current { get { return _singleton; } }
         private void InitializeLayouts()
         {
-            _layouts.Add(typeof(FunctionConcept), new FunctionConceptLayout());
-            _layouts.Add(typeof(ParameterConcept), new ParameterConceptLayout());
-            _layouts.Add(typeof(VariableConcept), new VariableConceptLayout());
-            _layouts.Add(typeof(SelectConcept), new SelectConceptLayout());
-            _layouts.Add(typeof(SelectExpression), new SelectExpressionLayout());
-            _layouts.Add(typeof(FromConcept), new FromConceptLayout());
-            _layouts.Add(typeof(WhereConcept), new WhereConceptLayout());
-            _layouts.Add(typeof(TableConcept), new TableConceptLayout());
+            //_layouts.Add(typeof(FunctionConcept), new FunctionConceptLayout());
+            //_layouts.Add(typeof(ParameterConcept), new ParameterConceptLayout());
+            //_layouts.Add(typeof(VariableConcept), new VariableConceptLayout());
+            //_layouts.Add(typeof(SelectConcept), new SelectConceptLayout());
+            //_layouts.Add(typeof(SelectExpression), new SelectExpressionLayout());
+            //_layouts.Add(typeof(FromConcept), new FromConceptLayout());
+            //_layouts.Add(typeof(WhereConcept), new WhereConceptLayout());
+            //_layouts.Add(typeof(TableConcept), new TableConceptLayout());
         }
         public void RegisterConceptLayout(Type conceptType, IConceptLayout conceptLayout)
         {
