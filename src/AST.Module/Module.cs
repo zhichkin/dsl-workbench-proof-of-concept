@@ -31,6 +31,8 @@ namespace OneCSharp.AST.Module
         {
             Shell = shell ?? throw new ArgumentNullException(nameof(shell));
 
+            SyntaxTreeManager.RegisterScopeProvider(typeof(LanguageConcept), new AssemblyScopeProvider());
+
             SyntaxTreeController.Current.RegisterConceptLayout(typeof(ScriptConcept), new ScriptConceptLayout());
             SyntaxTreeController.Current.RegisterConceptLayout(typeof(LanguageConcept), new LanguageConceptLayout());
 

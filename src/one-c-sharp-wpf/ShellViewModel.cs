@@ -63,12 +63,12 @@ namespace OneCSharp.Shell
         {
             StatusBarRegion = "Welcome to 1C# ! =)";
 
-            // Plug in SQL module
-            IModule module1 = new OneCSharp.SQL.UI.Module();
+            // Plug in main AST module
+            IModule module1 = new OneCSharp.AST.Module.Module();
             module1.Initialize(this);
 
-            // Plug in AST module
-            IModule module2 = new OneCSharp.AST.Module.Module();
+            // Plug in SQL module (TODO: move it to extension modules in future)
+            IModule module2 = new OneCSharp.SQL.UI.Module();
             module2.Initialize(this);
 
             InitializeExtensionModules();
@@ -100,8 +100,6 @@ namespace OneCSharp.Shell
                 }
             }
         }
-
-
         public void AddMenuItem(MenuItemViewModel menuItem)
         {
             MainMenuRegion.Add(menuItem);
@@ -110,16 +108,11 @@ namespace OneCSharp.Shell
         {
             LeftRegion.TreeNodes.Add(treeNode);
         }
-
-
         public void ShowStatusBarMessage(string message)
         {
             StatusBarRegion = message;
             //App.Current.MainWindow.Dispatcher.Invoke(() => { StatusBarRegion = message; });
         }
-    
-
-
         private void InitializeExtensionModules()
         {
             string moduleCatalog = Path.Combine(AppCatalogPath, "Modules");

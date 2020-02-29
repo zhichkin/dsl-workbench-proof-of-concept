@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace OneCSharp.DML.Model
 {
-    public sealed class FunctionConcept : SyntaxNode, IIdentifiable
+    public sealed class FunctionConcept : SyntaxRoot, IIdentifiable
     {
         private const string PLACEHOLDER = "<function name>";
         public string Identifier { get; set; } = PLACEHOLDER;

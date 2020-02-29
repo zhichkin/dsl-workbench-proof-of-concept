@@ -145,7 +145,8 @@ namespace OneCSharp.AST.UI
         private LanguageConcept SelectLanguageReference(ISyntaxNode concept, string propertyName, Visual control)
         {
             // get scope provider
-            IScopeProvider scopeProvider = new AssemblyScopeProvider();
+            IScopeProvider scopeProvider = SyntaxTreeManager.GetScopeProvider(concept.GetType());
+            if (scopeProvider == null) { return null; }
 
             // get references in the scope
             IEnumerable<ISyntaxNode> scope = scopeProvider.Scope(concept, propertyName);

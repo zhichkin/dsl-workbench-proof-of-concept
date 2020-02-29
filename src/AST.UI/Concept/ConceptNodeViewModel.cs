@@ -146,9 +146,6 @@ namespace OneCSharp.AST.UI
             conceptNode.Owner.Lines[lineIndex].Nodes.Insert(nodeIndex, option);
             option.StartHideOptionAnimation();
         }
-
-
-
         public void ProcessOptionSelection(string propertyName)
         {
             if (string.IsNullOrWhiteSpace(propertyName)) return;
@@ -245,28 +242,28 @@ namespace OneCSharp.AST.UI
         {
             if (string.IsNullOrWhiteSpace(propertyName)) return;
 
-            // first check if own property reset to null action is requested ...
-            PropertyInfo p = SyntaxNode.GetPropertyInfo(propertyName);
-            if (p != null)
+            // removes concept which is own property of THIS concept
+
+            PropertyInfo property = SyntaxNode.GetPropertyInfo(propertyName);
+            if (property != null)
             {
-                if (p.IsOptional())
+                if (property.IsOptional())
                 {
-                    IOptional o = (IOptional)p.GetValue(SyntaxNode);
-                    o.HasValue = false;
+                    IOptional optional = (IOptional)property.GetValue(SyntaxNode);
+                    optional.HasValue = false;
                 }
                 else
                 {
-                    p.SetValue(SyntaxNode, null);
+                    property.SetValue(SyntaxNode, null);
                 }
-                // 
-                return;
             }
-
-            // second check if remove repeatable concept command is requested
-            if (!(Owner is RepeatableViewModel repeatable)) return;
+        }
+        public void RemoveRepeatableConcept(RepeatableViewModel repeatable)
+        {
+            // removes THIS concept from owning THIS concept repeatable
 
             // TODO: move the code below to SyntaxTreeManager
-            PropertyInfo property = repeatable.Owner.SyntaxNode.GetPropertyInfo(propertyName);
+            PropertyInfo property = repeatable.Owner.SyntaxNode.GetPropertyInfo(repeatable.PropertyBinding);
             IList list;
             if (property.IsOptional())
             {

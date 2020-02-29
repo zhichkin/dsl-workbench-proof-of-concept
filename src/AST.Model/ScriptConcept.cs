@@ -6,7 +6,7 @@ namespace OneCSharp.AST.Model
     public sealed class ScriptConcept : SyntaxNode
     {
         public List<LanguageConcept> Languages { get; } = new List<LanguageConcept>();
-        public List<SyntaxNode> Statements { get; } = new List<SyntaxNode>();
+        public List<SyntaxRoot> Statements { get; } = new List<SyntaxRoot>();
     }
     public sealed class LanguageConcept : SyntaxNode
     {

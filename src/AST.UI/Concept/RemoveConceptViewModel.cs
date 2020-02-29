@@ -52,7 +52,7 @@ namespace OneCSharp.AST.UI
             }
             else if (Owner.Owner is RepeatableViewModel repeatable)
             {
-                concept.RemoveConcept(repeatable.PropertyBinding);
+                concept.RemoveRepeatableConcept(repeatable);
             }
         }
     }
