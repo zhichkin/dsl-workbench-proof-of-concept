@@ -64,7 +64,11 @@ namespace OneCSharp.AST.Model
         }
         public static void ClassifyTypeConstraint(TypeConstraint constraints, Type type)
         {
-            if (SimpleTypes.DotNetTypes.Contains(type))
+            if (type.IsEnum)
+            {
+                constraints.Enumerations.Add(type);
+            }
+            else if (SimpleTypes.DotNetTypes.Contains(type))
             {
                 constraints.DotNetTypes.Add(type);
             }

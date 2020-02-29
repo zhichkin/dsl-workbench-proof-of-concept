@@ -24,6 +24,31 @@ namespace OneCSharp.AST.UI
                 {
                     if (SyntaxNodeType == null)
                     {
+                        // TODO: refactor all this hell below !!!
+                        var ancestor = this.Ancestor<ConceptNodeViewModel>();
+                        if (ancestor == null) return $"{{{PropertyBinding}}}";
+                        PropertyInfo property = ancestor.SyntaxNode.GetPropertyInfo(PropertyBinding);
+                        Type propertyType = SyntaxTreeManager.GetPropertyType(property);
+                        if(propertyType == null) return $"{{{PropertyBinding}}}";
+                        if (propertyType.IsEnum)
+                        {
+                            if (property.IsOptional())
+                            {
+                                IOptional optional = (IOptional)property.GetValue(ancestor.SyntaxNode);
+                                if (optional.HasValue)
+                                {
+                                    return optional.Value.ToString();
+                                }
+                                else
+                                {
+                                    return $"{{{PropertyBinding}}}";
+                                }
+                            }
+                            else
+                            {
+                                return property.GetValue(ancestor.SyntaxNode).ToString();
+                            }
+                        }
                         return $"{{{PropertyBinding}}}";
                     }
                     else
@@ -101,6 +126,12 @@ namespace OneCSharp.AST.UI
                 SyntaxTreeManager.SetConceptProperty(ancestor.SyntaxNode, PropertyBinding, selectedType);
                 SyntaxNodeType = selectedType;
             }
+            else if (selectedType.IsEnum)
+            {
+                object enumValue = SelectEnumerationValue(selectedType, control);
+                if (enumValue == null) { return; }
+                SyntaxTreeManager.SetConceptProperty(ancestor.SyntaxNode, PropertyBinding, enumValue);
+            }
             else
             {
                 ISyntaxNode reference;
@@ -120,6 +151,19 @@ namespace OneCSharp.AST.UI
 
             // reset view model's state
             OnPropertyChanged(nameof(Presentation));
+        }
+        private object SelectEnumerationValue(Type enumType, Visual control)
+        {
+            // build tree view
+            TreeNodeViewModel viewModel = SyntaxNodeExtensions.BuildEnumerationSelectorTree(enumType);
+
+            // open dialog window
+            PopupWindow dialog = new PopupWindow(control, viewModel);
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) { return null; }
+
+            // return selected enumeration value
+            return dialog.Result.NodePayload;
         }
         private ISyntaxNode SelectSyntaxNodeReference(Type childConcept, ISyntaxNode parentConcept, string propertyName, Visual control)
         {

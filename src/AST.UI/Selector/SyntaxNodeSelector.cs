@@ -14,6 +14,7 @@ namespace OneCSharp.AST.UI
             TreeNodeViewModel tree = new TreeNodeViewModel();
 
             BuildConstantSelectorTree(tree, constraints.DotNetTypes);
+            BuildEnumerationsSelectorTree(tree, constraints.Enumerations);
             BuildConceptSelectorTree(tree, constraints.DataTypes, typeof(DataType));
             BuildConceptSelectorTree(tree, constraints.Concepts, typeof(SyntaxNode));
 
@@ -32,6 +33,26 @@ namespace OneCSharp.AST.UI
             TreeNodeViewModel groupingNode = new TreeNodeViewModel()
             {
                 NodeText = "Constants"
+            };
+            root.TreeNodes.Add(groupingNode);
+
+            foreach (Type type in types)
+            {
+                TreeNodeViewModel typeNode = new TreeNodeViewModel()
+                {
+                    NodeText = type.ToString(),
+                    NodePayload = type
+                };
+                groupingNode.TreeNodes.Add(typeNode);
+            }
+        }
+        private static void BuildEnumerationsSelectorTree(TreeNodeViewModel root, List<Type> types)
+        {
+            if (types.Count == 0) return;
+
+            TreeNodeViewModel groupingNode = new TreeNodeViewModel()
+            {
+                NodeText = "Enumerations"
             };
             root.TreeNodes.Add(groupingNode);
 

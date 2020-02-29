@@ -100,5 +100,6 @@ namespace OneCSharp.AST.Model
         public readonly List<Type> Concepts = new List<Type>();
         public readonly List<Type> DataTypes = new List<Type>();
         public readonly List<Type> DotNetTypes = new List<Type>();
+        public readonly List<Type> Enumerations = new List<Type>();
     }
 }

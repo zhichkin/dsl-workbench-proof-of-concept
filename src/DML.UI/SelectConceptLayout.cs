@@ -56,7 +56,12 @@ namespace OneCSharp.DML.UI
         {
             return (new ConceptNodeViewModel(null, concept))
                 .Identifier()
-                .Selector().Bind(nameof(concept.TableDefinition));
+                .Selector().Bind(nameof(concept.TableDefinition))
+                .Property(nameof(concept.Hint))
+                    .Keyword("WITH")
+                    .Literal("(")
+                    .Selector()
+                    .Literal(")");
         }
     }
 }

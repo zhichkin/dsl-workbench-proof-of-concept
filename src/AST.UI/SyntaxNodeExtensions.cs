@@ -311,5 +311,19 @@ namespace OneCSharp.AST.UI
             }
             return tree;
         }
+        public static TreeNodeViewModel BuildEnumerationSelectorTree(Type enumType)
+        {
+            TreeNodeViewModel tree = new TreeNodeViewModel();
+            foreach (var value in Enum.GetValues(enumType))
+            {
+                tree.TreeNodes.Add(new TreeNodeViewModel()
+                {
+                    IsExpanded = true,
+                    NodePayload = value,
+                    NodeText = Enum.GetName(enumType, value)
+                });
+            }
+            return tree;
+        }
     }
 }

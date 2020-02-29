@@ -62,5 +62,16 @@ namespace OneCSharp.DML.Model
         private const string PLACEHOLDER = "<table>";
         public TableConcept() { Identifier = PLACEHOLDER; }
         [TypeConstraint(typeof(ComplexDataType))] public Type TableDefinition { get; set; }
+        public Optional<TableHints> Hint { get; set; } = new Optional<TableHints>();
+    }
+    public enum TableHints
+    {
+        NO_LOCK,
+        ROW_LOCK,
+        READ_PAST,
+        READ_COMMITED,
+        READ_UNCOMMITED,
+        READ_REPEATABLE,
+        SERIALIZABLE
     }
 }
