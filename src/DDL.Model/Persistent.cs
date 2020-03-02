@@ -3,10 +3,7 @@
 namespace OneCSharp.DDL.Attributes
 {
     public abstract class Persistent { } // marker class for database entities to use in DSL syntax tree as a type constraint
-    public abstract class ReferenceObject : Persistent
-    {
-        [Field(Name = "_IDRRef", TypeName = "binary", Length = 16, IsPrimaryKey = true)] public Guid Ссылка { get; set; }
-    }
+    public abstract class ReferenceObject : Persistent { }
 
     public enum FieldPurpose
     {
@@ -36,6 +33,8 @@ namespace OneCSharp.DDL.Attributes
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)] public sealed class EntityAttribute : Attribute
     {
+        public EntityAttribute() { }
+        public EntityAttribute(string uuid) { UUID = new Guid(uuid); }
         public Guid UUID { get; set; }
         public int TypeCode { get; set; }
         public string TableName { get; set; }

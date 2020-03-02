@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OneCSharp.SQL.Services
@@ -183,6 +184,22 @@ namespace OneCSharp.SQL.Services
         }
 
         public string ConnectionString { get; set; }
+        public void Load(Database infoBase)
+        {
+            foreach (Namespace ns in infoBase.Namespaces)
+            {
+                List<Task> tasks = new List<Task>();
+                foreach (var item in ns.DataTypes)
+                {
+                    tasks.Add(Task.Run(() =>
+                    {
+                        GetSQLMetadata((MetaObject)item);
+                    }));
+                }
+                Task all = Task.WhenAll(tasks);
+                _ = all.Wait(Timeout.Infinite);
+            }
+        }
         public async Task LoadAsync(Database infoBase)
         {
             foreach (Namespace ns in infoBase.Namespaces)
@@ -300,13 +317,13 @@ namespace OneCSharp.SQL.Services
             }
             else if (name == DBToken.RecorderRRef) // TODO: определять при чтении метаданных из Config
             {
-                property.Name = "Регистратор (ссылка)";
+                property.Name = "Регистратор_Cсылка";
                 property.ValueType = SimpleType.UniqueIdentifier; //.Types.Add(new TypeInfo() { Name = "UUID", TypeCode = -6 });
                 return;
             }
             else if (name == DBToken.RecorderTRef) // TODO: определять при чтении метаданных из Config
             {
-                property.Name = "Регистратор (тип)";
+                property.Name = "Регистратор_Тип";
                 property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                 return;
             }
@@ -322,7 +339,7 @@ namespace OneCSharp.SQL.Services
                 {
                     property.Fields[0].Purpose = FieldPurpose.Version;
                 }
-                property.Name = "Версия";
+                property.Name = "Version";
                 property.ValueType = SimpleType.Binary; //.Types.Add(new TypeInfo() { Name = "Version", TypeCode = -7 });
                 return;
             }
@@ -410,7 +427,7 @@ namespace OneCSharp.SQL.Services
             }
             else if (name == DBToken.KeyField)
             {
-                property.Name = "КлючСтроки";
+                property.Name = "KeyField";
                 property.ValueType = SimpleType.Numeric; //.Types.Add(new TypeInfo() { Name = "Numeric", TypeCode = -4 });
                 return;
             }

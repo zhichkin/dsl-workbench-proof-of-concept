@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DML.UI", "DML.UI\DML.UI.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DML.Module", "DML.Module\DML.Module.csproj", "{0B30CE11-E5C3-4EBB-98D3-5BEA59AC54B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{5AB226F1-62AA-44D9-81CD-41FB98B5D35E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDL.Services", "DDL.Services\DDL.Services.csproj", "{EA594781-E93F-4BB2-8476-A1784E2B117A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,10 +113,10 @@ Global
 		{0B30CE11-E5C3-4EBB-98D3-5BEA59AC54B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B30CE11-E5C3-4EBB-98D3-5BEA59AC54B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B30CE11-E5C3-4EBB-98D3-5BEA59AC54B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5AB226F1-62AA-44D9-81CD-41FB98B5D35E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5AB226F1-62AA-44D9-81CD-41FB98B5D35E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5AB226F1-62AA-44D9-81CD-41FB98B5D35E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5AB226F1-62AA-44D9-81CD-41FB98B5D35E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA594781-E93F-4BB2-8476-A1784E2B117A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA594781-E93F-4BB2-8476-A1784E2B117A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA594781-E93F-4BB2-8476-A1784E2B117A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA594781-E93F-4BB2-8476-A1784E2B117A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

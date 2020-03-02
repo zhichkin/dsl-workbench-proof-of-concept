@@ -10,6 +10,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OneCSharp.SQL.Services
@@ -144,6 +145,47 @@ namespace OneCSharp.SQL.Services
             } // end of limited scope
 
             return list;
+        }
+        public void ReadMetadata(Database database)
+        {
+            _DBNames.Clear();
+            _internal_UUID.Clear();
+
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder()
+            {
+                DataSource = database.Owner.Address,
+                InitialCatalog = database.Name,
+                IntegratedSecurity = true,
+                PersistSecurityInfo = false
+            };
+            ConnectionString = csb.ConnectionString;
+
+            ReadDBNames();
+            if (_DBNames.Count > 0)
+            {
+                List<Task> tasks = new List<Task>();
+                foreach (var item in _DBNames)
+                {
+                    if (new Guid(item.Key) == Guid.Empty) continue; // system tables and settings
+                    if (string.IsNullOrWhiteSpace(item.Value.Token)) continue; // unsupported meta-object type
+                    if (item.Value.Token == DBToken.Const) continue; // not supported yet
+                    tasks.Add(Task.Run(() =>
+                    {
+                        ProcessDBName(database, item.Key, item.Value, null);
+                    }));
+                }
+                Task all = Task.WhenAll(tasks);
+                _ = all.Wait(Timeout.Infinite);
+
+                ResolvePropertiesReferenceValueTypes(database); // resolve internal identifiers into types
+
+                // load SQL metadata
+                SQLHelper SQL = new SQLHelper
+                {
+                    ConnectionString = ConnectionString
+                };
+                SQL.Load(database);
+            }
         }
         public async Task ReadMetadataAsync(Database database, IProgress<string> progress)
         {
