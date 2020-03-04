@@ -37,7 +37,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DML.UI", "DML.UI\DML.UI.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DML.Module", "DML.Module\DML.Module.csproj", "{0B30CE11-E5C3-4EBB-98D3-5BEA59AC54B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDL.Services", "DDL.Services\DDL.Services.csproj", "{EA594781-E93F-4BB2-8476-A1784E2B117A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDL.Services", "DDL.Services\DDL.Services.csproj", "{EA594781-E93F-4BB2-8476-A1784E2B117A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneCSharp.WebAgent", "OneCSharp.WebAgent\OneCSharp.WebAgent.csproj", "{7E70BF2B-40AD-47A7-B199-5C73B2C9BEAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,6 +119,10 @@ Global
 		{EA594781-E93F-4BB2-8476-A1784E2B117A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA594781-E93F-4BB2-8476-A1784E2B117A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA594781-E93F-4BB2-8476-A1784E2B117A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E70BF2B-40AD-47A7-B199-5C73B2C9BEAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E70BF2B-40AD-47A7-B199-5C73B2C9BEAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E70BF2B-40AD-47A7-B199-5C73B2C9BEAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E70BF2B-40AD-47A7-B199-5C73B2C9BEAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
