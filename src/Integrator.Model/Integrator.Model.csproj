@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>OneCSharp.Integrator.Model</AssemblyName>
+    <RootNamespace>OneCSharp.Integrator.Model</RootNamespace>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)OneCSharp.Integrator.Model.dll&quot; &quot;$(SolutionDir)one-c-sharp-wpf\bin\$(ConfigurationName)\netcoreapp3.1\Modules\Integrator\&quot; /Y" />
+  </Target>
+
+</Project>

@@ -18,8 +18,10 @@ namespace OneCSharp.Shell
         private AppSettings _settings;
         private readonly IServiceProvider _serviceProvider;
 
-        private string _catalogPath;
-        public string AppCatalogPath { get { return _catalogPath; } }
+        private string _appCatalogPath;
+        private string _modulesCatalogPath;
+        public string AppCatalogPath { get { return _appCatalogPath; } }
+        public string ModulesCatalogPath { get { return _modulesCatalogPath; } }
         public IService GetService<IService>()
         {
             return _serviceProvider.GetService<IService>();
@@ -35,7 +37,12 @@ namespace OneCSharp.Shell
         private void SetupCatalogPath()
         {
             Assembly asm = Assembly.GetExecutingAssembly();
-            _catalogPath = Path.GetDirectoryName(asm.Location);
+            _appCatalogPath = Path.GetDirectoryName(asm.Location);
+            _modulesCatalogPath = Path.Combine(_appCatalogPath, "Modules");
+            if (!Directory.Exists(_modulesCatalogPath))
+            {
+                _ = Directory.CreateDirectory(_modulesCatalogPath);
+            }
         }
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName)
@@ -115,12 +122,7 @@ namespace OneCSharp.Shell
         }
         private void InitializeExtensionModules()
         {
-            string moduleCatalog = Path.Combine(AppCatalogPath, "Modules");
-            if (!Directory.Exists(moduleCatalog))
-            {
-                Directory.CreateDirectory(moduleCatalog);
-            }
-            foreach (string directory in Directory.GetDirectories(moduleCatalog))
+            foreach (string directory in Directory.GetDirectories(ModulesCatalogPath))
             {
                 foreach (string file in Directory.GetFiles(directory, "*.dll"))
                 {

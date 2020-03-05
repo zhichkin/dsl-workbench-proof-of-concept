@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>OneCSharp.Integrator.Module</AssemblyName>
+    <RootNamespace>OneCSharp.Integrator.Module</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="images\AddCatalog.png" />
+    <None Remove="images\AddLocalServer.png" />
+    <None Remove="images\AddWebCatalog.png" />
+    <None Remove="images\AddWebService.png" />
+    <None Remove="images\Catalog.png" />
+    <None Remove="images\Cloud.png" />
+    <None Remove="images\DeleteCatalog.png" />
+    <None Remove="images\WebCatalog.png" />
+    <None Remove="images\WebServer.png" />
+    <None Remove="images\WebService.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Integrator.Model\Integrator.Model.csproj" />
+    <ProjectReference Include="..\MVVM\MVVM.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\AddCatalog.png" />
+    <Resource Include="images\AddLocalServer.png" />
+    <Resource Include="images\AddWebCatalog.png" />
+    <Resource Include="images\AddWebService.png" />
+    <Resource Include="images\Catalog.png" />
+    <Resource Include="images\Cloud.png" />
+    <Resource Include="images\DeleteCatalog.png" />
+    <Resource Include="images\WebCatalog.png" />
+    <Resource Include="images\WebServer.png" />
+    <Resource Include="images\WebService.png" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)OneCSharp.Integrator.Module.dll&quot; &quot;$(SolutionDir)one-c-sharp-wpf\bin\$(ConfigurationName)\netcoreapp3.1\Modules\Integrator\&quot; /Y" />
+  </Target>
+
+</Project>
