@@ -140,10 +140,5 @@ namespace OneCSharp.SQL.UI
         {
             _shell.ShowStatusBarMessage(message);
         }
-
-        public void Persist(object entity)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

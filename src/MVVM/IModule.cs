@@ -8,6 +8,5 @@ namespace OneCSharp.MVVM
         void Initialize(IShell shell);
         IController GetController<T>();
         IController GetController(Type type);
-        void Persist(object entity);
     }
 }

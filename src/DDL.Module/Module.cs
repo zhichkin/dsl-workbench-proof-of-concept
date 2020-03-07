@@ -100,10 +100,6 @@ namespace OneCSharp.DDL.Module
                 throw new FileNotFoundException("DDL module files not found!");
             }
         }
-        public void Persist(object entity)
-        {
-            throw new NotImplementedException();
-        }
         private void CreateTestCodeEditor(object parameter)
         {
             DomainConcept concept = new DomainConcept();

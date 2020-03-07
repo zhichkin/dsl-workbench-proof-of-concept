@@ -44,10 +44,6 @@ namespace OneCSharp.AST.Module
                 MenuItemPayload = this
             });
         }
-        public void Persist(object entity)
-        {
-            throw new NotImplementedException();
-        }
         private void CreateCodeEditor(object parameter)
         {
             //FunctionConcept concept = new FunctionConcept();

@@ -25,10 +25,6 @@ namespace OneCSharp.DML.Module
         {
             throw new NotImplementedException();
         }
-        public void Persist(object entity)
-        {
-            throw new NotImplementedException();
-        }
         public IShell Shell { get; private set; }
         public void Initialize(IShell shell)
         {

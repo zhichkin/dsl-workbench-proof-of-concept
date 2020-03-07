@@ -10,4 +10,8 @@
     <Exec Command="xcopy &quot;$(TargetDir)OneCSharp.Integrator.Model.dll&quot; &quot;$(SolutionDir)one-c-sharp-wpf\bin\$(ConfigurationName)\netcoreapp3.1\Modules\Integrator\&quot; /Y" />
   </Target>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AST.Model\AST.Model.csproj" />
+  </ItemGroup>
+
 </Project>

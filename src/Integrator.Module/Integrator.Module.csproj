@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AST.UI\AST.UI.csproj" />
     <ProjectReference Include="..\Integrator.Model\Integrator.Model.csproj" />
     <ProjectReference Include="..\MVVM\MVVM.csproj" />
   </ItemGroup>

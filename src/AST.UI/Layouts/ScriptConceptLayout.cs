@@ -7,7 +7,7 @@ namespace OneCSharp.AST.UI
         public override ISyntaxNodeViewModel Layout(ScriptConcept concept)
         {
             return (new ConceptNodeViewModel(null, concept))
-                .Keyword("ONE-C-SHARP")
+                .Keyword("1C#")
                 .Repeatable().Bind(nameof(concept.Languages))
                 .Repeatable().Bind(nameof(concept.Statements));
         }
