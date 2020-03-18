@@ -1,5 +1,6 @@
 # 1C# DSL workbench
-Платформа для создания модульных DSL.
+Концепция платформы (proof of concept) разработки и использования модульных DSL.
+
 Грамматика DSL языка (концепции) задаётся классом на языке C#.
 
 ```C#
@@ -41,7 +42,7 @@ public sealed class SelectConceptLayout : ConceptLayout<SelectConcept>
     }
 ```
 
-Редактор кода работает по метаданным грамматики, изменяя ViewModel шаблона при помощи Reflection.
+Редактор кода работает по метаданным класса грамматики, изменяя ViewModel шаблона, используя Reflection.
 
 Демо видео здесь: https://www.youtube.com/watch?v=3SML4jSCL14
 
