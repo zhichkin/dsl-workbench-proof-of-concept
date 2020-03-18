@@ -43,6 +43,8 @@ public sealed class SelectConceptLayout : ConceptLayout<SelectConcept>
 
 Редактор кода работает по метаданным грамматики, изменяя ViewModel шаблона при помощи Reflection.
 
+Демо видео здесь: https://www.youtube.com/watch?v=3SML4jSCL14
+
 Языки модульные, то есть можно использовать в редакторе 2 и более подключенных языков DSL одновременно.
 Всё работает аналогично JetBrains MPS. Отличаются только способы создания DSL языков и их редактирования.
-Демо видео здесь: https://www.youtube.com/watch?v=3SML4jSCL14
+
