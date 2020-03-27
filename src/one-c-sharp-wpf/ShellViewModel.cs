@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Controls;
 
 namespace OneCSharp.Shell
 {
@@ -85,6 +86,15 @@ namespace OneCSharp.Shell
         {
             get { return _selectedTab; }
             set { _selectedTab = value; OnPropertyChanged(nameof(SelectedTab)); }
+        }
+        public object SelectedTabViewModel
+        {
+            get
+            {
+                if (SelectedTab == null) return null;
+                if (!(SelectedTab.Content is UserControl content)) return null;
+                return content.DataContext;
+            }
         }
         public void AddTabItem(string header, object content)
         {

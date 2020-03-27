@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>OneCSharp.AST.Services</AssemblyName>
+    <RootNamespace>OneCSharp.AST.Services</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AST.Model\AST.Model.csproj" />
+  </ItemGroup>
+
+</Project>

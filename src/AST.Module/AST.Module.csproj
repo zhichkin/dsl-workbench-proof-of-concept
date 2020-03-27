@@ -9,16 +9,21 @@
 
   <ItemGroup>
     <None Remove="images\EditWindow.png" />
+    <None Remove="images\OpenFile.png" />
+    <None Remove="images\SaveToFile.png" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AST.Model\AST.Model.csproj" />
+    <ProjectReference Include="..\AST.Services\AST.Services.csproj" />
     <ProjectReference Include="..\AST.UI\AST.UI.csproj" />
     <ProjectReference Include="..\MVVM\MVVM.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="images\EditWindow.png" />
+    <Resource Include="images\OpenFile.png" />
+    <Resource Include="images\SaveToFile.png" />
   </ItemGroup>
 
 </Project>

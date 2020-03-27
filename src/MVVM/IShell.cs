@@ -10,5 +10,6 @@
         void AddTabItem(string header, object content);
         void RemoveTabItem(TabViewModel tab);
         void ShowStatusBarMessage(string message);
+        object SelectedTabViewModel { get; }
     }
 }

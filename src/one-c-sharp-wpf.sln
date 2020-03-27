@@ -45,6 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Integrator.Model", "Integra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Integrator.Module", "Integrator.Module\Integrator.Module.csproj", "{F3910094-C2A9-46C6-B021-F0C7C67711C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AST.Services", "AST.Services\AST.Services.csproj", "{7EF6C8AA-7E62-4149-9AAF-E62EED2D895A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +137,10 @@ Global
 		{F3910094-C2A9-46C6-B021-F0C7C67711C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3910094-C2A9-46C6-B021-F0C7C67711C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3910094-C2A9-46C6-B021-F0C7C67711C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF6C8AA-7E62-4149-9AAF-E62EED2D895A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF6C8AA-7E62-4149-9AAF-E62EED2D895A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF6C8AA-7E62-4149-9AAF-E62EED2D895A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF6C8AA-7E62-4149-9AAF-E62EED2D895A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
