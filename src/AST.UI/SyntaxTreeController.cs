@@ -1,6 +1,7 @@
 ﻿using OneCSharp.AST.Model;
 using OneCSharp.MVVM;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Media.Imaging;
@@ -57,37 +58,96 @@ namespace OneCSharp.AST.UI
             {
                 for (int i = 0; i < line.Nodes.Count; i++)
                 {
-                    if (line.Nodes[i] is ConceptNodeViewModel)
+                    ISyntaxNodeViewModel currentNode = line.Nodes[i];
+                    if (currentNode is ConceptNodeViewModel)
                     {
-                        string propertyBinding = line.Nodes[i].PropertyBinding;
-                        PropertyInfo property = node.SyntaxNode.GetPropertyInfo(propertyBinding);
-                        IOptional optional = null;
-                        if (property.IsOptional())
-                        {
-                            optional = (IOptional)property.GetValue(node.SyntaxNode);
-                        }
-                        ISyntaxNode concept = null;
-                        if (optional == null)
-                        {
-                            concept = (ISyntaxNode)property.GetValue(node.SyntaxNode);
-                        }
-                        else if (optional.HasValue)
-                        {
-                            concept = (ISyntaxNode)optional.Value;
-                        }
-                        if (concept != null)
-                        {
-                            ConceptNodeViewModel conceptNode = CreateSyntaxNode(node, concept);
-                            if (conceptNode != null)
-                            {
-                                line.Nodes[i] = conceptNode;
-                                conceptNode.PropertyBinding = propertyBinding;
-                            }
-                        }
+                        InitializeConceptViewModel(currentNode);
+                    }
+                    else if (currentNode is RepeatableViewModel)
+                    {
+                        InitializeRepeatableViewModel(currentNode);
+                    }
+                    else if (currentNode is SelectorViewModel)
+                    {
+                        InitializeSelectorViewModel(currentNode);
                     }
                 }
             }
             return node;
+        }
+        private void InitializeConceptViewModel(ISyntaxNodeViewModel conceptViewModel)
+        {
+            ISyntaxNodeViewModel parentNode = conceptViewModel.Owner;
+            string propertyBinding = conceptViewModel.PropertyBinding;
+            ISyntaxNode parentConcept = parentNode.SyntaxNode;
+
+            PropertyInfo property = parentNode.SyntaxNode.GetPropertyInfo(propertyBinding);
+            IOptional optional = null;
+            if (property.IsOptional())
+            {
+                optional = (IOptional)property.GetValue(parentConcept);
+            }
+            ISyntaxNode concept = null;
+            if (optional == null)
+            {
+                concept = (ISyntaxNode)property.GetValue(parentConcept);
+            }
+            else if (optional.HasValue)
+            {
+                concept = (ISyntaxNode)optional.Value;
+            }
+            if (concept != null)
+            {
+                ConceptNodeViewModel conceptNode = CreateSyntaxNode(parentNode, concept);
+                if (conceptNode != null)
+                {
+                    conceptViewModel = conceptNode; // TODO: why I did it like that ???
+                    conceptNode.PropertyBinding = propertyBinding;
+                }
+            }
+        }
+        private void InitializeRepeatableViewModel(ISyntaxNodeViewModel repeatableNode)
+        {
+            ISyntaxNodeViewModel parentNode = repeatableNode.Owner;
+            ISyntaxNode concept = parentNode.SyntaxNode;
+            string propertyBinding = repeatableNode.PropertyBinding;
+
+            IList conceptChildren;
+            PropertyInfo property = concept.GetPropertyInfo(propertyBinding);
+            if (property.IsOptional())
+            {
+                IOptional optional = (IOptional)property.GetValue(concept);
+                if (optional == null || !optional.HasValue)
+                {
+                    return;
+                }
+                conceptChildren = (IList)optional.Value;
+            }
+            else
+            {
+                conceptChildren = (IList)property.GetValue(concept);
+            }
+            if (conceptChildren == null || conceptChildren.Count == 0)
+            {
+                return;
+            }
+            foreach (var child in conceptChildren)
+            {
+                if (!(child is SyntaxNode))
+                {
+                    continue;
+                }
+                ConceptNodeViewModel conceptViewModel = CreateSyntaxNode(repeatableNode, (ISyntaxNode)child);
+                if (conceptViewModel == null)
+                {
+                    continue;
+                }
+                repeatableNode.Add(conceptViewModel);
+            }
+        }
+        private void InitializeSelectorViewModel(ISyntaxNodeViewModel selectorViewModel)
+        {
+            //TODO
         }
     }
 }
