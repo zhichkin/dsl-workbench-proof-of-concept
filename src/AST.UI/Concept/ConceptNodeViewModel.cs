@@ -291,5 +291,16 @@ namespace OneCSharp.AST.UI
                 }
             }
         }
+        public override string ToString()
+        {
+            if (SyntaxNode == null)
+            {
+                return base.ToString();
+            }
+            else
+            {
+                return $"ViewModel for {SyntaxNode.ToString()}";
+            }
+        }
     }
 }

@@ -226,7 +226,15 @@ namespace OneCSharp.AST.Services
                 }
                 else if (reader.TokenType == JsonTokenType.Number)
                 {
-                    propertyInfo.SetValue(entity, reader.GetUInt32());
+                    uint intValue = reader.GetUInt32();
+                    if (propertyInfo.PropertyType.IsEnum)
+                    {
+                        propertyInfo.SetValue(entity, Enum.GetValues(propertyInfo.PropertyType).GetValue(intValue));
+                    }
+                    else
+                    {
+                        propertyInfo.SetValue(entity, intValue);
+                    }
                 }
                 else if (reader.TokenType == JsonTokenType.String)
                 {
@@ -259,7 +267,7 @@ namespace OneCSharp.AST.Services
                     }
                 }
             }
-            return entity;
+            return entity; // never gets here - JsonTokenType.EndObject returns ...
         }
         private void ReadOption(ref Utf8JsonReader reader, IOptional target, JsonSerializerOptions options)
         {
@@ -308,7 +316,15 @@ namespace OneCSharp.AST.Services
                 }
                 else if (reader.TokenType == JsonTokenType.Number)
                 {
-                    target.Value = reader.GetUInt32();
+                    uint intValue = reader.GetUInt32();
+                    if (propertyInfo.PropertyType.IsEnum)
+                    {
+                        target.Value = Enum.GetValues(propertyInfo.PropertyType).GetValue(intValue);
+                    }
+                    else
+                    {
+                        target.Value = intValue;
+                    }
                 }
                 else if (reader.TokenType == JsonTokenType.String)
                 {

@@ -1,16 +1,14 @@
 ﻿using OneCSharp.AST.Model;
-using OneCSharp.MVVM;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Windows.Media.Imaging;
 
 namespace OneCSharp.AST.UI
 {
     public sealed class SyntaxTreeController
     {
-        private const string ADD_PROPERTY = "pack://application:,,,/OneCSharp.AST.UI;component/images/AddProperty.png";
         private readonly Dictionary<Type, IConceptLayout> _layouts = new Dictionary<Type, IConceptLayout>();
         private SyntaxTreeController()
         {
@@ -53,35 +51,64 @@ namespace OneCSharp.AST.UI
 
             ConceptNodeViewModel node = layout.Layout(model) as ConceptNodeViewModel;
             node.Owner = parentNode;
+            InitializeConceptViewModel(node);
 
-            foreach (ICodeLineViewModel line in node.Lines)
-            {
-                for (int i = 0; i < line.Nodes.Count; i++)
-                {
-                    ISyntaxNodeViewModel currentNode = line.Nodes[i];
-                    if (currentNode is ConceptNodeViewModel)
-                    {
-                        InitializeConceptViewModel(currentNode);
-                    }
-                    else if (currentNode is RepeatableViewModel)
-                    {
-                        InitializeRepeatableViewModel(currentNode);
-                    }
-                    else if (currentNode is SelectorViewModel)
-                    {
-                        InitializeSelectorViewModel(currentNode);
-                    }
-                }
-            }
             return node;
         }
         private void InitializeConceptViewModel(ISyntaxNodeViewModel conceptViewModel)
         {
+            foreach (ICodeLineViewModel line in conceptViewModel.Lines)
+            {
+                // PropertyViewModel does not have Lines collection
+                InitializeChildrenSyntaxNodes(conceptViewModel, line.Nodes);
+            }
+        }
+        private void InitializeChildrenSyntaxNodes(ISyntaxNodeViewModel conceptViewModel, ObservableCollection<ISyntaxNodeViewModel> nodes)
+        {
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                ISyntaxNodeViewModel currentNode = nodes[i];
+                if (currentNode is ConceptNodeViewModel) // recursion
+                {
+                    ISyntaxNode concept = GetConceptFromPropertyBinding(currentNode);
+                    if (concept == null)
+                    {
+                        continue;
+                    }
+                    string propertyBinding = currentNode.PropertyBinding;
+                    currentNode = CreateSyntaxNode(conceptViewModel, concept);
+                    if (currentNode != null)
+                    {
+                        // replace layout node with newly created initialized node
+                        nodes[i] = currentNode;
+                        currentNode.PropertyBinding = propertyBinding;
+                    }
+                }
+                else if (currentNode is PropertyViewModel)
+                {
+                    InitializeChildrenSyntaxNodes(currentNode, ((PropertyViewModel)currentNode).Nodes);
+                }
+                else if (currentNode is RepeatableViewModel)
+                {
+                    InitializeRepeatableViewModel(currentNode);
+                }
+                else if (currentNode is SelectorViewModel)
+                {
+                    InitializeSelectorViewModel(currentNode);
+                }
+            }
+        }
+        private ISyntaxNode GetConceptFromPropertyBinding(ISyntaxNodeViewModel conceptViewModel)
+        {
+            if (conceptViewModel.Owner == null)
+            {
+                return conceptViewModel.SyntaxNode; // it is syntax tree root node
+            }
             ISyntaxNodeViewModel parentNode = conceptViewModel.Owner;
             string propertyBinding = conceptViewModel.PropertyBinding;
             ISyntaxNode parentConcept = parentNode.SyntaxNode;
 
-            PropertyInfo property = parentNode.SyntaxNode.GetPropertyInfo(propertyBinding);
+            PropertyInfo property = parentConcept.GetPropertyInfo(propertyBinding);
             IOptional optional = null;
             if (property.IsOptional())
             {
@@ -96,15 +123,7 @@ namespace OneCSharp.AST.UI
             {
                 concept = (ISyntaxNode)optional.Value;
             }
-            if (concept != null)
-            {
-                ConceptNodeViewModel conceptNode = CreateSyntaxNode(parentNode, concept);
-                if (conceptNode != null)
-                {
-                    conceptViewModel = conceptNode; // TODO: why I did it like that ???
-                    conceptNode.PropertyBinding = propertyBinding;
-                }
-            }
+            return concept;
         }
         private void InitializeRepeatableViewModel(ISyntaxNodeViewModel repeatableNode)
         {
@@ -147,7 +166,46 @@ namespace OneCSharp.AST.UI
         }
         private void InitializeSelectorViewModel(ISyntaxNodeViewModel selectorViewModel)
         {
-            //TODO
+            ISyntaxNodeViewModel parentNode = selectorViewModel.Owner;
+            string propertyBinding = selectorViewModel.PropertyBinding;
+            ISyntaxNode parentConcept = parentNode.SyntaxNode;
+            PropertyInfo property = parentConcept.GetPropertyInfo(propertyBinding);
+
+            IOptional optional = null;
+            if (property.IsOptional())
+            {
+                optional = (IOptional)property.GetValue(parentConcept);
+            }
+            object propertyValue = null;
+            if (optional == null)
+            {
+                propertyValue = property.GetValue(parentConcept);
+            }
+            else if (optional.HasValue)
+            {
+                propertyValue = optional.Value;
+            }
+            if (propertyValue is Assembly)
+            {
+                selectorViewModel.SyntaxNode = parentConcept;
+                selectorViewModel.SyntaxNodeType = null;
+            }
+            else if (propertyValue is Type)
+            {
+                selectorViewModel.SyntaxNode = null;
+                selectorViewModel.SyntaxNodeType = (Type)propertyValue;
+            }
+            else if (propertyValue is SyntaxNode)
+            {
+                selectorViewModel.SyntaxNode = (ISyntaxNode)propertyValue;
+                selectorViewModel.SyntaxNodeType = null;
+            }
+            else
+            {
+                selectorViewModel.SyntaxNode = null;
+                selectorViewModel.SyntaxNodeType = null;
+            }
+            _ = ((SelectorViewModel)selectorViewModel).Presentation;
         }
     }
 }
