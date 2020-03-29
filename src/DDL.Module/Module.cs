@@ -13,8 +13,9 @@ namespace OneCSharp.DDL.Module
     public sealed class Module : IModule
     {
         #region " String resources "
-        public const string ONE_C_SHARP = "ONE-C-SHARP";
-        public const string EDIT_WINDOW = "pack://application:,,,/OneCSharp.AST.Module;component/images/EditWindow.png";
+        private const string ONE_C_SHARP = "ONE-C-SHARP";
+        private const string DATABASES_CATALOG = "Databases";
+        private const string EDIT_WINDOW = "pack://application:,,,/OneCSharp.AST.Module;component/images/EditWindow.png";
         #endregion
 
         public Module() { }
@@ -27,9 +28,25 @@ namespace OneCSharp.DDL.Module
             throw new NotImplementedException();
         }
         public IShell Shell { get; private set; }
+        public string DatabasesCatalog
+        {
+            get
+            {
+                string catalogPath = Path.Combine(Shell.AppCatalogPath, DATABASES_CATALOG);
+                if (!Directory.Exists(catalogPath))
+                {
+                    _ = Directory.CreateDirectory(catalogPath);
+                }
+                return catalogPath;
+            }
+        }
         public void Initialize(IShell shell)
         {
             Shell = shell ?? throw new ArgumentNullException(nameof(shell));
+
+            RegisterDatabaseAssemblies();
+
+            //SyntaxTreeManager.RegisterScopeProvider(typeof(UseDatabaseConcept), databaseProvider);
 
             try
             {
@@ -44,6 +61,18 @@ namespace OneCSharp.DDL.Module
                     + Environment.NewLine
                     + ex.Message,
                     ONE_C_SHARP, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+        }
+        private void RegisterDatabaseAssemblies()
+        {
+            DatabaseScopeProvider databaseProvider = new DatabaseScopeProvider();
+            SyntaxTreeManager.RegisterScopeProvider(typeof(UseDatabaseConcept), databaseProvider);
+
+            //foreach (string directory in Directory.GetDirectories())
+            foreach (string file in Directory.GetFiles(DatabasesCatalog, "*.dll"))
+            {
+                Assembly assembly = Assembly.LoadFrom(file);
+                databaseProvider.RegisterDatabase(assembly);
             }
         }
         private void RegisterConceptLayouts()

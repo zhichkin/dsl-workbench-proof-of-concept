@@ -18,6 +18,6 @@ namespace OneCSharp.AST.Model
     [Description("Root concepts")]
     public abstract class SyntaxRoot : SyntaxNode
     {
-
+        // marker class (interface)
     }
 }

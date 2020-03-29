@@ -10,7 +10,7 @@ using System.Text;
 
 namespace OneCSharp.DDL.Services
 {
-    public sealed class PersistentAssemblyGenerator
+    public sealed class DatabaseAssemblyGenerator
     {
         //private string filePath = @"C:\Users\User\Desktop\GitHub\TestCode.cs";
         private string assemblyPath = string.Empty;

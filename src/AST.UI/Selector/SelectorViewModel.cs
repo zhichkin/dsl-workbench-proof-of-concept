@@ -83,13 +83,13 @@ namespace OneCSharp.AST.UI
             var ancestor = this.Ancestor<ConceptNodeViewModel>();
             if (ancestor == null) return;
 
-            // check if property is referencing language assembly - special case !
+            // check if property is referencing assembly - special case !
             if (ancestor.SyntaxNode.IsAssemblyReference(PropertyBinding))
             {
-                LanguageConcept language = SelectLanguageReference(ancestor.SyntaxNode, PropertyBinding, control);
-                if (language == null) { return; }
-                SyntaxTreeManager.SetConceptProperty(ancestor.SyntaxNode, PropertyBinding, language.Assembly);
-                SyntaxNode = language;
+                IAssemblyConcept assemblyConcept = SelectAssemblyReference(ancestor.SyntaxNode, PropertyBinding, control);
+                if (assemblyConcept == null) { return; }
+                SyntaxTreeManager.SetConceptProperty(ancestor.SyntaxNode, PropertyBinding, assemblyConcept.Assembly);
+                SyntaxNode = ancestor.SyntaxNode;
                 OnPropertyChanged(nameof(Presentation));
                 return;
             }
@@ -186,7 +186,7 @@ namespace OneCSharp.AST.UI
             // return selected reference
             return (dialog.Result.NodePayload as ISyntaxNode);
         }
-        private LanguageConcept SelectLanguageReference(ISyntaxNode concept, string propertyName, Visual control)
+        private IAssemblyConcept SelectAssemblyReference(ISyntaxNode concept, string propertyName, Visual control)
         {
             // get scope provider
             IScopeProvider scopeProvider = SyntaxTreeManager.GetScopeProvider(concept.GetType());
@@ -197,7 +197,7 @@ namespace OneCSharp.AST.UI
             if (scope == null || scope.Count() == 0) { return null; }
 
             // build tree view
-            TreeNodeViewModel viewModel = SyntaxNodeExtensions.BuildLanguageSelectorTree(scope);
+            TreeNodeViewModel viewModel = SyntaxNodeExtensions.BuildAssemblySelectorTree(scope);
 
             // open dialog window
             PopupWindow dialog = new PopupWindow(control, viewModel);
@@ -205,7 +205,7 @@ namespace OneCSharp.AST.UI
             if (dialog.Result == null) { return null; }
 
             // return selected reference
-            return (dialog.Result.NodePayload as LanguageConcept);
+            return (dialog.Result.NodePayload as IAssemblyConcept);
         }
     }
 }

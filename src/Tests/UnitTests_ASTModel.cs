@@ -13,7 +13,7 @@ namespace OneCSharp.Tests
         [TestMethod]
         public void Test1()
         {
-            var generator = new PersistentAssemblyGenerator();
+            var generator = new DatabaseAssemblyGenerator();
             Assembly assembly = generator.Generate("zhichkin", "accounting_3_0_72_72_demo"); // "reverse_engineering"
             foreach (Type type in assembly.GetTypes())
             {

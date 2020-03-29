@@ -17,7 +17,7 @@ namespace OneCSharp.AST.Module
     {
         #region " String resources "
         private const string ONE_C_SHARP = "ONE-C-SHARP";
-        private const string MODULE_NAME = "OneCSharpDSL";
+        private const string MODULE_NAME = "DSL";
         private const string EDIT_WINDOW = "pack://application:,,,/OneCSharp.AST.Module;component/images/EditWindow.png";
         private const string OPEN_SCRIPT = "pack://application:,,,/OneCSharp.AST.Module;component/images/OpenFile.png";
         private const string SAVE_SCRIPT = "pack://application:,,,/OneCSharp.AST.Module;component/images/SaveToFile.png";
