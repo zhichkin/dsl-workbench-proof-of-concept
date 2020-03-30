@@ -29,5 +29,9 @@ namespace OneCSharp.AST.Model
         {
             throw new NotImplementedException();
         }
+        public IEnumerable<Type> Scope(ISyntaxNode context, Type scopeType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -46,7 +46,7 @@ namespace OneCSharp.DDL.Module
 
             RegisterDatabaseAssemblies();
 
-            //SyntaxTreeManager.RegisterScopeProvider(typeof(UseDatabaseConcept), databaseProvider);
+            SyntaxTreeManager.RegisterScopeProvider(typeof(EntityConcept), new EntityScopeProvider());
 
             try
             {

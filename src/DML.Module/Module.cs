@@ -88,6 +88,7 @@ namespace OneCSharp.DML.Module
         private void RegisterScopeProviders()
         {
             SyntaxTreeManager.RegisterScopeProvider(typeof(VariableConcept), new VariableScopeProvider());
+            SyntaxTreeManager.RegisterScopeProvider(typeof(ColumnConcept), new ColumnReferenceScopeProvider());
         }
     }
 }

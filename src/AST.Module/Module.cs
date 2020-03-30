@@ -102,8 +102,8 @@ namespace OneCSharp.AST.Module
 
             SyntaxTreeJsonSerializer _serializer = new SyntaxTreeJsonSerializer();
             var knownTypes = _serializer.Binder.KnownTypes;
-            
-            int counter = 0;
+            knownTypes.Add(typeof(ScriptConcept).FullName, typeof(ScriptConcept));
+            knownTypes.Add(typeof(LanguageConcept).FullName, typeof(LanguageConcept));
             foreach (LanguageConcept language in script.Languages)
             {
                 if (language.Assembly == null)
@@ -113,14 +113,9 @@ namespace OneCSharp.AST.Module
                 foreach (Type type in language.Assembly.GetTypes()
                     .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(SyntaxNode))))
                 {
-                    counter++;
-                    knownTypes.Add(counter, type);
+                    knownTypes.Add(type.FullName, type);
                 }
             }
-            counter++;
-            knownTypes.Add(counter, typeof(ScriptConcept));
-            counter++;
-            knownTypes.Add(counter, typeof(LanguageConcept));
             if (knownTypes.Count == 0) return;
 
             string filePath = ScriptFilePath;
@@ -131,16 +126,6 @@ namespace OneCSharp.AST.Module
             }
 
             MessageBox.Show("Script has been saved successfully!", ONE_C_SHARP, MessageBoxButton.OK, MessageBoxImage.Information);
-
-            //json = File.ReadAllText(filePath);
-            //if (string.IsNullOrWhiteSpace(json)) return;
-            //SyntaxNode syntaxNode = _serializer.FromJson(json);
-
-            //CodeEditor editor = new CodeEditor()
-            //{
-            //    DataContext = SyntaxTreeController.Current.CreateSyntaxNode(null, syntaxNode)
-            //};
-            //Shell.AddTabItem("SCRIPT FROM JSON", editor);
         }
         private void OpenScript(object parameter)
         {
@@ -160,21 +145,15 @@ namespace OneCSharp.AST.Module
             SyntaxTreeJsonSerializer _serializer = new SyntaxTreeJsonSerializer();
             var knownTypes = _serializer.Binder.KnownTypes;
 
-            int counter = 0;
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => a.FullName == "OneCSharp.DML.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"))
+                .Where(a => a.FullName.StartsWith("OneCSharp") && a.GetName().Name.EndsWith("Model")))
             {
                 foreach (Type type in assembly.GetTypes()
                         .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(SyntaxNode))))
                 {
-                    counter++;
-                    knownTypes.Add(counter, type);
+                    knownTypes.Add(type.FullName, type);
                 }
             }
-            counter++;
-            knownTypes.Add(counter, typeof(ScriptConcept));
-            counter++;
-            knownTypes.Add(counter, typeof(LanguageConcept));
             if (knownTypes.Count == 0) return;
 
             SyntaxNode syntaxNode = _serializer.FromJson(json);

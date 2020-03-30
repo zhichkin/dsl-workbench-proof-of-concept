@@ -38,7 +38,7 @@ namespace OneCSharp.AST.Services
             Type type = value.GetType();
             writer.WriteStartObject();
             writer.WriteString("$id", id);
-            writer.WriteNumber("$type", _binder.GetTypeCode(type));
+            writer.WriteString("$type", _binder.GetTypeCode(type));
             foreach (PropertyInfo info in type.GetProperties())
             {
                 WriteProperty(writer, value, info, options);
@@ -201,7 +201,7 @@ namespace OneCSharp.AST.Services
                     else if (reader.ValueTextEquals(TYPE))
                     {
                         reader.Read();
-                        int typeCode = reader.GetInt32();
+                        string typeCode = reader.GetString();
                         entityType = _binder.GetType(typeCode);
                         entity = (SyntaxNode)Activator.CreateInstance(entityType);
                         _resolver.AddReference(reference1, entity);

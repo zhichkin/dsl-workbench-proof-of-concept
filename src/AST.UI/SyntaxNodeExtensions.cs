@@ -3,6 +3,7 @@ using OneCSharp.MVVM;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 
 namespace OneCSharp.AST.UI
@@ -324,6 +325,64 @@ namespace OneCSharp.AST.UI
                 });
             }
             return tree;
+        }
+        public static TreeNodeViewModel BuildTypeSelectionTree(IEnumerable<Type> types)
+        {
+            TreeNodeViewModel root = new TreeNodeViewModel();
+            foreach (Type type in types)
+            {
+                TreeNodeViewModel namespaceNode = GetNamespaceNode(root, type.Namespace);
+                if (namespaceNode == null)
+                {
+                    return root;
+                }
+                TreeNodeViewModel typeNode = new TreeNodeViewModel()
+                {
+                    IsExpanded = false,
+                    NodePayload = type,
+                    NodeText = type.Name
+                };
+                foreach (Type nestedType in type.GetNestedTypes())
+                {
+                    typeNode.TreeNodes.Add(new TreeNodeViewModel()
+                    {
+                        IsExpanded = false,
+                        NodePayload = nestedType,
+                        NodeText = nestedType.Name
+                    });
+                }
+                namespaceNode.TreeNodes.Add(typeNode);
+            }
+            return root;
+        }
+        private static TreeNodeViewModel GetNamespaceNode(TreeNodeViewModel root, string namespacePath)
+        {
+            if (string.IsNullOrWhiteSpace(namespacePath)) throw new NullReferenceException(nameof(namespacePath));
+
+            string[] namespaces = namespacePath.Split('.');
+
+            TreeNodeViewModel parentNode = root;
+            TreeNodeViewModel currentNode = null;
+            foreach (string name in namespaces)
+            {
+                currentNode = parentNode.TreeNodes.Where(n => n.NodeText == name).FirstOrDefault();
+                if (currentNode == null)
+                {
+                    TreeNodeViewModel namespaceNode = new TreeNodeViewModel()
+                    {
+                        IsExpanded = true,
+                        NodePayload = null,
+                        NodeText = name
+                    };
+                    parentNode.TreeNodes.Add(namespaceNode);
+                    parentNode = namespaceNode;
+                }
+                else
+                {
+                    parentNode = currentNode;
+                }
+            }
+            return parentNode;
         }
     }
 }

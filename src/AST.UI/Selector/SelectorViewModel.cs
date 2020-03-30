@@ -123,6 +123,7 @@ namespace OneCSharp.AST.UI
             PropertyInfo property = ancestor.SyntaxNode.GetPropertyInfo(PropertyBinding);
             if (SyntaxTreeManager.GetPropertyType(property) == typeof(Type))
             {
+                selectedType = SelectTypeReference(ancestor.SyntaxNode, selectedType, control);
                 SyntaxTreeManager.SetConceptProperty(ancestor.SyntaxNode, PropertyBinding, selectedType);
                 SyntaxNodeType = selectedType;
             }
@@ -206,6 +207,27 @@ namespace OneCSharp.AST.UI
 
             // return selected reference
             return (dialog.Result.NodePayload as IAssemblyConcept);
+        }
+        private Type SelectTypeReference(ISyntaxNode context, Type scopeType, Visual control)
+        {
+            // get scope provider
+            IScopeProvider scopeProvider = SyntaxTreeManager.GetScopeProvider(scopeType);
+            if (scopeProvider == null) { return scopeType; } // scope provider is not registered
+
+            // get references in the scope
+            IEnumerable<Type> scope = scopeProvider.Scope(context, scopeType);
+            if (scope == null || scope.Count() == 0) { return scopeType; } // scope provider found nothing
+
+            // build Type selection tree
+            TreeNodeViewModel viewModel = SyntaxNodeExtensions.BuildTypeSelectionTree(scope);
+            
+            // open dialog window
+            PopupWindow dialog = new PopupWindow(control, viewModel);
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) { return null; } // user made no choice
+
+            // return selected reference
+            return (dialog.Result.NodePayload as Type);
         }
     }
 }

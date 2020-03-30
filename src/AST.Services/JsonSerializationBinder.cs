@@ -6,19 +6,19 @@ namespace OneCSharp.AST.Services
 {
     public interface ISerializationBinder
     {
-        Type GetType(int typeCode);
-        int GetTypeCode(Type type);
-        Dictionary<int, Type> KnownTypes { get; }
+        Type GetType(string typeCode);
+        string GetTypeCode(Type type);
+        Dictionary<string, Type> KnownTypes { get; }
     }
     public sealed class JsonSerializationBinder : ISerializationBinder
     {
-        public Dictionary<int, Type> KnownTypes { get; } = new Dictionary<int, Type>();
+        public Dictionary<string, Type> KnownTypes { get; } = new Dictionary<string, Type>();
         public JsonSerializationBinder() { }
-        public Type GetType(int typeCode)
+        public Type GetType(string typeCode)
         {
             return KnownTypes.SingleOrDefault(i => i.Key == typeCode).Value;
         }
-        public int GetTypeCode(Type type)
+        public string GetTypeCode(Type type)
         {
             return KnownTypes.SingleOrDefault(i => i.Value == type).Key;
         }
