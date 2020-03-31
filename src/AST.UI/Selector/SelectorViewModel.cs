@@ -37,7 +37,9 @@ namespace OneCSharp.AST.UI
                                 IOptional optional = (IOptional)property.GetValue(ancestor.SyntaxNode);
                                 if (optional.HasValue)
                                 {
-                                    return optional.Value.ToString();
+                                    return ReflectionExtensions.GetEnumValuePresentation(
+                                        propertyType,
+                                        optional.Value);
                                 }
                                 else
                                 {
@@ -46,7 +48,9 @@ namespace OneCSharp.AST.UI
                             }
                             else
                             {
-                                return property.GetValue(ancestor.SyntaxNode).ToString();
+                                return ReflectionExtensions.GetEnumValuePresentation(
+                                    propertyType,
+                                    property.GetValue(ancestor.SyntaxNode));
                             }
                         }
                         return $"{{{PropertyBinding}}}";
@@ -166,27 +170,6 @@ namespace OneCSharp.AST.UI
             // return selected enumeration value
             return dialog.Result.NodePayload;
         }
-        private ISyntaxNode SelectSyntaxNodeReference(Type childConcept, ISyntaxNode parentConcept, string propertyName, Visual control)
-        {
-            // get scope provider
-            IScopeProvider scopeProvider = SyntaxTreeManager.GetScopeProvider(childConcept);
-            if (scopeProvider == null) { return null; }
-
-            // get references in the scope
-            IEnumerable<ISyntaxNode> scope = scopeProvider.Scope(parentConcept, propertyName);
-            if (scope == null || scope.Count() == 0) { return null; }
-
-            // build tree view
-            TreeNodeViewModel viewModel = SyntaxNodeExtensions.BuildReferenceSelectorTree(scope);
-
-            // open dialog window
-            PopupWindow dialog = new PopupWindow(control, viewModel);
-            _ = dialog.ShowDialog();
-            if (dialog.Result == null) { return null; }
-
-            // return selected reference
-            return (dialog.Result.NodePayload as ISyntaxNode);
-        }
         private IAssemblyConcept SelectAssemblyReference(ISyntaxNode concept, string propertyName, Visual control)
         {
             // get scope provider
@@ -228,6 +211,33 @@ namespace OneCSharp.AST.UI
 
             // return selected reference
             return (dialog.Result.NodePayload as Type);
+        }
+        private ISyntaxNode SelectSyntaxNodeReference(Type childConcept, ISyntaxNode parentConcept, string propertyName, Visual control)
+        {
+            // get scope provider
+            IScopeProvider scopeProvider = SyntaxTreeManager.GetScopeProvider(childConcept);
+            if (scopeProvider == null)
+            {
+                return null;
+                // TODO: if selector is for language concepts which are not yet nodes of the syntax tree !!!
+                // Create ConceptViewModel and ConceptModel
+                // SyntaxTreeController.Current.CreateSyntaxNode(this, new childConcept());
+            }
+
+            // get references in the scope
+            IEnumerable<ISyntaxNode> scope = scopeProvider.Scope(parentConcept, propertyName);
+            if (scope == null || scope.Count() == 0) { return null; }
+
+            // build tree view
+            TreeNodeViewModel viewModel = SyntaxNodeExtensions.BuildReferenceSelectorTree(scope);
+
+            // open dialog window
+            PopupWindow dialog = new PopupWindow(control, viewModel);
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) { return null; }
+
+            // return selected reference
+            return (dialog.Result.NodePayload as ISyntaxNode);
         }
     }
 }

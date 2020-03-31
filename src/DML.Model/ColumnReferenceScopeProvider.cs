@@ -15,9 +15,20 @@ namespace OneCSharp.DML.Model
             if (select.FROM.Expressions == null) return scope;
             if (select.FROM.Expressions.Count == 0) return scope;
 
-            foreach (TableConcept table in select.FROM.Expressions)
+            foreach (var expression in select.FROM.Expressions)
             {
+                TableConcept table = null;
+                if (expression is TableConcept)
+                {
+                    table = (TableConcept)expression;
+                }
+                else if (expression is JoinOperatorConcept)
+                {
+                    table = ((JoinOperatorConcept)expression).TableReference;
+                }
+                if (table == null) continue;
                 if (table.TableDefinition == null) continue;
+
                 foreach (PropertyInfo property in table.TableDefinition.GetProperties())
                 {
                     scope.Add(new ColumnConcept()

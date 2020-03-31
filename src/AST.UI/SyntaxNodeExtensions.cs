@@ -120,7 +120,7 @@ namespace OneCSharp.AST.UI
         }
         public static ConceptNodeViewModel Concept(this ConceptNodeViewModel @this)
         {
-            ICodeLineViewModel codeLine = @this.NewLine().BottomCodeLine();
+            ICodeLineViewModel codeLine = @this.BottomCodeLine();
             codeLine.Nodes.Add(new ConceptNodeViewModel(@this, null));
             return @this;
         }
@@ -315,13 +315,13 @@ namespace OneCSharp.AST.UI
         public static TreeNodeViewModel BuildEnumerationSelectorTree(Type enumType)
         {
             TreeNodeViewModel tree = new TreeNodeViewModel();
-            foreach (var value in Enum.GetValues(enumType))
+            foreach (var enumValue in Enum.GetValues(enumType))
             {
                 tree.TreeNodes.Add(new TreeNodeViewModel()
                 {
                     IsExpanded = true,
-                    NodePayload = value,
-                    NodeText = Enum.GetName(enumType, value)
+                    NodePayload = enumValue,
+                    NodeText = ReflectionExtensions.GetEnumValuePresentation(enumType, enumValue)
                 });
             }
             return tree;

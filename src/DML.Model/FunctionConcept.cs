@@ -19,6 +19,10 @@ namespace OneCSharp.DML.Model
         public string Identifier { get; set; } = PLACEHOLDER;
         public SimpleDataType ParameterType { get; set; }
         public Optional<bool> IsOutput { get; } = new Optional<bool>();
+        public override string ToString()
+        {
+            return $"{Identifier} ({ParameterType})";
+        }
     }
     public sealed class VariableConcept : SyntaxNode, IIdentifiable
     {

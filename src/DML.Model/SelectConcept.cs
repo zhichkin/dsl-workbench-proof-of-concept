@@ -24,10 +24,8 @@ namespace OneCSharp.DML.Model
     }
     public sealed class FromConcept : SyntaxNode
     {
-        public List<TableConcept> Expressions { get; } = new List<TableConcept>();
-    }
-    public sealed class WhereConcept : SyntaxNode
-    {
-        public List<TableConcept> Expressions { get; } = new List<TableConcept>();
+        //public List<TableConcept> Expressions { get; } = new List<TableConcept>();
+        [TypeConstraint(typeof(TableConcept), typeof(JoinOperatorConcept))]
+        public List<SyntaxNode> Expressions { get; } = new List<SyntaxNode>();
     }
 }

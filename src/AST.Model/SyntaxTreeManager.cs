@@ -145,6 +145,10 @@ namespace OneCSharp.AST.Model
         {
             foreach (Type type in types)
             {
+                if (type == typeof(SyntaxNode))
+                {
+                    continue;
+                }
                 if (type.IsAbstract)
                 {
                     foreach (Type subclass in GetSubclassesOfType(languages, type))

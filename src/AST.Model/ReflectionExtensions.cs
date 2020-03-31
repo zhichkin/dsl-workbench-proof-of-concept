@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace OneCSharp.AST.Model
@@ -104,6 +105,13 @@ namespace OneCSharp.AST.Model
             {
                 property.SetValue(concept, value);
             }
+        }
+        public static string GetEnumValuePresentation(Type enumType, object enumValue)
+        {
+            string name = Enum.GetName(enumType, enumValue);
+            FieldInfo field = enumType.GetField(name);
+            DescriptionAttribute description = field.GetCustomAttribute<DescriptionAttribute>(false);
+            return (description == null) ? name : description.Description;
         }
     }
 }

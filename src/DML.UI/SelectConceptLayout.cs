@@ -18,8 +18,8 @@ namespace OneCSharp.DML.UI
                     .Selector()
                     .Literal(")")
                 .Repeatable().Bind(nameof(concept.Expressions))
-                .Concept().Bind(nameof(concept.FROM))
-                .Concept().Bind(nameof(concept.WHERE));
+                .NewLine().Concept().Bind(nameof(concept.FROM))
+                .NewLine().Concept().Bind(nameof(concept.WHERE));
         }
     }
     public sealed class SelectExpressionLayout : ConceptLayout<SelectExpression>
