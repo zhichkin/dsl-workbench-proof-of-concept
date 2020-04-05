@@ -15,6 +15,7 @@
     <None Remove="images\Catalog.png" />
     <None Remove="images\Cloud.png" />
     <None Remove="images\DeleteCatalog.png" />
+    <None Remove="images\JsonScript.png" />
     <None Remove="images\WebCatalog.png" />
     <None Remove="images\WebServer.png" />
     <None Remove="images\WebService.png" />
@@ -23,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AST.UI\AST.UI.csproj" />
     <ProjectReference Include="..\Integrator.Model\Integrator.Model.csproj" />
+    <ProjectReference Include="..\Integrator.Services\Integrator.Services.csproj" />
     <ProjectReference Include="..\MVVM\MVVM.csproj" />
   </ItemGroup>
 
@@ -34,6 +36,7 @@
     <Resource Include="images\Catalog.png" />
     <Resource Include="images\Cloud.png" />
     <Resource Include="images\DeleteCatalog.png" />
+    <Resource Include="images\JsonScript.png" />
     <Resource Include="images\WebCatalog.png" />
     <Resource Include="images\WebServer.png" />
     <Resource Include="images\WebService.png" />

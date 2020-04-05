@@ -54,7 +54,7 @@ namespace OneCSharp.DDL.Services
                 //MetadataReference.CreateFromFile(Path.Combine(dotNetCoreDir, "System.Runtime.dll"))
             };
 
-            return CSharpCompilation.Create($"{assemblyName}.dll",
+            return CSharpCompilation.Create($"{assemblyName}",
                 new[] { parsedSyntaxTree },
                 references: references,
                 options: new CSharpCompilationOptions(

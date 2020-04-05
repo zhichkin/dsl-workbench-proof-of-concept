@@ -28,9 +28,17 @@ namespace OneCSharp.SQL.UI
         private readonly Dictionary<Type, IController> _controllers = new Dictionary<Type, IController>();
         public Module() { }
         public IShell Shell { get { return _shell; } }
-        public IController GetController<T>()
+        public T GetService<T>()
         {
-            return _controllers[typeof(T)];
+            throw new NotImplementedException();
+        }
+        public T GetProvider<T>()
+        {
+            throw new NotImplementedException();
+        }
+        public T GetController<T>()
+        {
+            return (T)_controllers[typeof(T)];
         }
         public IController GetController(Type type)
         {
@@ -40,7 +48,7 @@ namespace OneCSharp.SQL.UI
         {
             _shell = shell ?? throw new ArgumentNullException(nameof(shell));
 
-            _controllers.Add(typeof(Database), new DatabaseController(this));
+            _controllers.Add(typeof(DatabaseController), new DatabaseController(this));
 
             _shell.AddMenuItem(new MenuItemViewModel()
             {
@@ -112,7 +120,7 @@ namespace OneCSharp.SQL.UI
 
             await DoWorkAsync(database);
 
-            IController controller = GetController<Database>();
+            IController controller = GetController<DatabaseController>();
             controller.BuildTreeNode(database, out TreeNodeViewModel childNode);
             treeNode.TreeNodes.Add(childNode);
             //Persist(database);

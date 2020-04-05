@@ -14,7 +14,7 @@ namespace OneCSharp.Tests
         public void Test1()
         {
             var generator = new DatabaseAssemblyGenerator();
-            Assembly assembly = generator.Generate("zhichkin", "accounting_3_0_72_72_demo"); // "reverse_engineering"
+            Assembly assembly = generator.Generate("zhichkin", "trade_11_2_3_159_demo"); // "accounting_3_0_72_72_demo"
             foreach (Type type in assembly.GetTypes())
             {
                 Console.WriteLine($"{type.Name}");

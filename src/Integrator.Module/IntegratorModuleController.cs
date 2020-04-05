@@ -12,6 +12,7 @@ namespace OneCSharp.Integrator.Module
 {
     public sealed class IntegratorModuleController : IController
     {
+        #region "Private fields"
         private const string SCRIPT_TAB_TITLE = "SCRIPT";
         private const string MODULE_NAME = "Integrator";
         private const string MODULE_TOOLTIP = "Integrator module";
@@ -25,15 +26,15 @@ namespace OneCSharp.Integrator.Module
         private readonly BitmapImage MODULE_ICON = new BitmapImage(new Uri(MODULE_ICON_PATH));
         private readonly BitmapImage WEB_SERVER_ICON = new BitmapImage(new Uri(WEB_SERVER_PATH));
         private readonly BitmapImage ADD_NODE_ICON = new BitmapImage(new Uri(ADD_NODE_PATH));
-
-        private IShell Shell { get; set; }
-        public IntegratorModuleController(IShell shell)
+        #endregion
+        private IModule Module { get; set; }
+        public IntegratorModuleController(IModule module)
         {
-            Shell = shell;
+            Module = module;
         }
-        public string ModuleCatalogPath
+        public void AttachTreeNodes(TreeNodeViewModel parentNode)
         {
-            get { return Path.Combine(Shell.ModulesCatalogPath, MODULE_NAME); }
+            throw new NotImplementedException();
         }
         public void BuildTreeNode(object model, out TreeNodeViewModel treeNode)
         {
@@ -68,6 +69,9 @@ namespace OneCSharp.Integrator.Module
         }
         private void ConfigureNodes(TreeNodeViewModel mainNode)
         {
+            var controller = Module.GetController<ContractsController>();
+            controller.AttachTreeNodes(mainNode);
+
             TreeNodeViewModel nodes = new TreeNodeViewModel()
             {
                 IsExpanded = true,
@@ -78,7 +82,7 @@ namespace OneCSharp.Integrator.Module
             };
             nodes.ContextMenuItems.Add(new MenuItemViewModel()
             {
-                MenuItemHeader = "Create node...",
+                MenuItemHeader = "Add node",
                 MenuItemIcon = ADD_NODE_ICON,
                 MenuItemCommand = new RelayCommand(CreateIntegrationNode),
                 MenuItemPayload = nodes
@@ -112,7 +116,6 @@ namespace OneCSharp.Integrator.Module
             parent.TreeNodes.Add(treeNode);
             return treeNode;
         }
-
         private void CreateIntegrationNode(object parameter)
         {
             TreeNodeViewModel treeNode = parameter as TreeNodeViewModel;
@@ -133,7 +136,7 @@ namespace OneCSharp.Integrator.Module
             {
                 DataContext = SyntaxTreeController.Current.CreateSyntaxNode(null, script)
             };
-            Shell.AddTabItem(SCRIPT_TAB_TITLE, editor);
+            Module.Shell.AddTabItem(SCRIPT_TAB_TITLE, editor);
 
             //_ = CreateTreeNode(treeNode, node);
         }
@@ -157,7 +160,7 @@ namespace OneCSharp.Integrator.Module
             {
                 DataContext = SyntaxTreeController.Current.CreateSyntaxNode(null, script)
             };
-            Shell.AddTabItem(SCRIPT_TAB_TITLE, editor);
+            Module.Shell.AddTabItem(SCRIPT_TAB_TITLE, editor);
         }
     }
 }

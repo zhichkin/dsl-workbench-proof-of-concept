@@ -17,7 +17,15 @@ namespace OneCSharp.DML.Module
         #endregion
 
         public Module() { }
-        public IController GetController<T>()
+        public T GetService<T>()
+        {
+            throw new NotImplementedException();
+        }
+        public T GetProvider<T>()
+        {
+            throw new NotImplementedException();
+        }
+        public T GetController<T>()
         {
             throw new NotImplementedException();
         }

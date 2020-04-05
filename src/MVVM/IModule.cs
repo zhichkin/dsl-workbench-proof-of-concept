@@ -6,7 +6,9 @@ namespace OneCSharp.MVVM
     {
         IShell Shell { get; }
         void Initialize(IShell shell);
-        IController GetController<T>();
+        T GetService<T>();
+        T GetProvider<T>();
+        T GetController<T>();
         IController GetController(Type type);
     }
 }

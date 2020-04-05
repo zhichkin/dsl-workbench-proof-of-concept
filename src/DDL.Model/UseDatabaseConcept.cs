@@ -9,7 +9,9 @@ namespace OneCSharp.DDL.Model
         public Assembly Assembly { get; set; }
         public override string ToString()
         {
-            return (Assembly == null ? PLACEHOLDER : Assembly.ToString());
+            if (Assembly == null) return PLACEHOLDER;
+            AssemblyName asm = Assembly.GetName();
+            return $"{asm.Name} ({asm.Version.ToString()})";
         }
     }
 }

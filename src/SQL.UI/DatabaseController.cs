@@ -189,5 +189,10 @@ namespace OneCSharp.SQL.UI
                 MenuItemIcon = new BitmapImage(new Uri(Module.ADD_NAMESPACE)),
             });
         }
+
+        public void AttachTreeNodes(TreeNodeViewModel parentNode)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -25,9 +25,17 @@ namespace OneCSharp.AST.Module
 
         private readonly Dictionary<Type, IController> _controllers = new Dictionary<Type, IController>();
         public Module() { }
-        public IController GetController<T>()
+        public T GetService<T>()
         {
-            return _controllers[typeof(T)];
+            throw new NotImplementedException();
+        }
+        public T GetProvider<T>()
+        {
+            throw new NotImplementedException();
+        }
+        public T GetController<T>()
+        {
+            return (T)_controllers[typeof(T)];
         }
         public IController GetController(Type type)
         {
