@@ -72,12 +72,12 @@ namespace OneCSharp.Shell
             StatusBarRegion = "Welcome to 1C# ! =)";
 
             // Plug in main AST module
-            IModule module1 = new OneCSharp.AST.Module.Module();
-            module1.Initialize(this);
+            //IModule module1 = new OneCSharp.AST.Module.Module();
+            //module1.Initialize(this);
 
             // Plug in SQL module (TODO: move it to extension modules in future)
-            IModule module2 = new OneCSharp.SQL.UI.Module();
-            module2.Initialize(this);
+            //IModule module2 = new OneCSharp.SQL.UI.Module();
+            //module2.Initialize(this);
 
             InitializeExtensionModules();
         }
