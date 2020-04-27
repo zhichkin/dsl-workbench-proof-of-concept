@@ -12,6 +12,17 @@
             <Setter Property="Icon" Value="{StaticResource MenuItemIcon}"/>
             <Setter Property="Command" Value="{Binding MenuItemCommand}" />
             <Setter Property="CommandParameter" Value="{Binding MenuItemPayload}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSeparator}" Value="True">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type MenuItem}">
+                                <Separator />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
     </ContextMenu.Resources>
     <ContextMenu.ItemTemplate>

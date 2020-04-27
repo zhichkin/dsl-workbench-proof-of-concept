@@ -6,13 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
 
 namespace OneCSharp.Integrator.Module
 {
     public sealed class IntegratorModule : IModule
     {
         private const string MODULE_NAME = "Integrator";
+        private const string SETTINGS_FILE_NAME = "IntegratorSettings.json";
         private const string CONTRACTS_CATALOG_NAME = "Contracts";
+        private const string WEB_SERVERS_CATALOG_NAME = "WebServers";
         private readonly Dictionary<Type, object> _services = new Dictionary<Type, object>();
         private readonly Dictionary<Type, object> _providers = new Dictionary<Type, object>();
         private readonly Dictionary<Type, IController> _controllers = new Dictionary<Type, IController>();
@@ -34,6 +37,7 @@ namespace OneCSharp.Integrator.Module
             return _controllers[type];
         }
         public IShell Shell { get; private set; }
+        public IntegratorModuleSettings Settings { get; private set; }
         public string ModuleCatalogPath
         {
             get
@@ -58,9 +62,22 @@ namespace OneCSharp.Integrator.Module
                 return contractsCatalog;
             }
         }
+        public string WebServersCatalogPath
+        {
+            get
+            {
+                string catalog = Path.Combine(ModuleCatalogPath, WEB_SERVERS_CATALOG_NAME);
+                if (!Directory.Exists(catalog))
+                {
+                    _ = Directory.CreateDirectory(catalog);
+                }
+                return catalog;
+            }
+        }
         public void Initialize(IShell shell)
         {
             Shell = shell ?? throw new ArgumentNullException(nameof(shell));
+            LoadSettings();
             ConfigureProviders();
             ConfigureControllers();
             ConfigureView();
@@ -92,6 +109,40 @@ namespace OneCSharp.Integrator.Module
             SyntaxTreeController.Current.RegisterConceptLayout(
                 typeof(CreateIntegrationNodeConcept),
                 (IConceptLayout)Activator.CreateInstance(typeof(CreateIntegrationNodeLayout)));
+        }
+
+        private string SettingsFilePath
+        {
+            get { return Path.Combine(ModuleCatalogPath, SETTINGS_FILE_NAME); }
+        }
+        private void LoadSettings()
+        {
+            if (!File.Exists(SettingsFilePath))
+            {
+                IntegratorModuleSettings settings = new IntegratorModuleSettings();
+                settings.Nodes.Add(new WebServerSettings() { Name = "оля" });
+                SaveSettings(settings);
+                Settings = settings;
+            }
+            else
+            {
+                byte[] json = File.ReadAllBytes(SettingsFilePath);
+                Utf8JsonReader reader = new Utf8JsonReader(json);
+                Settings = JsonSerializer.Deserialize<IntegratorModuleSettings>(ref reader);
+            }
+        }
+        private void SaveSettings(IntegratorModuleSettings settings)
+        {
+            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            byte[] json = JsonSerializer.SerializeToUtf8Bytes(settings, options);
+            File.WriteAllBytes(SettingsFilePath, json);
+            Settings = settings;
+        }
+        public void SaveSettings()
+        {
+            SaveSettings(Settings);
         }
     }
 }

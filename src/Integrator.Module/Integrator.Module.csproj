@@ -9,13 +9,22 @@
 
   <ItemGroup>
     <None Remove="images\AddCatalog.png" />
+    <None Remove="images\AddDatabase.png" />
     <None Remove="images\AddLocalServer.png" />
     <None Remove="images\AddWebCatalog.png" />
     <None Remove="images\AddWebService.png" />
+    <None Remove="images\Cancel.png" />
     <None Remove="images\Catalog.png" />
     <None Remove="images\Cloud.png" />
+    <None Remove="images\Database.png" />
+    <None Remove="images\DatabaseScript.png" />
+    <None Remove="images\DataServer.png" />
     <None Remove="images\DeleteCatalog.png" />
     <None Remove="images\JsonScript.png" />
+    <None Remove="images\SaveToFile.png" />
+    <None Remove="images\ServerSettings.png" />
+    <None Remove="images\SettingsFile.png" />
+    <None Remove="images\UpdateDatabase.png" />
     <None Remove="images\WebCatalog.png" />
     <None Remove="images\WebServer.png" />
     <None Remove="images\WebService.png" />
@@ -30,13 +39,22 @@
 
   <ItemGroup>
     <Resource Include="images\AddCatalog.png" />
+    <Resource Include="images\AddDatabase.png" />
     <Resource Include="images\AddLocalServer.png" />
     <Resource Include="images\AddWebCatalog.png" />
     <Resource Include="images\AddWebService.png" />
+    <Resource Include="images\Cancel.png" />
     <Resource Include="images\Catalog.png" />
     <Resource Include="images\Cloud.png" />
+    <Resource Include="images\Database.png" />
+    <Resource Include="images\DatabaseScript.png" />
+    <Resource Include="images\DataServer.png" />
     <Resource Include="images\DeleteCatalog.png" />
     <Resource Include="images\JsonScript.png" />
+    <Resource Include="images\SaveToFile.png" />
+    <Resource Include="images\ServerSettings.png" />
+    <Resource Include="images\SettingsFile.png" />
+    <Resource Include="images\UpdateDatabase.png" />
     <Resource Include="images\WebCatalog.png" />
     <Resource Include="images\WebServer.png" />
     <Resource Include="images\WebService.png" />

@@ -10,10 +10,8 @@ namespace OneCSharp.MVVM
         private ICommand _command;
         private BitmapImage _image;
         private object _payload;
-        public MenuItemViewModel()
-        {
-
-        }
+        public MenuItemViewModel() { }
+        public bool IsSeparator { get; set; } = false;
         public string MenuItemHeader
         {
             get { return _header; }
