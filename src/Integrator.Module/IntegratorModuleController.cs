@@ -1,16 +1,14 @@
-﻿using Microsoft.VisualBasic;
-using OneCSharp.Integrator.Model;
+﻿using OneCSharp.Integrator.Model;
 using OneCSharp.MVVM;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
+using System.Reflection;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace OneCSharp.Integrator.Module
@@ -150,60 +148,7 @@ namespace OneCSharp.Integrator.Module
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }
-        private void AttachWebServer(object parameter)
-        {
-            if (!(parameter is TreeNodeViewModel parentNode)) return;
-
-            InputStringDialog dialog = new InputStringDialog()
-            {
-                Title = "Input web server name"
-            };
-            _ = dialog.ShowDialog();
-            if (dialog.Result == null) return;
-
-            string catalogName = Path.Combine(Module.WebServersCatalogPath, (string)dialog.Result);
-            DirectoryInfo catalog = new DirectoryInfo(catalogName);
-            if (catalog.Exists)
-            {
-                MessageBox.Show($"Catalog \"{catalogName}\" already exists !", "1C#", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                return;
-            }
-            catalog.Create();
-
-            WebServerSettings settings = new WebServerSettings()
-            {
-                Name = catalog.Name
-            };
-            string settingsFilePath = Path.Combine(catalog.FullName, SETTINGS_FILE_NAME);
-            SaveWebServerSettings(settings, settingsFilePath);
-
-            TreeNodeViewModel treeNode = CreateWebServerNode(parentNode, settings);
-            treeNode.IsExpanded = true;
-        }
-        private void CreateWebCatalog(object parameter)
-        {
-            if (!(parameter is TreeNodeViewModel parentNode)) return;
-
-            // ask for catalog name
-            string catalogName = "catalog";
-
-            // create direcitory on the disk
-
-            TreeNodeViewModel treeNode = CreateCatalogNode(parentNode, catalogName);
-            treeNode.IsExpanded = true;
-        }
-        private void CreateWebScript(object parameter)
-        {
-            if (!(parameter is TreeNodeViewModel parentNode)) return;
-
-            // ask for query file name
-            string fileName = "query";
-
-            // create query file on the disk
-
-            CreateScriptNode(parentNode, fileName);
-        }
-
+        
         private void LoadCatalogStructure(DirectoryInfo catalog, TreeNodeViewModel parentNode, bool isServerLevel)
         {
             if (!catalog.Exists) return;
@@ -290,9 +235,17 @@ namespace OneCSharp.Integrator.Module
                 IsExpanded = false,
                 NodeIcon = CATALOG_ICON,
                 NodeText = catalogName,
-                NodeToolTip = catalogName,
-                NodePayload = null
+                NodeToolTip = catalogName
             };
+            if (parentNode.NodePayload is WebServerSettings)
+            {
+                treeNode.NodePayload = Path.Combine(parentNode.NodeText, catalogName);
+            }
+            else
+            {
+                treeNode.NodePayload = Path.Combine((string)parentNode.NodePayload, catalogName);
+            }
+            // TODO: edit catalog name menu option
             treeNode.ContextMenuItems.Add(new MenuItemViewModel()
             {
                 MenuItemHeader = "Create new catalog",
@@ -317,14 +270,22 @@ namespace OneCSharp.Integrator.Module
             {
                 NodeIcon = DATABASE_SCRIPT_ICON,
                 NodeText = fileName,
-                NodeToolTip = "script.qry",
+                NodeToolTip = fileName,
                 NodePayload = null
             };
+            if (parentNode.NodePayload is WebServerSettings)
+            {
+                treeNode.NodePayload = parentNode.NodeText;
+            }
+            else
+            {
+                treeNode.NodePayload = (string)parentNode.NodePayload;
+            }
             treeNode.ContextMenuItems.Add(new MenuItemViewModel()
             {
                 MenuItemHeader = "Edit",
                 MenuItemIcon = DATABASE_SCRIPT_ICON,
-                MenuItemCommand = null,
+                MenuItemCommand = new RelayCommand(EditWebScript),
                 MenuItemPayload = treeNode
             });
             treeNode.ContextMenuItems.Add(new MenuItemViewModel()
@@ -344,9 +305,43 @@ namespace OneCSharp.Integrator.Module
             {
                 SaveWebServerScript(vm.Model, vm.TextJSON);
             }
+            else if (Module.Shell.SelectedTabViewModel is QueryEditorViewModel editor)
+            {
+                SaveQueryScript(editor.FileFullPath, editor.QueryScript);
+            }
         }
         #endregion
 
+        private void AttachWebServer(object parameter)
+        {
+            if (!(parameter is TreeNodeViewModel parentNode)) return;
+
+            InputStringDialog dialog = new InputStringDialog()
+            {
+                Title = "Web server name"
+            };
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) return;
+
+            string catalogName = Path.Combine(Module.WebServersCatalogPath, (string)dialog.Result);
+            DirectoryInfo catalog = new DirectoryInfo(catalogName);
+            if (catalog.Exists)
+            {
+                MessageBox.Show($"Catalog \"{catalogName}\" already exists !", "1C#", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+            catalog.Create();
+
+            WebServerSettings settings = new WebServerSettings()
+            {
+                Name = catalog.Name
+            };
+            string settingsFilePath = Path.Combine(catalog.FullName, SETTINGS_FILE_NAME);
+            SaveWebServerSettings(settings, settingsFilePath);
+
+            TreeNodeViewModel treeNode = CreateWebServerNode(parentNode, settings);
+            treeNode.IsExpanded = true;
+        }
         private void ConfigureWebServer(object parameter)
         {
             if (!(parameter is TreeNodeViewModel treeNode)) return;
@@ -400,6 +395,109 @@ namespace OneCSharp.Integrator.Module
                 treeNode.NodeText = settings.Name;
                 treeNode.NodeToolTip = settings.HttpHost;
             }
+        }
+
+        private void CreateWebCatalog(object parameter)
+        {
+            if (!(parameter is TreeNodeViewModel parentNode)) return;
+
+            // ask for catalog name
+            InputStringDialog dialog = new InputStringDialog()
+            {
+                Title = "Catalog name"
+            };
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) return;
+
+            string catalogName = (string)dialog.Result;
+            string catalogPath;
+            if (parentNode.NodePayload is WebServerSettings)
+            {
+                catalogPath = Path.Combine(parentNode.NodeText, catalogName);
+            }
+            else
+            {
+                catalogPath = Path.Combine((string)parentNode.NodePayload, catalogName);
+            }
+            string catalogFullName = Path.Combine(Module.WebServersCatalogPath, catalogPath);
+            if (Directory.Exists(catalogFullName))
+            {
+                MessageBox.Show($"Catalog \"{catalogPath}\" already exists !", "1C#", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+            // create direcitory on the disk
+            _ = Directory.CreateDirectory(catalogFullName);
+
+            TreeNodeViewModel treeNode = CreateCatalogNode(parentNode, catalogName);
+            treeNode.IsExpanded = true;
+            parentNode.IsExpanded = true;
+        }
+
+        private void CreateWebScript(object parameter)
+        {
+            if (!(parameter is TreeNodeViewModel parentNode)) return;
+
+            // ask for query file name
+            InputStringDialog dialog = new InputStringDialog()
+            {
+                Title = "Script name"
+            };
+            _ = dialog.ShowDialog();
+            if (dialog.Result == null) return;
+
+            string scriptName = (string)dialog.Result;
+            string catalogPath;
+            if (parentNode.NodePayload is WebServerSettings)
+            {
+                catalogPath = parentNode.NodeText;
+            }
+            else
+            {
+                catalogPath = (string)parentNode.NodePayload;
+            }
+            string scriptFullName = Path.Combine(Module.WebServersCatalogPath, catalogPath, $"{scriptName}.qry");
+            if (File.Exists(scriptFullName))
+            {
+                MessageBox.Show($"Script \"{scriptFullName}\" already exists !", "1C#", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+            // create query file on the disk
+            _ = File.Create(scriptFullName);
+
+            CreateScriptNode(parentNode, $"{scriptName}.qry");
+
+            // open script for editing
+            QueryEditorView view = new QueryEditorView()
+            {
+                DataContext = new QueryEditorViewModel(scriptFullName) { QueryScript = "" }
+            };
+            Module.Shell.AddTabItem($"{scriptName}.qry", view);
+        }
+        private void EditWebScript(object parameter)
+        {
+            if (!(parameter is TreeNodeViewModel parentNode)) return;
+
+            string scriptName = parentNode.NodeText;
+            string catalogPath = (string)parentNode.NodePayload;
+            string scriptFullName = Path.Combine(Module.WebServersCatalogPath, catalogPath, scriptName);
+            if (!File.Exists(scriptFullName))
+            {
+                MessageBox.Show($"Script \"{scriptFullName}\" not found !", "1C#", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+            // read script file
+            string script = File.ReadAllText(scriptFullName);
+
+            // open script for editing
+            QueryEditorView view = new QueryEditorView()
+            {
+                DataContext = new QueryEditorViewModel(scriptFullName) { QueryScript = script }
+            };
+            Module.Shell.AddTabItem(scriptName, view);
+        }
+        private void SaveQueryScript(string filePath, string script)
+        {
+            File.WriteAllText(filePath, script, Encoding.UTF8);
         }
     }
 }

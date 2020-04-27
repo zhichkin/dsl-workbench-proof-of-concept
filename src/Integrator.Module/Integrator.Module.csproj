@@ -60,6 +60,18 @@
     <Resource Include="images\WebService.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="QueryEditorView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="QueryEditorView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(TargetDir)OneCSharp.Integrator.Module.dll&quot; &quot;$(SolutionDir)one-c-sharp-wpf\bin\$(ConfigurationName)\netcoreapp3.1\Modules\Integrator\&quot; /Y" />
   </Target>
