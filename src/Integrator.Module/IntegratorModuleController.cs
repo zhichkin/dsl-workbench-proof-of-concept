@@ -2,13 +2,11 @@
 using OneCSharp.MVVM;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace OneCSharp.Integrator.Module
