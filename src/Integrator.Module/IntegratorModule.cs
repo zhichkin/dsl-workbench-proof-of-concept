@@ -1,10 +1,13 @@
 ﻿using OneCSharp.AST.UI;
 using OneCSharp.Integrator.Model;
 using OneCSharp.Integrator.Services;
+using OneCSharp.Metadata.Services;
 using OneCSharp.MVVM;
+using OneCSharp.Scripting.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 
@@ -77,6 +80,18 @@ namespace OneCSharp.Integrator.Module
         public void Initialize(IShell shell)
         {
             Shell = shell ?? throw new ArgumentNullException(nameof(shell));
+
+            IModule module = Shell.GetModules().Where(m => m.GetType().Name == "MetadataModule").FirstOrDefault();
+            if (module != null)
+            {
+                PropertyInfo property = module.GetType().GetProperty("Metadata");
+                if (property != null)
+                {
+                    IMetadataService metadata = (IMetadataService)property.GetValue(module);
+                    _services.Add(typeof(IMetadataService), metadata);
+                    _services.Add(typeof(IScriptingService), new ScriptingService(metadata, new QueryExecutor(metadata)));
+                }
+            }
             LoadSettings();
             ConfigureProviders();
             ConfigureControllers();

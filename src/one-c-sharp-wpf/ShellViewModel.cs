@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Options;
 using OneCSharp.MVVM;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -132,21 +134,35 @@ namespace OneCSharp.Shell
         }
         private void InitializeExtensionModules()
         {
+            List<Assembly> assemblies = new List<Assembly>();
             foreach (string directory in Directory.GetDirectories(ModulesCatalogPath))
             {
                 foreach (string file in Directory.GetFiles(directory, "*.dll"))
                 {
                     Assembly assembly = Assembly.LoadFrom(file);
-                    foreach (Type type in assembly.GetTypes())
+                    assemblies.Add(assembly);
+                }
+            }
+            foreach (Assembly asm in assemblies)
+            {
+                foreach (Type type in asm.GetTypes())
+                {
+                    if (type.GetInterfaces().Where(i => i == typeof(IModule)).Count() > 0)
                     {
-                        if (type.GetInterfaces().Where(i => i == typeof(IModule)).Count() > 0)
-                        {
-                            IModule module = (IModule)Activator.CreateInstance(type);
-                            module.Initialize(this);
-                        }
+                        IModule module = (IModule)Activator.CreateInstance(type);
+                        Modules.Add(module);
                     }
                 }
             }
+            foreach (IModule module in Modules)
+            {
+                module.Initialize(this);
+            }
+        }
+        private List<IModule> Modules { get; } = new List<IModule>();
+        public IList<IModule> GetModules()
+        {
+            return Modules;
         }
     }
 }

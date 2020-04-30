@@ -14,4 +14,19 @@
     <ProjectReference Include="..\Integrator.Model\Integrator.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.TransactSql.ScriptDom">
+      <HintPath>..\..\lib\Microsoft.SqlServer.TransactSql.ScriptDom.dll</HintPath>
+    </Reference>
+    <Reference Include="OneCSharp.Metadata.Model">
+      <HintPath>..\..\lib\OneCSharp.Metadata.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="OneCSharp.Metadata.Services">
+      <HintPath>..\..\lib\OneCSharp.Metadata.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="OneCSharp.Scripting.Services">
+      <HintPath>..\..\lib\OneCSharp.Scripting.Services.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

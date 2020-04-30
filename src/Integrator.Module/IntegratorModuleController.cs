@@ -1,6 +1,11 @@
 ﻿using OneCSharp.Integrator.Model;
+using OneCSharp.Integrator.Services;
+using OneCSharp.Metadata.Services;
 using OneCSharp.MVVM;
+using OneCSharp.Scripting.Services;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -28,6 +33,8 @@ namespace OneCSharp.Integrator.Module
         private const string WEB_SERVICE_PATH = "pack://application:,,,/OneCSharp.Integrator.Module;component/images/WebService.png";
         private const string WEB_CATALOG_PATH = "pack://application:,,,/OneCSharp.Integrator.Module;component/images/WebCatalog.png";
         private const string DATABASE_SCRIPT_PATH = "pack://application:,,,/OneCSharp.Integrator.Module;component/images/DatabaseScript.png";
+        private const string EXECUTE_QUERY_PATH = "pack://application:,,,/OneCSharp.Integrator.Module;component/images/RunQuery.png";
+        private const string TRANSLATE_SCRIPT_PATH = "pack://application:,,,/OneCSharp.Integrator.Module;component/images/SQLQueryUnchecked.png";
 
         private const string SERVER_SETTINGS_PATH = "pack://application:,,,/OneCSharp.Integrator.Module;component/images/ServerSettings.png";
         private const string ADD_WEB_SERVICE_PATH = "pack://application:,,,/OneCSharp.Integrator.Module;component/images/AddWebService.png";
@@ -49,6 +56,8 @@ namespace OneCSharp.Integrator.Module
         private readonly BitmapImage WEB_CATALOG_ICON = new BitmapImage(new Uri(WEB_CATALOG_PATH));
         private readonly BitmapImage ADD_WEB_SERVICE_ICON = new BitmapImage(new Uri(ADD_WEB_SERVICE_PATH));
         private readonly BitmapImage DATABASE_SCRIPT_ICON = new BitmapImage(new Uri(DATABASE_SCRIPT_PATH));
+        private readonly BitmapImage EXECUTE_QUERY_ICON = new BitmapImage(new Uri(EXECUTE_QUERY_PATH));
+        private readonly BitmapImage TRANSLATE_SCRIPT_ICON = new BitmapImage(new Uri(TRANSLATE_SCRIPT_PATH));
 
         private readonly BitmapImage SAVE_FILE_ICON = new BitmapImage(new Uri(SAVE_FILE_PATH));
         private readonly BitmapImage SERVER_SETTINGS_ICON = new BitmapImage(new Uri(SERVER_SETTINGS_PATH));
@@ -62,9 +71,13 @@ namespace OneCSharp.Integrator.Module
         #endregion
         private IntegratorModule Module { get; set; }
         private TreeNodeViewModel RootNode { get; set; }
+        private IMetadataService MetadataService { get; set; }
+        private IScriptingService ScriptingService { get; set; }
         public IntegratorModuleController(IModule module)
         {
             Module = (IntegratorModule)module;
+            MetadataService = Module.GetService<IMetadataService>();
+            ScriptingService = Module.GetService<IScriptingService>(); ;
         }
         
         #region " Utility methods "
@@ -288,6 +301,20 @@ namespace OneCSharp.Integrator.Module
             });
             treeNode.ContextMenuItems.Add(new MenuItemViewModel()
             {
+                MenuItemHeader = "Translate (SQL)",
+                MenuItemIcon = TRANSLATE_SCRIPT_ICON,
+                MenuItemCommand = new RelayCommand(TranslateScript),
+                MenuItemPayload = treeNode
+            });
+            treeNode.ContextMenuItems.Add(new MenuItemViewModel()
+            {
+                MenuItemHeader = "Execute (JSON)",
+                MenuItemIcon = EXECUTE_QUERY_ICON,
+                MenuItemCommand = new RelayCommand(ExecuteScript),
+                MenuItemPayload = treeNode
+            });
+            treeNode.ContextMenuItems.Add(new MenuItemViewModel()
+            {
                 MenuItemHeader = "Deploy",
                 MenuItemIcon = ADD_CATALOG_ICON,
                 MenuItemCommand = null,
@@ -435,6 +462,13 @@ namespace OneCSharp.Integrator.Module
         {
             if (!(parameter is TreeNodeViewModel parentNode)) return;
 
+            WebServerSettings settings = GetWebServerSettingsForScriptNode(parentNode);
+            if (settings == null)
+            {
+                MessageBox.Show("Web server settings not found!", "1C#", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             // ask for query file name
             InputStringDialog dialog = new InputStringDialog()
             {
@@ -467,13 +501,20 @@ namespace OneCSharp.Integrator.Module
             // open script for editing
             QueryEditorView view = new QueryEditorView()
             {
-                DataContext = new QueryEditorViewModel(scriptFullName) { QueryScript = "" }
+                DataContext = new QueryEditorViewModel(Module.Shell, settings, scriptFullName, MetadataService, ScriptingService) { QueryScript = "" }
             };
             Module.Shell.AddTabItem($"{scriptName}.qry", view);
         }
         private void EditWebScript(object parameter)
         {
             if (!(parameter is TreeNodeViewModel parentNode)) return;
+
+            WebServerSettings settings = GetWebServerSettingsForScriptNode(parentNode);
+            if (settings == null)
+            {
+                MessageBox.Show("Web server settings not found!", "1C#", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             string scriptName = parentNode.NodeText;
             string catalogPath = (string)parentNode.NodePayload;
@@ -489,13 +530,88 @@ namespace OneCSharp.Integrator.Module
             // open script for editing
             QueryEditorView view = new QueryEditorView()
             {
-                DataContext = new QueryEditorViewModel(scriptFullName) { QueryScript = script }
+                DataContext = new QueryEditorViewModel(Module.Shell, settings, scriptFullName, MetadataService, ScriptingService) { QueryScript = script }
             };
             Module.Shell.AddTabItem(scriptName, view);
         }
         private void SaveQueryScript(string filePath, string script)
         {
             File.WriteAllText(filePath, script, Encoding.UTF8);
+        }
+
+        private WebServerSettings GetWebServerSettingsForScriptNode(TreeNodeViewModel searchNode)
+        {
+            Stack<TreeNodeViewModel> treePath = new Stack<TreeNodeViewModel>();
+
+            foreach (TreeNodeViewModel startNode in RootNode.TreeNodes)
+            {
+                BuildTreeNodePath(startNode, searchNode, treePath);
+                if (treePath.Count == 1 && treePath.Peek() == startNode)
+                {
+                    _ = treePath.Pop();
+                }
+                else if (treePath.Count > 0)
+                {
+                    return treePath.ToArray()[treePath.Count - 1].NodePayload as WebServerSettings;
+                }
+            }
+            return null;
+        }
+        private void BuildTreeNodePath(TreeNodeViewModel startNode, TreeNodeViewModel searchNode, Stack<TreeNodeViewModel> treePath)
+        {
+            treePath.Push(startNode);
+
+            if (startNode == searchNode)
+            {
+                return;
+            }
+
+            foreach (TreeNodeViewModel node in startNode.TreeNodes)
+            {
+                BuildTreeNodePath(node, searchNode, treePath);
+                if (node == searchNode)
+                {
+                    break;
+                }
+                else
+                {
+                    _ = treePath.Pop();
+                }
+            }
+        }
+
+        private void TranslateScript(object parameter)
+        {
+            if (!(parameter is TreeNodeViewModel parentNode)) return;
+
+            WebServerSettings settings = GetWebServerSettingsForScriptNode(parentNode);
+            if (settings == null)
+            {
+                MessageBox.Show("Web server settings not found!", "1C#", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string scriptName = parentNode.NodeText;
+            string catalogPath = (string)parentNode.NodePayload;
+            string scriptFullName = Path.Combine(Module.WebServersCatalogPath, catalogPath, scriptName);
+            if (!File.Exists(scriptFullName))
+            {
+                MessageBox.Show($"Script \"{scriptFullName}\" not found !", "1C#", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+            // read script file
+            string script = File.ReadAllText(scriptFullName);
+
+            // open script for execution
+            QueryEditorView view = new QueryEditorView()
+            {
+                DataContext = new QueryEditorViewModel(Module.Shell, settings, scriptFullName, MetadataService, ScriptingService) { QueryScript = script }
+            };
+            Module.Shell.AddTabItem(scriptName, view);
+        }
+        private void ExecuteScript(object parameter)
+        {
+            if (!(parameter is TreeNodeViewModel parentNode)) return;
         }
     }
 }

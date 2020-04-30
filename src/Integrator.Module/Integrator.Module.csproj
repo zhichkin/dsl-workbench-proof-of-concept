@@ -21,9 +21,11 @@
     <None Remove="images\DataServer.png" />
     <None Remove="images\DeleteCatalog.png" />
     <None Remove="images\JsonScript.png" />
+    <None Remove="images\RunQuery.png" />
     <None Remove="images\SaveToFile.png" />
     <None Remove="images\ServerSettings.png" />
     <None Remove="images\SettingsFile.png" />
+    <None Remove="images\SQLQueryUnchecked.png" />
     <None Remove="images\UpdateDatabase.png" />
     <None Remove="images\WebCatalog.png" />
     <None Remove="images\WebServer.png" />
@@ -35,6 +37,21 @@
     <ProjectReference Include="..\Integrator.Model\Integrator.Model.csproj" />
     <ProjectReference Include="..\Integrator.Services\Integrator.Services.csproj" />
     <ProjectReference Include="..\MVVM\MVVM.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.TransactSql.ScriptDom">
+      <HintPath>..\..\lib\Microsoft.SqlServer.TransactSql.ScriptDom.dll</HintPath>
+    </Reference>
+    <Reference Include="OneCSharp.Metadata.Model">
+      <HintPath>..\..\lib\OneCSharp.Metadata.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="OneCSharp.Metadata.Services">
+      <HintPath>..\..\lib\OneCSharp.Metadata.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="OneCSharp.Scripting.Services">
+      <HintPath>..\..\lib\OneCSharp.Scripting.Services.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -51,9 +68,11 @@
     <Resource Include="images\DataServer.png" />
     <Resource Include="images\DeleteCatalog.png" />
     <Resource Include="images\JsonScript.png" />
+    <Resource Include="images\RunQuery.png" />
     <Resource Include="images\SaveToFile.png" />
     <Resource Include="images\ServerSettings.png" />
     <Resource Include="images\SettingsFile.png" />
+    <Resource Include="images\SQLQueryUnchecked.png" />
     <Resource Include="images\UpdateDatabase.png" />
     <Resource Include="images\WebCatalog.png" />
     <Resource Include="images\WebServer.png" />
